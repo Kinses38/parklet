@@ -18,6 +18,7 @@
 ## SECTION B
 
 ### Introduction
+> "Airbnb for parking"
 
 The aim of our project will be to develop an android app that will allow 
 homeowners to easily rent out their driveways as parking spaces to commuters 
@@ -25,8 +26,6 @@ with minimal effort. And likewise enable commuters to easily view and book
 parking spots with competitive rates.
 
 ### Outline
-
-> Outline the proposed project.
 
 The project will be an android based app which will utilize firebase for our back-end as well as real time synchronization to our database.
 We plan on using the google maps api for locating available parking for the customer. We also hope to implement a nfc check in/check out system
@@ -123,18 +122,18 @@ the area of the event.
 
 ### Learning Challenges
 
-**Common**
+**Common learning challenges:**
 - Android development
 - Android studio
 - Firebase
 - Implementing NFC based technology
 
-**Shaun**
+**Shaun's learning challenges:**
 - Previous projects & internship experience utilized functional paradigm 
   languages such as Clojure and Clojurescript. I've never undertaken an Object 
   Oriented project of this size. 
 
-**Mike**
+**Mike's learning challenges**
 - Using google maps api
 
 ### Breakdown of work
@@ -145,13 +144,20 @@ the area of the event.
 > separate, clearly-defined tasks, and that those responsibilities substantially cover all of the work required
 > for the project.
 
-- Implementation of the base Android UI
-- Implementation of the map functionality 
-- Implementation of rental functionality 
-- Implementation of NFC enabled check-in
-- Firebase functionality 
-- Implementation of User profiles (homeowner and renter)
-- Implementation of rental statistics
+- I will be working on the base android ui template
+- I will be working on the registration and login features, this will include the ui elements
+  that will allow a user to swap between listing a property or renting an available property.
+- I will be working on the google map intergration including the displaying of 
+  available parking spots to rent and interactions with the corresponding map pins.
+- I will be working on the implementation of the booking system including notifying the owner of new bookings. 
+- Implementation of NFC enabled check-in functionality. Writing the nfc tags, associating the tag with our app
+  and the push notifications to the homeowner when a customer checks in or out of the property.
+
+- Design of firebase data structures, how the documents will be stored, such as 
+  bookings, user information, and propert locations. 
+- I will be implementing the rental statistics for both customers and homeowners
+  to better understand the demand in a given area.
+- The implementation of a star based review system for both homeowners and customers.
 
 
 #### Student 1
