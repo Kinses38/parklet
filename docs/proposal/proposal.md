@@ -6,7 +6,7 @@
 
 |                     |                   |
 |---------------------|-------------------|
-|Project Title:       | xxxxxx            |
+|Project Title:       | PARKLET           |
 |Student 1 Name:      | Shaun Kinsella    |
 |Student 1 ID:        | 14740175          |
 |Student 2 Name:      | Mike Purcell      |
@@ -144,27 +144,36 @@ the area of the event.
 > separate, clearly-defined tasks, and that those responsibilities substantially cover all of the work required
 > for the project.
 
-- I will be working on the base android ui template
+This breakdown of work is based on our current understanding of the requirements of this project.
+As part of our workflow we will also be utilizing pair programming, auditing each others commits and taking
+an equal share in the documentation and architecture design of this project.
+
+Each member will be responsible for the design and implementation of various tests for each 
+component that they are responsible for to ensure proper test coverage.
+
+#### Student 1: Shaun
+
+- I will be working on the base android ui template which will involve the setting up of the project and 
+  developing the skeleton of the application which will facilitate the adding of the below features. 
+
 - I will be working on the registration and login features, this will include the ui elements
   that will allow a user to swap between listing a property or renting an available property.
-- I will be working on the google map intergration including the displaying of 
+
+- I will be working on the google map integration including the displaying of 
   available parking spots to rent and interactions with the corresponding map pins.
-- I will be working on the implementation of the booking system including notifying the owner of new bookings. 
+
+- I will be implementing the rental statistics for both customers and homeowners
+  to better understand the demand in a given area.
+
+
+#### Student 2: Mike
+
+- Design of firebase data structures, how the documents will be stored, such as 
+  bookings, user information, and property locations. 
+
 - Implementation of NFC enabled check-in functionality. Writing the nfc tags, associating the tag with our app
   and the push notifications to the homeowner when a customer checks in or out of the property.
 
-- Design of firebase data structures, how the documents will be stored, such as 
-  bookings, user information, and propert locations. 
-- I will be implementing the rental statistics for both customers and homeowners
-  to better understand the demand in a given area.
 - The implementation of a star based review system for both homeowners and customers.
 
-
-#### Student 1
-
-> *Student 1 should complete this section.*
-
-#### Student 2
-
-> *Student 2 should complete this section.*
-
+- I will be working on the implementation of the booking system including notifying the owner of new bookings. 
