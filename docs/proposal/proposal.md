@@ -113,6 +113,8 @@ the area of the event.
 - [Android-Geofire](https://github.com/firebase/geofire-android): library that allows 
   real time queries of services based on their geographical location.
 - [Espresso](https://developer.android.com/training/testing/espresso): Testing framework allowing us to run automated ui tests.
+- [Mockito](https://site.mockito.org) Mocking framework allowing us to write unit tests with mocked dependencies.
+- [AWS Device Farm](https://aws.amazon.com/device-farm/) Allows us to test our application on multiple devices and versions of Android in parallel.
 
 
 ### Hardware
