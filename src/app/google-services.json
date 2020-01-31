@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "13099749492",
+    "firebase_url": "https://parklet-730d2.firebaseio.com",
+    "project_id": "parklet-730d2",
+    "storage_bucket": "parklet-730d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:13099749492:android:d27a52255ea8cf1d118121",
+        "android_client_info": {
+          "package_name": "com.kinses38.parklet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "13099749492-am80fde0866mma8eisfeca8rrmrmnd1p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kinses38.parklet",
+            "certificate_hash": "91ee8c0fac179e69f6a14c5ae6b2d05b91008fb7"
+          }
+        },
+        {
+          "client_id": "13099749492-adhhl4eo7jgnv1j57oeelf96en360b9p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbUPCQj5jzq1hjE_PWEgCToq_O2EBAUSg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "13099749492-adhhl4eo7jgnv1j57oeelf96en360b9p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
