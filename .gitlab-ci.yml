@@ -21,22 +21,22 @@ context:
 assembleDebug:
   stage: build
   script:
-    - sh script/run-gradle.sh assembleDebug
+    - sh src/script/run-gradle.sh assembleDebug
   artifacts:
     paths:
-      - app/build/outputs/
+      - src/app/build/outputs/
 
 lint:
   stage: test
   script:
-    - sh script/run-gradle.sh -Pci --console=plain :app:lintDebug -PbuildDir=lint
+    - src/sh script/run-gradle.sh -Pci --console=plain :app:lintDebug -PbuildDir=lint
 
 debugTests:
   stage: test
   script:
-    - sh script/run-gradle.sh -Pci --console=plain :app:testDebug
+    - sh src/script/run-gradle.sh -Pci --console=plain :app:testDebug
 
 unitTests:
   stage: test
   script:
-    - sh script/run-gradle.sh test
+    - sh src/script/run-gradle.sh test
