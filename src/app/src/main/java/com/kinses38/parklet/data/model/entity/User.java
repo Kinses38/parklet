@@ -15,7 +15,7 @@ public class User implements Serializable {
         //empty constructor required for firebase
     }
 
-    User(String uuid, String name, String email){
+    public User(String uuid, String name, String email){
         this.uuid = uuid;
         this.name = name;
         this.email = email;
