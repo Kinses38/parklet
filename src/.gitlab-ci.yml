@@ -1,0 +1,42 @@
+### Taken from https://gitlab.computing.dcu.ie/sblott/test-project-android ###
+
+image: smblott/dcu-docker-gitlab-ci
+
+variables:
+  ANDROID_COMPILE_SDK: "29"
+  ANDROID_BUILD_TOOLS: "29.0.2"
+
+stages:
+  - pre
+  - build
+  - test
+
+context:
+  stage: pre
+  script:
+    - env | grep CACHE
+    - echo $ANDROID_HOME
+    - ls -l $ANDROID_HOME
+
+assembleDebug:
+  stage: build
+  script:
+    - sh script/run-gradle.sh assembleDebug
+  artifacts:
+    paths:
+      - app/build/outputs/
+
+lint:
+  stage: test
+  script:
+    - sh script/run-gradle.sh -Pci --console=plain :app:lintDebug -PbuildDir=lint
+
+debugTests:
+  stage: test
+  script:
+    - sh script/run-gradle.sh -Pci --console=plain :app:testDebug
+
+unitTests:
+  stage: test
+  script:
+    - sh script/run-gradle.sh test
