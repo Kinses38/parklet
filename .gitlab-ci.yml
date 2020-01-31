@@ -29,7 +29,7 @@ assembleDebug:
 lint:
   stage: test
   script:
-    - src/sh script/run-gradle.sh -Pci --console=plain :app:lintDebug -PbuildDir=lint
+    - sh src/script/run-gradle.sh -Pci --console=plain :app:lintDebug -PbuildDir=lint
 
 debugTests:
   stage: test
