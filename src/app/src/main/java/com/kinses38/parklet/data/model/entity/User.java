@@ -45,7 +45,7 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public boolean isNew() {
+    public boolean checkIsNew() {
         return isNew;
     }
 
@@ -53,7 +53,7 @@ public class User implements Serializable {
         isNew = aNew;
     }
 
-    public boolean isCreated() {
+    public boolean checkIsCreated() {
         return isCreated;
     }
 
@@ -61,7 +61,7 @@ public class User implements Serializable {
         isCreated = created;
     }
 
-    public boolean isAuthenticated() {
+    public boolean checkIsAuthenticated() {
         return isAuthenticated;
     }
 
