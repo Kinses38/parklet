@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexWarning"
+        android:name="com.kinses38.parklet.ParkLet"
         android:fullBackupContent="@xml/backup_descriptor">
         <activity android:name=".view.ui.activities.LandingActivity">
             <intent-filter>

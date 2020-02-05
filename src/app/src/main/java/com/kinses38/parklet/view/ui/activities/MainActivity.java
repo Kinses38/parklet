@@ -19,13 +19,14 @@ import com.kinses38.parklet.data.model.entity.User;
 
 public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
 
-    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
     private TextView messageTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        firebaseAuth  = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
         User user = getUserFromIntent();
         initGoogleSignInClient();
@@ -51,7 +52,12 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
     //TODO place holder for profile information.
     private void setMessageToMessageTextView(User user){
-        String message = "You are logged in as: \n" +user.getName() + "\n" + user.getEmail();
+        String message;
+        if(user == null) {
+            message = "User profile retrieval failed";
+        }else{
+            message = "You are logged in as: \n" +user.getName() + "\n" + user.getEmail();
+        }
         messageTextView.setText(message);
     }
 

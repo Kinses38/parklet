@@ -18,11 +18,14 @@ public class MainActivityTest {
 
     @Before
     public void setUp() throws Exception {
+        mainActivity = Robolectric.buildActivity(MainActivity.class)
+                .create()
+                .get();
 
     }
 
     @Test
     public void shouldExist(){
-
+        assertNotNull(mainActivity);
     }
 }
