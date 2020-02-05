@@ -6,7 +6,6 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.firebase.FirebaseApp;
 import com.kinses38.parklet.ViewModel.LandingViewModel;
 import com.kinses38.parklet.data.model.entity.User;
 
@@ -23,7 +22,6 @@ public class LandingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        FirebaseApp.initializeApp(this);
         initLandingViewModel();
         checkIfUserIsAuthenticated();
     }
