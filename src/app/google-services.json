@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "13099749492-4rahtec5m0cev64dd7kllodnkj42ljnu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kinses38.parklet",
+            "certificate_hash": "b8123aed1086bf12a5762e924d4e05d55e3a0a1d"
+          }
+        },
+        {
+          "client_id": "13099749492-rcnk9f8tcdgouqjkl2kuc6a494lpdj1e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kinses38.parklet",
+            "certificate_hash": "c1daafa3074add4d3a370f4f572f26fd23d3a73d"
+          }
+        },
+        {
           "client_id": "13099749492-am80fde0866mma8eisfeca8rrmrmnd1p.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
