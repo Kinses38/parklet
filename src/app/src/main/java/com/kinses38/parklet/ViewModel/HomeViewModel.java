@@ -18,6 +18,7 @@ public class HomeViewModel extends AndroidViewModel {
                 "This is a placeholder for upcoming park bookings");
     }
 
+
     public LiveData<String> getText() {
         return mText;
     }

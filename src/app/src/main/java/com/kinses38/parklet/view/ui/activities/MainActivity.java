@@ -36,20 +36,33 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         firebaseAuth  = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
 
+        initToolbar();
+        initDrawer();
+
+
+        initGoogleSignInClient();
+    }
+
+    private void initToolbar(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+    }
 
+    private void initDrawer() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home).setDrawerLayout(drawer).build();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+
+        Bundle bundle = new Bundle();
+
+        bundle.putSerializable("User", getUserFromIntent());
+        navController.setGraph(R.navigation.mobile_navigation, bundle);
+
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navigationView,navController);
-
-        User user = getUserFromIntent();
-        initGoogleSignInClient();
     }
 
     //TODO Constants
