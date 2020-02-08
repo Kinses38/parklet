@@ -1,17 +1,23 @@
 package com.kinses38.parklet.view.ui.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.kinses38.parklet.R;
@@ -21,17 +27,29 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
     private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
-    private TextView messageTextView;
+
+    private AppBarConfiguration appBarConfiguration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         firebaseAuth  = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_home).setDrawerLayout(drawer).build();
+
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView,navController);
+
         User user = getUserFromIntent();
         initGoogleSignInClient();
-        initMessageTextView();
-        setMessageToMessageTextView(user);
     }
 
     //TODO Constants
@@ -46,19 +64,11 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
     }
 
-    private void initMessageTextView(){
-        messageTextView = findViewById(R.id.message_text_view);
-    }
-
-    //TODO place holder for profile information.
-    private void setMessageToMessageTextView(User user){
-        String message;
-        if(user == null) {
-            message = "User profile retrieval failed";
-        }else{
-            message = "You are logged in as: \n" +user.getName() + "\n" + user.getEmail();
-        }
-        messageTextView.setText(message);
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        return NavigationUI.navigateUp(navController, appBarConfiguration)
+                || super.onSupportNavigateUp();
     }
 
     @Override
