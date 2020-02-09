@@ -9,7 +9,9 @@ variables:
 stages:
   - pre
   - build
-  - test
+  - lint
+  - debugTests
+  - unitTests
 
 context:
   stage: pre
@@ -27,16 +29,16 @@ assembleDebug:
       - src/app/build/outputs/
 
 lint:
-  stage: test
+  stage: lint
   script:
     - sh src/script/run-gradle.sh -Pci --console=plain :app:lintDebug -PbuildDir=lint
 
 debugTests:
-  stage: test
+  stage: debugTests
   script:
     - sh src/script/run-gradle.sh -Pci --console=plain :app:testDebug
 
 unitTests:
-  stage: test
+  stage: unitTests
   script:
     - sh src/script/run-gradle.sh test
