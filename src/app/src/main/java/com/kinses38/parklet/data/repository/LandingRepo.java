@@ -24,7 +24,7 @@ public class LandingRepo {
             isUserAuthorisedMutableLiveData.setValue(user);
         } else {
             user.setAuthenticated(true);
-            user.setUuid(firebaseAuthUser.getUid());
+            user.setUid(firebaseAuthUser.getUid());
             user.setName(firebaseAuthUser.getDisplayName());
             user.setEmail(firebaseAuthUser.getEmail());
             isUserAuthorisedMutableLiveData.setValue(user);
