@@ -22,17 +22,35 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        //TODO placeholder for querying firebase;
-        Bundle bundle = this.getArguments();
-        if(bundle != null){
-            User user = (User)bundle.getSerializable("User");
-            Log.i("User here: ", user.getName());
-        }
+
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        final TextView textView = root.findViewById(R.id.text_home);
 
+        //TODO placeholder for querying firebase;
+        Bundle bundle = this.getArguments();
+        initProfileView(bundle);
+
+        final TextView textView = root.findViewById(R.id.text_home);
         homeViewModel.getText().observe(getViewLifecycleOwner(), text -> textView.setText(text));
+
+
         return root;
+    }
+
+    private void initProfileView(Bundle bundle){
+        if(bundle != null){
+            User user = (User)bundle.getSerializable("User");
+            if(user.checkIsNew()){
+                Log.i("HomeFragment", "New user profile: "+user.getName());
+                createNewUserProfile(user);
+            }else{
+                Log.i("Homefragment", "Old user profile:" + user.getName());
+                //TODO retrieve user profile
+            }
+        }
+    }
+
+    private void createNewUserProfile(User user){
+        homeViewModel.createUserProfile(user);
     }
 }

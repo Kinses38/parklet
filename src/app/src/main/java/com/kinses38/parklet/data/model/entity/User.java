@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class User implements Serializable {
 
-    private String uuid, name, email;
+    private String uid, name, email;
 
     @Exclude
     private boolean isNew, isCreated, isAuthenticated;
@@ -15,18 +15,18 @@ public class User implements Serializable {
         //empty constructor required for firebase
     }
 
-    public User(String uuid, String name, String email){
-        this.uuid = uuid;
+    public User(String uid, String name, String email){
+        this.uid = uid;
         this.name = name;
         this.email = email;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getUid() {
+        return uid;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getName() {
