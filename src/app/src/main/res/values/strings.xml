@@ -10,4 +10,5 @@
 
     <string name="menu_home">Home</string>
     <string name="vehicles">"My Vehicles</string>
+    <string name="vehicle_default_text">"You have not added any vehicles yet"</string>
 </resources>

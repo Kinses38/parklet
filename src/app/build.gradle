@@ -3,6 +3,9 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
+    dataBinding{
+        enabled=true
+    }
     defaultConfig {
         applicationId "com.kinses38.parklet"
         minSdkVersion 16
