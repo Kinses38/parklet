@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.kinses38.parklet.R;
-import com.kinses38.parklet.ViewModel.HomeViewModel;
+import com.kinses38.parklet.viewmodels.HomeViewModel;
 import com.kinses38.parklet.data.model.entity.User;
 
 public class HomeFragment extends Fragment {

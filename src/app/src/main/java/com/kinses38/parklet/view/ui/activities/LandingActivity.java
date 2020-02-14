@@ -6,7 +6,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.kinses38.parklet.ViewModel.LandingViewModel;
+import com.kinses38.parklet.viewmodels.LandingViewModel;
 import com.kinses38.parklet.data.model.entity.User;
 
 /**
