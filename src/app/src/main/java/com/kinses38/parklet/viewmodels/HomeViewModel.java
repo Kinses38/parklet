@@ -1,4 +1,4 @@
-package com.kinses38.parklet.ViewModel;
+package com.kinses38.parklet.viewmodels;
 
 import android.app.Application;
 

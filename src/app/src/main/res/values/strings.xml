@@ -11,4 +11,12 @@
     <string name="menu_home">Home</string>
     <string name="vehicles">"My Vehicles</string>
     <string name="vehicle_default_text">"You have not added any vehicles yet"</string>
+    <string name="vehicle_show_form">Add Vehicle</string>
+    <string name="vehicle_form_save">Save</string>
+    <string name="vehicle_form_cancel">Cancel</string>
+    <string name="vehicle_brand">Vehicle Brand</string>
+    <string name="vehicle_model">Vehicle Model</string>
+    <string name="vehicle_registration">Vehicle Registration</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 </resources>

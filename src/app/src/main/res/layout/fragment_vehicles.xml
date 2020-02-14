@@ -1,28 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
-        <variable
-            name="vehicle"
-            type="com.kinses38.parklet.data.model.entity.Vehicle" />
+        <import type="android.view.View"/>
+        <variable name="vehicleFrag" type="com.kinses38.parklet.view.ui.fragments.VehiclesFragment" />
+        <variable name="vehicleViewModel" type="com.kinses38.parklet.viewmodels.VehiclesViewModel" />
+        <variable name="formClicked" type="java.lang.Boolean" />
+        <variable name="vehicle" type="com.kinses38.parklet.data.model.entity.Vehicle" />
 
     </data>
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/vehicle_form_toggle_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="48dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/vehicle_show_form"
+            android:onClick='@{(v) -> vehicleFrag.onClick(v)}'
+            android:text="@string/vehicle_show_form"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:visibility="@{formClicked ? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <EditText
+            android:id="@+id/carMake"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="8dp"
+            android:hint="@string/vehicle_brand"
+            android:singleLine="true"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:visibility="@{formClicked ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/vehicle_form_toggle_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <EditText
+            android:id="@+id/carModel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="192dp"
+            android:layout_marginEnd="8dp"
+            android:hint="@string/vehicle_model"
+            android:singleLine="true"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:visibility="@{formClicked ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/carMake"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.546" />
+
+        <EditText
+            android:id="@+id/carReg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="264dp"
+            android:layout_marginEnd="8dp"
+            android:hint="@string/vehicle_registration"
+            android:singleLine="true"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:visibility="@{formClicked ? View.VISIBLE : View.GONE}"
+            android:imeOptions="actionDone"
+            app:layout_constraintBottom_toBottomOf="@+id/carModel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.574" />
+
+        <Button
+            android:id="@+id/vehicle_form_save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="29dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/save"
+            android:onClick='@{(v) -> vehicleViewModel.onClickVehicleSubmit(carMake.getText().toString(), carModel.getText().toString(), carReg.getText().toString())}'
+            android:text="@string/vehicle_form_save"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:visibility="@{formClicked ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.289"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/carReg"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/vehicle_form_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="29dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/cancel"
+            android:onClick='@{(v) -> vehicleFrag.onClick(v)}'
+            android:text="@string/vehicle_form_cancel"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:visibility="@{formClicked ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.676"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/carReg"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/text_vehicle_landing"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text='@{vehicle.getReg ?? @string/vehicle_default_text}'
+            android:layout_height="0dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="164dp"
             android:layout_marginEnd="8dp"
+            android:text='@{vehicle.getMake ?? @string/vehicle_default_text}'
             android:textAlignment="center"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/carModel" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

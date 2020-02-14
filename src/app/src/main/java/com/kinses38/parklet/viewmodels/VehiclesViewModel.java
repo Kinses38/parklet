@@ -1,4 +1,4 @@
-package com.kinses38.parklet.ViewModel;
+package com.kinses38.parklet.viewmodels;
 
 import android.app.Application;
 
@@ -13,6 +13,7 @@ import java.util.List;
 
 public class VehiclesViewModel extends AndroidViewModel {
 
+    private Vehicle vehicle;
     private MutableLiveData<String> mText;
     private VehicleRepo vehicleRepo = new VehicleRepo();
 
@@ -23,6 +24,11 @@ public class VehiclesViewModel extends AndroidViewModel {
 
     public LiveData<String> getText() {
         return mText;
+    }
+
+    public void onClickVehicleSubmit(String make, String model, String reg){
+        vehicle = new Vehicle(make, model, reg);
+        createNewVehicle(vehicle);
     }
 
     public void createNewVehicle(Vehicle vehicle){
