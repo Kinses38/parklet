@@ -1,12 +1,10 @@
 package com.kinses38.parklet.view.ui.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
@@ -15,13 +13,14 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.kinses38.parklet.R;
+import com.kinses38.parklet.utilities.InputHandler;
 import com.kinses38.parklet.viewmodels.VehiclesViewModel;
 import com.kinses38.parklet.data.model.entity.Vehicle;
 import com.kinses38.parklet.databinding.FragmentVehiclesBinding;
 
 import java.util.List;
 
-public class VehiclesFragment extends Fragment implements View.OnClickListener {
+public class VehiclesFragment extends Fragment  implements View.OnClickListener{
 
     private VehiclesViewModel vehiclesViewModel;
     private FragmentVehiclesBinding vehiclesLandingBinding;
@@ -36,7 +35,6 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
         //Binding boolean value to hide form
         vehiclesLandingBinding.setFormClicked(false);
         vehiclesLandingBinding.setVehicleViewModel(vehiclesViewModel);
-
 
         initVehicleObserver();
 
@@ -56,16 +54,6 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    // Hide keyboard temporarily if cancel or toggle form button is pressed. No easy way to do this for buttons.
-    private void hideKeyboard() {
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            assert inputManager != null;
-            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
-
     public void onClick(View v){
         switch (v.getId()) {
             case R.id.vehicle_form_toggle_button:
@@ -74,7 +62,7 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.vehicle_form_cancel_button:
                 Log.i("3rd button", "cancel");
-                hideKeyboard();
+                InputHandler.hideKeyboard(getActivity());
                 vehiclesLandingBinding.setFormClicked(!vehiclesLandingBinding.getFormClicked());
             default: break;
         }
