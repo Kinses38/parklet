@@ -3,7 +3,6 @@ package com.kinses38.parklet.viewmodels;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.AndroidViewModel;
 
 import com.kinses38.parklet.data.model.entity.Vehicle;
@@ -26,10 +25,10 @@ public class VehiclesViewModel extends AndroidViewModel {
     }
 
     public void createNewVehicle(Vehicle vehicle){
-        vehicleRepo.createNewVehicle(vehicle);
+        vehicleRepo.create(vehicle);
     }
 
     public LiveData<List<Vehicle>> getVehicles(){
-        return vehicleRepo.placeholder();
+        return vehicleRepo.selectAll();
     }
 }
