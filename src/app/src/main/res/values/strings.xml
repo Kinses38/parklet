@@ -19,4 +19,9 @@
     <string name="vehicle_registration">Vehicle Registration</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="car_model">Model:</string>
+    <string name="car_make">Brand:</string>
+    <string name="car_reg">Reg:</string>
+    <string name="car_descript">Car svg</string>
+    <string name="no_vehicles">You have added no vehicles yet, please add one</string>
 </resources>

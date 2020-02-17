@@ -14,16 +14,10 @@ import java.util.List;
 public class VehiclesViewModel extends AndroidViewModel {
 
     private Vehicle vehicle;
-    private MutableLiveData<String> mText;
     private VehicleRepo vehicleRepo = new VehicleRepo();
 
     public VehiclesViewModel(Application application) {
         super(application);
-    }
-
-
-    public LiveData<String> getText() {
-        return mText;
     }
 
     public void onClickVehicleSubmit(String make, String model, String reg){
@@ -36,6 +30,6 @@ public class VehiclesViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Vehicle>> getVehicles(){
-        return vehicleRepo.getVehicles();
+        return vehicleRepo.placeholder();
     }
 }

@@ -57,8 +57,8 @@ public class VehicleRepo {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Vehicle userVehicle = dataSnapshot.getValue(Vehicle.class);
                             userVehicleList.add(userVehicle);
-                            userVehiclesMutableLiveData.setValue(userVehicleList);
-                            Log.i("VehicleRepo", userVehicle.getMake());
+                            userVehiclesMutableLiveData.postValue(userVehicleList);
+                           // Log.i("VehicleRepo", userVehicle.getMake());
                         }
 
                         @Override
@@ -74,6 +74,31 @@ public class VehicleRepo {
                 Log.i("VehicleRepo", databaseError.getMessage());
             }
         });
+
         return userVehiclesMutableLiveData;
+    }
+
+    public MutableLiveData<List<Vehicle>> placeholder() {
+        MutableLiveData<List<Vehicle>> userVehiclesMutableLiveData = new MutableLiveData<>();
+        DatabaseReference allVehicles = DB.child("vehicles/");
+        allVehicles.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Vehicle> vehicles = new ArrayList<>();
+                for(DataSnapshot ds :dataSnapshot.getChildren()){
+                    Vehicle userVehicle = ds.getValue(Vehicle.class);
+                    vehicles.add(userVehicle);
+                }
+                userVehiclesMutableLiveData.postValue(vehicles);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        return  userVehiclesMutableLiveData;
     }
 }

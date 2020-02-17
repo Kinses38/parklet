@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <import type="android.view.View"/>
         <variable name="vehicleFrag" type="com.kinses38.parklet.view.ui.fragments.VehiclesFragment" />
         <variable name="vehicleViewModel" type="com.kinses38.parklet.viewmodels.VehiclesViewModel" />
         <variable name="formClicked" type="java.lang.Boolean" />
+        <variable
+            name="hasVehicle"
+            type="java.lang.Boolean" />
         <variable name="vehicle" type="com.kinses38.parklet.data.model.entity.Vehicle" />
 
     </data>
@@ -19,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="36dp"
             android:layout_marginEnd="8dp"
             android:contentDescription="@string/vehicle_show_form"
             android:onClick='@{(v) -> vehicleFrag.onClick(v)}'
@@ -79,11 +83,11 @@
             android:layout_marginTop="264dp"
             android:layout_marginEnd="8dp"
             android:hint="@string/vehicle_registration"
+            android:imeOptions="actionDone"
             android:singleLine="true"
             android:textAlignment="center"
             android:textSize="20sp"
             android:visibility="@{formClicked ? View.VISIBLE : View.GONE}"
-            android:imeOptions="actionDone"
             app:layout_constraintBottom_toBottomOf="@+id/carModel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -132,19 +136,31 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/text_vehicle_landing"
-            android:layout_width="match_parent"
+            android:visibility="@{hasVehicle? View.GONE : View.VISIBLE}"
+            android:id="@+id/no_vehicle_text"
+            android:text="@string/no_vehicles"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="164dp"
-            android:layout_marginEnd="8dp"
-            android:text='@{vehicle.getMake ?? @string/vehicle_default_text}'
-            android:textAlignment="center"
-            android:textSize="20sp"
+            android:layout_marginTop="127dp"
+            android:gravity="center_horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/carModel" />
+            app:layout_constraintTop_toBottomOf="@+id/carReg"
+            app:layout_constraintVertical_bias="0.0"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:visibility="@{hasVehicle? View.VISIBLE : View.GONE}"
+            android:id="@+id/vehicle_recycler"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="127dp"
+            android:scrollbars="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/carReg"
+            app:layout_constraintVertical_bias="0.0" />
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/group"
