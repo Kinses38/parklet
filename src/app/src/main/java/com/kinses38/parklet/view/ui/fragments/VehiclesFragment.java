@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
@@ -32,6 +33,7 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
     private RecyclerView recyclerView;
     private VehicleAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private TextView carMake, carModel, carReg;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -39,12 +41,8 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
         vehiclesViewModel = new ViewModelProvider(getActivity()).get(VehiclesViewModel.class);
 
         initRecyclerView();
+        initBindings();
         initVehicleObserver();
-        //Bind this fragment to allow onClick binding
-        vehiclesLandingBinding.setVehicleFrag(this);
-        //Binding boolean value to hide form
-        vehiclesLandingBinding.setFormClicked(false);
-        vehiclesLandingBinding.setVehicleViewModel(vehiclesViewModel);
 
         //TODO duplicate bug is caused by loop in vehicle repo. Redo DB schema
         return vehiclesLandingBinding.getRoot();
@@ -75,16 +73,50 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    private void initBindings(){
+        //Bind this fragment to allow onClick binding
+        vehiclesLandingBinding.setVehicleFrag(this);
+        //Binding boolean value to hide form
+        vehiclesLandingBinding.setFormClicked(false);
+        //form data
+        carMake = vehiclesLandingBinding.carMake;
+        carModel = vehiclesLandingBinding.carModel;
+        carReg = vehiclesLandingBinding.carReg;
+
+    }
+
+    private void saveVehicle(){
+        String make = carMake.getText().toString();
+        String model = carModel.getText().toString();
+        String reg = carReg.getText().toString();
+        vehiclesViewModel.onClickVehicleSubmit(make, model, reg);
+    }
+
+    private void resetTextViews(){
+        carMake.setText("");
+        carModel.setText("");
+        carReg.setText("");
+    }
+
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.vehicle_form_toggle_button:
                 vehiclesLandingBinding.setFormClicked(!vehiclesLandingBinding.getFormClicked());
                 Log.i("1st button", "toggle form");
                 break;
-            case R.id.vehicle_form_cancel_button:
-                Log.i("3rd button", "cancel");
-                InputHandler.hideKeyboard(getActivity());
+            case R.id.vehicle_form_save_button:
+                saveVehicle();
+                InputHandler.hideKeyboard(requireActivity());
+                resetTextViews();
                 vehiclesLandingBinding.setFormClicked(!vehiclesLandingBinding.getFormClicked());
+                Log.i("2nd button", "save");
+                break;
+            case R.id.vehicle_form_cancel_button:
+                InputHandler.hideKeyboard(requireActivity());
+                resetTextViews();
+                vehiclesLandingBinding.setFormClicked(!vehiclesLandingBinding.getFormClicked());
+                Log.i("3rd button", "cancel");
+                break;
             default:
                 break;
         }

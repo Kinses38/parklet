@@ -5,11 +5,8 @@
     <data>
         <import type="android.view.View"/>
         <variable name="vehicleFrag" type="com.kinses38.parklet.view.ui.fragments.VehiclesFragment" />
-        <variable name="vehicleViewModel" type="com.kinses38.parklet.viewmodels.VehiclesViewModel" />
         <variable name="formClicked" type="java.lang.Boolean" />
-        <variable
-            name="hasVehicle"
-            type="java.lang.Boolean" />
+        <variable name="hasVehicle" type="java.lang.Boolean" />
         <variable name="vehicle" type="com.kinses38.parklet.data.model.entity.Vehicle" />
 
     </data>
@@ -103,7 +100,7 @@
             android:layout_marginTop="29dp"
             android:layout_marginEnd="8dp"
             android:contentDescription="@string/save"
-            android:onClick='@{(v) -> vehicleViewModel.onClickVehicleSubmit(carMake.getText().toString(), carModel.getText().toString(), carReg.getText().toString())}'
+            android:onClick='@{(v) -> vehicleFrag.onClick(v)}'
             android:text="@string/vehicle_form_save"
             android:textAlignment="center"
             android:textSize="20sp"
