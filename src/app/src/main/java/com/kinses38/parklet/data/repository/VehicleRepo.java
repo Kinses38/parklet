@@ -14,78 +14,32 @@ import com.google.firebase.database.ValueEventListener;
 import com.kinses38.parklet.data.model.entity.Vehicle;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class VehicleRepo {
     private DatabaseReference DB = FirebaseDatabase.getInstance().getReference();
-    private final String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid() ;
+    private final String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-    public void createNewVehicle(Vehicle vehicle){
-
-        //Obtain uid vehicleKey for item before pushing
-        //https://firebase.google.com/docs/database/android/read-and-write#save_data_as_transactions
-        String vehicleKey = DB.child("vehicles").push().getKey();
-
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("vehicles/"+vehicleKey, vehicle);
-        childUpdates.put("users/"+userUid+"/vehicles/"+vehicleKey, vehicle.getReg());
-
-        DB.updateChildren(childUpdates)
+    public void create(Vehicle vehicle) {
+        String vehicleKey = DB.child("vehicles" + userUid).push().getKey();
+        DatabaseReference vehicleRef = DB.child("vehicles/" + userUid + "/" + vehicleKey);
+        vehicleRef.setValue(vehicle)
                 .addOnSuccessListener(aVoid -> {
-                    DB.child("users/"+userUid+"/vehicles/");
-                    Log.i("VehicleRepo","New vehicle added successfully " + vehicle.getReg());
-        }).addOnFailureListener(e ->{
-                    Log.i("VehicleRepo", "Add new vehicle failed");
-        });
-
+                    Log.i("VehicleRepo", "Add worked");
+                })
+                .addOnFailureListener(e ->
+                        Log.i("VehicleRepo", "add failed"));
     }
 
-    public MutableLiveData<List<Vehicle>> getVehicles(){
+
+    public MutableLiveData<List<Vehicle>> selectAll() {
         MutableLiveData<List<Vehicle>> userVehiclesMutableLiveData = new MutableLiveData<>();
-        ArrayList<Vehicle> userVehicleList = new ArrayList<Vehicle>();
-        DatabaseReference userVehiclesRef = DB.child("users/"+userUid+"/vehicles/");
-        userVehiclesRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds: dataSnapshot.getChildren()){
-                    String vehicleKey = ds.getKey();
-                    DatabaseReference vehicleInfo = DB.child("vehicles/"+vehicleKey);
-                    vehicleInfo.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            Vehicle userVehicle = dataSnapshot.getValue(Vehicle.class);
-                            userVehicleList.add(userVehicle);
-                            userVehiclesMutableLiveData.postValue(userVehicleList);
-                           // Log.i("VehicleRepo", userVehicle.getMake());
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.i("VehicleRepo", databaseError.getMessage());
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.i("VehicleRepo", databaseError.getMessage());
-            }
-        });
-
-        return userVehiclesMutableLiveData;
-    }
-
-    public MutableLiveData<List<Vehicle>> placeholder() {
-        MutableLiveData<List<Vehicle>> userVehiclesMutableLiveData = new MutableLiveData<>();
-        DatabaseReference allVehicles = DB.child("vehicles/");
+        DatabaseReference allVehicles = DB.child("vehicles/"+userUid);
         allVehicles.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Vehicle> vehicles = new ArrayList<>();
-                for(DataSnapshot ds :dataSnapshot.getChildren()){
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Vehicle userVehicle = ds.getValue(Vehicle.class);
                     vehicles.add(userVehicle);
                 }
@@ -98,7 +52,6 @@ public class VehicleRepo {
 
             }
         });
-
-        return  userVehiclesMutableLiveData;
+        return userVehiclesMutableLiveData;
     }
 }
