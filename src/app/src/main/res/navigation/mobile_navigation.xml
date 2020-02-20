@@ -17,4 +17,10 @@
         android:label="@string/vehicles"
         tools:layout="@layout/fragment_vehicles"/>
 
+    <fragment
+       android:id="@+id/nav_properties"
+        android:name="com.kinses38.parklet.view.ui.fragments.PropertiesFragment"
+        android:label="@string/properties"
+        tools:layout="@layout/fragment_properties"/>
+
 </navigation>

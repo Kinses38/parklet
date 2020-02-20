@@ -24,4 +24,5 @@
     <string name="car_reg">Reg:</string>
     <string name="car_descript">Car svg</string>
     <string name="no_vehicles">You have added no vehicles yet, please add one</string>
+    <string name="properties">My Properties</string>
 </resources>
