@@ -31,4 +31,8 @@ public class VehiclesViewModel extends AndroidViewModel {
     public LiveData<List<Vehicle>> getVehicles(){
         return vehicleRepo.selectAll();
     }
+
+    public void remove(Vehicle vehicle){
+        vehicleRepo.remove(vehicle);
+    }
 }
