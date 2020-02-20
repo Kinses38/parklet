@@ -1,34 +1,23 @@
-# CA400 template repo
+## ParkLet
+> "Airbnb for parking"
 
-This is a template for CA400 projects.
+The aim of our project will be to develop an android app that will allow 
+homeowners to easily rent out their driveways as parking spaces to commuters 
+with minimal effort. And likewise enable commuters to easily view and book 
+parking spots with competitive rates.
 
-## 1. Create your repo
+### Outline
 
-One person from your project team should fork this repo, then add other teammates as project members on GitLab.
+The project will be an android based app which will utilize firebase for our back-end as well as real time synchronization to our database.
+We plan on using the google maps api for locating available parking for the customer. We also hope to implement a nfc check in/check out system
+for a clean way for users to notify each other on their arrival/departure. This nfc system will also allow the home owner to know whether the
+customer has left on time or not.
 
-## 2. Name your repo appropriately
+### Background
 
-The name of your project must be of the form `2020-ca400-XXXXXXX`, where "`XXXXXXX`"
-should be replaced with your usernames (e.g. `2020-ca400-sblott-pclark`).
+> Where did the ideas come from?
 
-It is the *name of your repo* which matters (not the name of your project).
-
-You can change the name of your repo on GitLab under:
-
-- Settings / General / Advanced / Change path
-
-It looks like this:
-
-![change-repo-path](./res/repo-change-path.png "Change repo path.")
-
-You should replace all of this file with a README describing your own project.
-
-## Additional resources
-
-- Repo [hygiene](https://gitlab.computing.dcu.ie/sblott/local-gitlab-documentation/blob/master/repo-hygiene.md)
-- Git [cheat sheet](https://gitlab.computing.dcu.ie/sblott/local-gitlab-documentation/blob/master/cheat-sheet.md)
-- Gitlab [CI environment](https://gitlab.computing.dcu.ie/sblott/docker-ci-environment) and it's [available software](https://gitlab.computing.dcu.ie/sblott/docker-ci-environment/blob/master/Dockerfile)
-- Example projects with CI configured:
-   * [Python](https://gitlab.computing.dcu.ie/sblott/test-project-python)
-   * [Java](https://gitlab.computing.dcu.ie/sblott/test-project-java)
-   * [MySql](https://gitlab.computing.dcu.ie/sblott/test-project-mysql)
+We were searching for ideas that could fit the AirBnB model of owning and renting a good or service, due to living in Dublin 
+we are well aware of the problems that commuting causes. With limited parking available in large areas of Dublin and the lack
+of use of most parking spots such as drive-ways during work hours, we thought this would be a great solution while also being
+a useful passive income for the parking spot owners.
