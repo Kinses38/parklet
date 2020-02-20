@@ -39,7 +39,6 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
                              ViewGroup container, Bundle savedInstanceState) {
         vehiclesLandingBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_vehicles, container, false);
         vehiclesViewModel = new ViewModelProvider(getActivity()).get(VehiclesViewModel.class);
-
         initRecyclerView();
         initBindings();
         initVehicleObserver();

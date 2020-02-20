@@ -54,4 +54,24 @@ public class VehicleRepo {
         });
         return userVehiclesMutableLiveData;
     }
+
+    public void remove(Vehicle vehicle){
+        DatabaseReference userVehicles = DB.child("vehicles/"+userUid);
+        userVehicles.orderByChild("reg").equalTo(vehicle.getReg()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+
+                     ds.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        Log.i("Delete", "delete here");
+    }
+
 }
