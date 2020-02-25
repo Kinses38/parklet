@@ -43,7 +43,6 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
         initBindings();
         initVehicleObserver();
 
-        //TODO duplicate bug is caused by loop in vehicle repo. Redo DB schema
         return vehiclesLandingBinding.getRoot();
     }
 

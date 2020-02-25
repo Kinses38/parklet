@@ -5,6 +5,8 @@
     xmlns:tools2="http://schemas.android.com/tools"
     package="com.kinses38.parklet"
     tools2:ignore="GoogleAppIndexingWarning">
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <dist:module dist:instant="true" />
 
@@ -26,6 +28,11 @@
         </activity>
         <activity android:name=".view.ui.activities.AuthActivity" />
             <activity android:name=".view.ui.activities.MainActivity"/>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCEXAfSXxlF5d8-mqxL4tM4RUUylLZ-ZQ8"/>
+
     </application>
 
 </manifest>
