@@ -23,4 +23,11 @@
         android:label="@string/properties"
         tools:layout="@layout/fragment_properties"/>
 
+    <fragment
+        android:id="@+id/nav_nfc"
+        android:name="com.kinses38.parklet.view.ui.fragments.NfcFragment"
+        android:label="@string/nfc_page"
+        tools:layout="@layout/fragment_nfc"/>
+
+
 </navigation>
