@@ -41,6 +41,11 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-common-java8:2.2.0"
     implementation "androidx.cardview:cardview:1.0.0"
 
+    //google places
+    implementation 'com.google.android.libraries.places:places:2.2.0'
+
+    //Geofire
+    implementation 'com.firebase:geofire-android:3.0.0'
 
     //Navbar
     implementation 'androidx.navigation:navigation-fragment:2.2.0'
