@@ -40,12 +40,17 @@
     <string name="property_cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="available_weekends">Available weekends?:</string>
+    <string name="available_weekends">Available weekends: </string>
     <string name="default_daily_rate">5.00</string>
+    <string name="house_icon_svg">house_icon_svg</string>
+    <string name="house_address"> <b>Address:</b></string>
+    <string name="available_to_book">Available to book: </string>
     <!--    Properties fragment end-->
 
     <!-- Nfc fragment start   -->
     <string name="nfc_page">NFC Tool</string>
+    <string name="no_property_text">You have added no properties yet. please add one</string>
+
     <!-- Nfc fragment end   -->
 
 
