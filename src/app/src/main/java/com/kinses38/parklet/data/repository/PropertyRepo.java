@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -16,7 +18,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.kinses38.parklet.data.model.entity.Property;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PropertyRepo {
 
@@ -31,6 +35,7 @@ public class PropertyRepo {
     public void create(Property property){
         String propertyKey = DB.child("properties"+ userUid).push().getKey();
         DatabaseReference propertyRef = DB.child("properties/" + userUid + "/" + propertyKey);
+        property.setPropertyUID(propertyKey);
         property.setOwnerUID(userUid);
         propertyRef.setValue(property).addOnSuccessListener(aVoid -> {
             Log.i("PropertyRepo", "Property added");
@@ -71,5 +76,23 @@ public class PropertyRepo {
         });
 
         return userPropertiesMutableLiveData;
+    }
+
+    public void remove(Property property){
+        Map<String, Object> requestMap = new HashMap<>();
+        requestMap.put("properties/"+userUid+"/"+property.getPropertyUID(), null);
+        requestMap.put("propertyLocations/"+property.getPropertyUID(), null);
+
+        DB.updateChildren(requestMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    Log.i("PropertyRepo", property.getEircode() + " removed");
+                }else{
+                    Log.i("PropertyRepo", "Failed");
+                }
+            }
+        });
+
     }
 }

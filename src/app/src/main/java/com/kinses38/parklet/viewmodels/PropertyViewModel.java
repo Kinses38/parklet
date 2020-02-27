@@ -37,4 +37,8 @@ public class PropertyViewModel extends ViewModel {
         propertyRepo.create(property);
     }
 
+    public void remove(Property property){
+        propertyRepo.remove(property);
+    }
+
 }

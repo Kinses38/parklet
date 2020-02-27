@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -26,6 +28,7 @@ public class UserPropertyAdapter extends RecyclerView.Adapter<UserPropertyAdapte
 
     static class UserPropertyViewHolder extends RecyclerView.ViewHolder{
         TextView rv_house_address, rv_daily_rate, rv_available_booking, rv_weekend_booking;
+        ImageButton rv_delete;
 
         UserPropertyViewHolder(@NonNull View userPropertyView){
             super(userPropertyView);
@@ -33,6 +36,7 @@ public class UserPropertyAdapter extends RecyclerView.Adapter<UserPropertyAdapte
             rv_daily_rate = userPropertyView.findViewById(R.id.rv_daily_rate);
             rv_available_booking = userPropertyView.findViewById(R.id.rv_available_booking);
             rv_weekend_booking = userPropertyView.findViewById(R.id.rv_weekend_booking);
+            rv_delete = userPropertyView.findViewById(R.id.rv_property_delete);
         }
     }
 
@@ -58,7 +62,19 @@ public class UserPropertyAdapter extends RecyclerView.Adapter<UserPropertyAdapte
         //TODO Parse to yes
         viewHolder.rv_available_booking.setText(String.format("%s %s", context.getString(R.string.available_to_book), property.getTakingBookings()));
         viewHolder.rv_weekend_booking.setText(String.format("%s %s", context.getString(R.string.available_weekends), property.getWeekendBookings()));
-
+        viewHolder.rv_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Property deletedProperty = properties.get(position);
+                propertyViewModel.remove(deletedProperty);
+                properties.remove(position);
+                //TODO dialog confirming the deletion might result in loss of revenue before deleting?
+                //Trigger to inform anyone with a booking that the booking has been cancelled.
+                Toast.makeText((FragmentActivity)context,
+                        String.format("Property: %s has been removed",
+                                deletedProperty.getAddressLine()), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     public void refreshList(List<Property> newProperties){
