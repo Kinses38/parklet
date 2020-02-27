@@ -2,7 +2,7 @@ package com.kinses38.parklet.data.model.entity;
 
 public class Property {
 
-    private String addressLine, eircode, ownerUID;
+    private String addressLine, eircode, ownerUID, propertyUID;
     private Double dailyRate, propertyRating = 0.0;
     private Boolean takingBookings = true, weekendBookings = true;
     private Double longitude, latitude;
@@ -94,5 +94,13 @@ public class Property {
 
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
+    }
+
+    public String getPropertyUID() {
+        return propertyUID;
+    }
+
+    public void setPropertyUID(String propertyUID) {
+        this.propertyUID = propertyUID;
     }
 }
