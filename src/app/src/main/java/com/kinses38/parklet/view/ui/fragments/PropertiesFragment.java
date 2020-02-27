@@ -15,11 +15,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.kinses38.parklet.R;
+import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.databinding.FragmentPropertiesBinding;
 import com.kinses38.parklet.utilities.InputHandler;
+import com.kinses38.parklet.utilities.UserPropertyAdapter;
 import com.kinses38.parklet.viewmodels.PropertyViewModel;
 
 import java.io.IOException;
@@ -28,8 +33,12 @@ import java.util.Locale;
 
 public class PropertiesFragment extends Fragment implements View.OnClickListener {
 
-    private FragmentPropertiesBinding propertiesBinding;
     private PropertyViewModel propertyViewModel;
+    private FragmentPropertiesBinding propertiesBinding;
+
+    private RecyclerView recyclerView;
+    private UserPropertyAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
     private TextView propertyAddress, textProperties, addressLine, dailyRate;
     private RadioGroup weekends;
 
@@ -40,11 +49,19 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
         propertyViewModel = new ViewModelProvider(getActivity()).get(PropertyViewModel.class);
         propertiesBinding.setLifecycleOwner(this);
 
+        initRecyclerView();
         initBindings();
-
+        initPropertyObserver();
         //TODO tutorial text
         textProperties.setText("This is the properties view");
         return propertiesBinding.getRoot();
+    }
+
+    private void initRecyclerView() {
+        adapter = new UserPropertyAdapter(getActivity());
+        recyclerView = propertiesBinding.getRoot().findViewById(R.id.property_recycler);
+        layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
     }
 
     private void initBindings() {
@@ -57,14 +74,28 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
         addressLine = propertiesBinding.addressLineOne;
         dailyRate = propertiesBinding.dailyRate;
 
-
-
         propertyAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
                     getGeo();
                 }
+            }
+        });
+    }
+
+    private void initPropertyObserver(){
+        propertyViewModel.getProperties().observe(getViewLifecycleOwner(), new Observer<List<Property>>() {
+            @Override
+            public void onChanged(List<Property> properties) {
+                if(!properties.isEmpty()){
+                    propertiesBinding.setHasProperty(true);
+                    adapter.refreshList(properties);
+                    recyclerView.setAdapter(adapter);
+                }else{
+                    propertiesBinding.setHasProperty(false);
+                }
+
             }
         });
     }

@@ -49,7 +49,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
     @NonNull
     @Override
     public VehicleAdapter.VehicleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View root = LayoutInflater.from(context).inflate(R.layout.recycler_layout, parent, false);
+        View root = LayoutInflater.from(context).inflate(R.layout.vehicle_recycler_layout, parent, false);
         return new VehicleViewHolder(root);
     }
 
@@ -62,8 +62,8 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
         viewHolder.rv_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Vehicle deletedvehicle = vehicles.get(position);
-                vehiclesViewModel.remove(deletedvehicle);
+                Vehicle deletedVehicle = vehicles.get(position);
+                vehiclesViewModel.remove(deletedVehicle);
                 vehicles.remove(position);
                 Toast.makeText((FragmentActivity)context, String.format("Vehicle: %s has been removed", vehicle.getReg()),Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();

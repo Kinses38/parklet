@@ -2,10 +2,13 @@ package com.kinses38.parklet.viewmodels;
 
 import android.location.Address;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.data.repository.PropertyRepo;
+
+import java.util.List;
 
 public class PropertyViewModel extends ViewModel {
 
@@ -22,7 +25,12 @@ public class PropertyViewModel extends ViewModel {
         Double longitude = address.getLongitude();
         Double latitude = address.getLatitude();
         property = new Property(addressLine, eircode, dailyRate, longitude, latitude);
+        property.parseWeekend(availableWeekends);
         addProperty(property);
+    }
+
+    public LiveData<List<Property>> getProperties(){
+        return propertyRepo.selectAll();
     }
 
     private void addProperty(Property property){

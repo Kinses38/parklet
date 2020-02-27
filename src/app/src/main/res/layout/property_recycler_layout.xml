@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="4dp">
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardElevation="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_margin="8dp">
+
+            <ImageView
+                android:id="@+id/house_svg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="18dp"
+                app:srcCompat="@drawable/ic_home_black_24dp"
+                tools:ignore="RtlHardcoded,RtlSymmetry"
+                android:contentDescription="@string/house_icon_svg" />
+
+            <TextView
+                android:id="@+id/rv_house_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:paddingTop="8dp"
+                android:layout_toRightOf="@id/house_svg"
+                android:text="@string/house_address"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_toEndOf="@id/house_svg" />
+
+            <TextView
+                android:id="@+id/rv_daily_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rv_house_address"
+                android:layout_toRightOf="@id/house_svg"
+                android:text="@string/daily_rate"
+                android:textSize="18sp"
+                tools:ignore="RtlHardcoded" />
+
+            <TextView
+                android:id="@+id/rv_available_booking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rv_daily_rate"
+                android:layout_toRightOf="@id/house_svg"
+                android:text="@string/available_to_book"
+                android:textSize="18sp"
+                tools:ignore="RtlHardcoded" />
+
+            <TextView
+                android:id="@+id/rv_weekend_booking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rv_available_booking"
+                android:layout_toRightOf="@id/house_svg"
+                android:text="@string/available_weekends"
+                android:textSize="18sp"
+                tools:ignore="RtlHardcoded" />
+
+
+        </RelativeLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

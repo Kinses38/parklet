@@ -72,8 +72,12 @@ public class Property {
         return weekendBookings;
     }
 
-    public void setWeekendBookings(String weekEnd) {
-        weekendBookings = weekEnd.toLowerCase().equals("yes");
+    public void setWeekendBookings(Boolean weekendBookings) {
+        this.weekendBookings = weekendBookings;
+    }
+
+    public void parseWeekend(String availableWeekend){
+        this.weekendBookings = availableWeekend.toLowerCase().equals("yes");
     }
 
     public Double getLongitude() {
