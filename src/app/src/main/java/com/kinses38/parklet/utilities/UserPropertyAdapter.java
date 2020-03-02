@@ -1,6 +1,7 @@
 package com.kinses38.parklet.utilities;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,7 @@ public class UserPropertyAdapter extends RecyclerView.Adapter<UserPropertyAdapte
 
     static class UserPropertyViewHolder extends RecyclerView.ViewHolder{
         TextView rv_house_address, rv_daily_rate, rv_available_booking, rv_weekend_booking;
-        ImageButton rv_delete;
+        ImageButton rv_delete, rv_nfc_write;
 
         UserPropertyViewHolder(@NonNull View userPropertyView){
             super(userPropertyView);
@@ -37,6 +38,7 @@ public class UserPropertyAdapter extends RecyclerView.Adapter<UserPropertyAdapte
             rv_available_booking = userPropertyView.findViewById(R.id.rv_available_booking);
             rv_weekend_booking = userPropertyView.findViewById(R.id.rv_weekend_booking);
             rv_delete = userPropertyView.findViewById(R.id.rv_property_delete);
+            rv_nfc_write = userPropertyView.findViewById(R.id.rv_nfc_write);
         }
     }
 
@@ -73,6 +75,14 @@ public class UserPropertyAdapter extends RecyclerView.Adapter<UserPropertyAdapte
                 Toast.makeText((FragmentActivity)context,
                         String.format("Property: %s has been removed",
                                 deletedProperty.getAddressLine()), Toast.LENGTH_LONG).show();
+            }
+        });
+        viewHolder.rv_nfc_write.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Property propertyToWrite = properties.get(position);
+                propertyViewModel.setPropertyToWrite(propertyToWrite);
+                Log.i("binder", "property: " + propertyToWrite.getPropertyUID());
             }
         });
     }

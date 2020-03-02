@@ -76,6 +76,16 @@
                 tools:ignore="RtlHardcoded" />
 
             <ImageButton
+                android:id="@+id/rv_nfc_write"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rv_available_booking"
+                android:layout_marginRight="15dp"
+                android:layout_toLeftOf="@id/rv_property_delete"
+                android:background="#0000"
+                app:srcCompat="@drawable/ic_nfc_black_24dp"/>
+
+            <ImageButton
                 android:id="@+id/rv_property_delete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
