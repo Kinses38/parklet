@@ -1,14 +1,24 @@
 package com.kinses38.parklet.view.ui.activities;
 
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.Ndef;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -21,12 +31,22 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.kinses38.parklet.R;
+import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.data.model.entity.User;
+import com.kinses38.parklet.utilities.DialogListener;
+import com.kinses38.parklet.view.ui.fragments.NfcWriteDialogFragment;
+import com.kinses38.parklet.viewmodels.PropertyViewModel;
 
-public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
+public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener, DialogListener {
 
     private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
+
+    private PropertyViewModel propertyViewModel;
+    private NfcAdapter nfcAdapter;
+    private boolean writeMode;
+    private Property propertyToWrite;
+    private NfcWriteDialogFragment nfcWriteDialogFragment;
 
     private AppBarConfiguration appBarConfiguration;
 
@@ -35,12 +55,62 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         super.onCreate(savedInstanceState);
         firebaseAuth  = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
-
+        initViewModel();
         initToolbar();
         initDrawer();
+        initObserver();
+        initNfc();
+
 
 
         initGoogleSignInClient();
+    }
+
+    private void initViewModel(){
+        propertyViewModel = new ViewModelProvider(this).get(PropertyViewModel.class);
+    }
+
+    private void initObserver(){
+        propertyViewModel.getPropertyToWriteMutableLiveData().observe(this, property -> {
+            if (property != null){
+                propertyToWrite = property;
+                showNfcWriteDialog();
+            }
+        });
+    }
+
+    private void initNfc(){
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+    }
+
+    private void showNfcWriteDialog(){
+        // https://developer.android.com/reference/androidx/fragment/app/DialogFragment
+        FragmentTransaction fragTrans = getSupportFragmentManager().beginTransaction();
+        Fragment previous = getSupportFragmentManager().findFragmentByTag("NfcWriteDialogFragment");
+        if(previous != null){
+            nfcWriteDialogFragment.dismiss();
+            fragTrans.remove(previous);
+        }
+        fragTrans.addToBackStack(null);
+        nfcWriteDialogFragment = NfcWriteDialogFragment.newInstance();
+        nfcWriteDialogFragment.show(fragTrans, "NfcWriteDialogFragment");
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent){
+        super.onNewIntent(intent);
+
+        Tag propertyTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        if(propertyTag != null){
+            Ndef ndef = Ndef.get(propertyTag);
+            if(writeMode){
+                nfcWriteDialogFragment.writeNfc(ndef, propertyToWrite );
+                Toast.makeText(this, "This is NFC in write mode", Toast.LENGTH_SHORT).show();
+            }else{
+                //TODO check-in functionality
+                Toast.makeText(this, "This is NFC in read mode", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void initToolbar(){
@@ -104,6 +174,30 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     }
 
     @Override
+    protected void onResume(){
+        super.onResume();
+        if(nfcAdapter != null && !nfcAdapter.isEnabled()){
+            Toast.makeText(this, "Please enable NFC", Toast.LENGTH_SHORT).show();
+        }
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        IntentFilter[] nfcIntentFilter = new IntentFilter[] {tagDetected};
+        // I think this is the only intent filter needed for our app, nothing more specific
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 999,
+                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),0);
+        if(nfcAdapter != null){
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, nfcIntentFilter, null);
+        }
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        if(nfcAdapter != null){
+            nfcAdapter.disableForegroundDispatch(this);
+        }
+    }
+
+    @Override
     protected void onStop(){
         super.onStop();
         firebaseAuth.removeAuthStateListener(this);
@@ -128,5 +222,20 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                break;
        }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    @Override
+    public void onDialogDisplayed(){
+        //TODO check this doesn't interfere with other dialog, i.e. check-in dialog
+        writeMode = true;
+        Log.i("NFCTEST", "WRITEMODE" + writeMode);
+        Log.i("NFCTEST", "DIALOGDISPLAY");
+    }
+
+    @Override
+    public void onDialogDismissed(){
+        writeMode = false;
+        Log.i("NFCTEST", "WRITEMODE" + writeMode);
+        Log.i("NFCTEST", "DIALOGDISMISSED");
     }
 }

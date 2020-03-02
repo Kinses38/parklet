@@ -3,6 +3,7 @@ package com.kinses38.parklet.viewmodels;
 import android.location.Address;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.kinses38.parklet.data.model.entity.Property;
@@ -14,6 +15,7 @@ public class PropertyViewModel extends ViewModel {
 
     private Property property;
     private PropertyRepo propertyRepo = new PropertyRepo();
+    private MutableLiveData<Property> propertyToWriteMutableLiveData = new MutableLiveData<>();
 
     public PropertyViewModel() {
     }
@@ -41,4 +43,11 @@ public class PropertyViewModel extends ViewModel {
         propertyRepo.remove(property);
     }
 
+    public void setPropertyToWrite(Property property){
+        propertyToWriteMutableLiveData.postValue(property);
+    }
+
+    public MutableLiveData<Property> getPropertyToWriteMutableLiveData() {
+        return propertyToWriteMutableLiveData;
+    }
 }
