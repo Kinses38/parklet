@@ -50,8 +50,16 @@
     <!-- Nfc fragment start   -->
     <string name="nfc_page">NFC Tool</string>
     <string name="no_property_text">You have added no properties yet. please add one</string>
-
     <!-- Nfc fragment end   -->
 
+    <!--    Home fragment start -->
+    <string name="user_welcome">Welcome to ParkLet %1$s</string>
+    <!--    Home fragment end   -->
+
+    <!--    Map fragment start -->
+    <string name="create_a_vehicle_booking">Create a vehicle booking</string>
+    <string name="no_bookings">You have no current bookings</string>
+    <string name="map_search_area">Search area</string>
+    <!--    Map fragment end -->
 
 </resources>

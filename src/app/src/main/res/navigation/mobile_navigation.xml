@@ -9,25 +9,36 @@
         android:id="@+id/nav_home"
         android:name="com.kinses38.parklet.view.ui.fragments.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_nav_home_to_nav_map"
+            app:destination="@id/nav_map"
+            app:launchSingleTop="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_vehicles"
         android:name="com.kinses38.parklet.view.ui.fragments.VehiclesFragment"
         android:label="@string/vehicles"
-        tools:layout="@layout/fragment_vehicles"/>
+        tools:layout="@layout/fragment_vehicles" />
 
     <fragment
-       android:id="@+id/nav_properties"
+        android:id="@+id/nav_properties"
         android:name="com.kinses38.parklet.view.ui.fragments.PropertiesFragment"
         android:label="@string/properties"
-        tools:layout="@layout/fragment_properties"/>
+        tools:layout="@layout/fragment_properties" />
 
     <fragment
         android:id="@+id/nav_nfc"
         android:name="com.kinses38.parklet.view.ui.fragments.NfcFragment"
         android:label="@string/nfc_page"
-        tools:layout="@layout/fragment_nfc"/>
+        tools:layout="@layout/fragment_nfc" />
+
+    <fragment
+        android:id="@+id/nav_map"
+        android:name="com.kinses38.parklet.view.ui.fragments.MapFragment"
+        android:label="Map search"
+        tools:layout="@layout/fragment_map" />
 
 
 </navigation>

@@ -3,8 +3,8 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
-    dataBinding{
-        enabled=true
+    dataBinding {
+        enabled = true
     }
     defaultConfig {
         applicationId "com.kinses38.parklet"
@@ -59,6 +59,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:17.2.2'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:4.3'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
