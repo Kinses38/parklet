@@ -37,6 +37,14 @@ public class User implements Serializable {
         this.name = name;
     }
 
+    public String getFirstName(){
+        if(name.contains(" ")){
+            return name.split(" ")[0];
+        }else{
+            return name;
+        }
+    }
+
     public String getEmail() {
         return email;
     }
