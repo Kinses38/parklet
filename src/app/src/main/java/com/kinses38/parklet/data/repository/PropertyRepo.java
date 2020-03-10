@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,42 +29,45 @@ public class PropertyRepo {
     //TODO refactor to static global paths?
     //TODO check for existing property using....?Eircode?
 
+    private final String TAG = this.getClass().getSimpleName();
+
     private DatabaseReference DB = FirebaseDatabase.getInstance().getReference();
     private final String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private DatabaseReference geoFireRef = FirebaseDatabase.getInstance().getReference("propertyLocations");
     private GeoFire geoFire = new GeoFire(geoFireRef);
 
-    public void create(Property property){
-        String propertyKey = DB.child("properties"+ userUid).push().getKey();
-        DatabaseReference propertyRef = DB.child("properties/" + userUid + "/" + propertyKey);
+
+    public void create(Property property) {
+        String propertyKey = DB.child("properties").push().getKey();
+        DatabaseReference propertyRef = DB.child("properties/" + propertyKey);
         property.setPropertyUID(propertyKey);
         property.setOwnerUID(userUid);
         propertyRef.setValue(property).addOnSuccessListener(aVoid -> {
-            Log.i("PropertyRepo", "Property added");
-                })
+            Log.i(TAG, "Property added");
+        })
                 .addOnFailureListener(e ->
-                        Log.i("PropertyRepo", "Property not added" + e.getMessage()));
+                        Log.i(TAG, "Property not added" + e.getMessage()));
 
         geoFire.setLocation(propertyKey, new GeoLocation(property.getLatitude(), property.getLongitude()), new GeoFire.CompletionListener() {
             @Override
             public void onComplete(String key, DatabaseError error) {
-                if(error == null){
-                    Log.i("PropertyRepo", "PropertyLocation saved");
-                }else{
-                    Log.i("PropertyRepo", error.getMessage());
+                if (error == null) {
+                    Log.i(TAG, "PropertyLocation saved");
+                } else {
+                    Log.i(TAG, error.getMessage());
                 }
             }
         });
     }
 
-    public MutableLiveData<List<Property>> selectAll(){
+    public MutableLiveData<List<Property>> selectAll() {
         MutableLiveData<List<Property>> userPropertiesMutableLiveData = new MutableLiveData<>();
-        DatabaseReference allProperties = DB.child("properties/"+userUid);
-        allProperties.addValueEventListener(new ValueEventListener() {
+        DatabaseReference allProperties = DB.child("properties/");
+        allProperties.orderByChild("ownerUID").equalTo(userUid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Property> properties = new ArrayList<>();
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Property userProperty = ds.getValue(Property.class);
                     properties.add(userProperty);
                 }
@@ -71,25 +76,86 @@ public class PropertyRepo {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.i("PropertyRepo", databaseError.getMessage());
+                Log.i(TAG, databaseError.getMessage());
             }
         });
 
         return userPropertiesMutableLiveData;
     }
 
-    public void remove(Property property){
+    public MutableLiveData<List<String>> selectAllInRange(Double lon, Double lat, Double range) {
+        MutableLiveData<List<String>> propertiesInRangeMutableLiveData = new MutableLiveData<>();
+        List<String> propertyKeys = new ArrayList<>();
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(lat, lon), range);
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                Log.i(TAG, "Near property: " + key);
+                propertyKeys.add(key);
+                //get key, run query for property, retrieve property, add to list, post.
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+                //unused
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+                //unused
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+                propertiesInRangeMutableLiveData.postValue(propertyKeys);
+                Log.i(TAG, "GeoQuery finished");
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+                Log.i(TAG, error.getMessage());
+            }
+        });
+
+        return propertiesInRangeMutableLiveData;
+    }
+
+    public MutableLiveData<List<Property>> selectProperty(List<String> keys) {
+        DatabaseReference ref = DB.child("properties/");
+        List<Property> properties = new ArrayList<>();
+        MutableLiveData<List<Property>> propertiesInRange = new MutableLiveData<>();
+        for (String key : keys) {
+            ref.orderByChild("propertyUID").equalTo(key).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        Property prop = ds.getValue(Property.class);
+                        properties.add(prop);
+                    }
+                    propertiesInRange.postValue(properties);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.i(TAG, databaseError.getMessage());
+                }
+            });
+        }
+        return propertiesInRange;
+    }
+
+    public void remove(Property property) {
         Map<String, Object> requestMap = new HashMap<>();
-        requestMap.put("properties/"+userUid+"/"+property.getPropertyUID(), null);
-        requestMap.put("propertyLocations/"+property.getPropertyUID(), null);
+        requestMap.put("properties/" + property.getPropertyUID(), null);
+        requestMap.put("propertyLocations/" + property.getPropertyUID(), null);
 
         DB.updateChildren(requestMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    Log.i("PropertyRepo", property.getEircode() + " removed");
-                }else{
-                    Log.i("PropertyRepo", "Failed");
+                if (task.isSuccessful()) {
+                    Log.i(TAG, property.getEircode() + " removed");
+                } else {
+                    Log.i(TAG, "Failed");
                 }
             }
         });
