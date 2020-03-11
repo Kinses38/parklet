@@ -18,7 +18,6 @@ public class MapViewModel extends ViewModel {
 
     }
 
-    //Call this when user submits, but should it call with defaults as well? Once user location permission issues are sorted?
     public LiveData<List<Property>> getPropertiesInRange(double lon, double lat, double range) {
         MutableLiveData<List<String>> propertyKeysLiveData = propertyRepo.selectAllInRange(lon, lat, range);
 

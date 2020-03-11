@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="mapFrag"
+            type="com.kinses38.parklet.view.ui.fragments.MapFragment" />
+        <variable
+            name="formClicked"
+            type="java.lang.Boolean" />
+
+    </data>
 
     <RelativeLayout
         android:id="@+id/map_container"
@@ -31,17 +42,82 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-<!--            Show initially then hide the form when results come and show a button to change area instead?-->
-            <EditText
-                android:id="@+id/map_search_input"
-                android:layout_width="match_parent"
+            <!--            Form start      -->
+            <!--            Show initially then hide the form when results come and show a button to change area instead?-->
+            <RelativeLayout
+                android:id="@+id/map_form_block"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:autofillHints="AUTOFILL_HINT_POSTAL_ADDRESS"
-                android:hint="@string/map_search_area"/>
+                android:background="#5A000000">
+                <!--Get both texts, check if null, hide form, replace with button to reshow form-->
+                <EditText
+                    android:id="@+id/map_search_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:autofillHints="AUTOFILL_HINT_POSTAL_ADDRESS"
+                    android:backgroundTint="@android:drawable/edit_text"
+                    android:backgroundTintMode="add"
+                    android:hint="@string/map_search_area"
+                    android:textColor="@color/quantum_white_text"
+                    android:textColorHint="@color/quantum_white_text"
+                    tools:ignore="UnusedAttribute"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginLeft="15dp"/>
 
+                <LinearLayout
+                    android:id="@+id/range_block"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/map_search_input"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginLeft="15dp">
+
+                    <TextView
+                        android:id="@+id/map_range_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@android:drawable/edit_text"
+                        android:backgroundTintMode="add"
+                        android:text="@string/map_range"
+                        android:textColor="@color/quantum_white_text"
+                        android:textColorHint="@color/quantum_white_text"
+                        android:textSize="15sp"
+                        tools:ignore="UnusedAttribute" />
+
+                    <EditText
+                        android:id="@+id/map_range_input"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@android:drawable/edit_text"
+                        android:backgroundTintMode="add"
+                        android:importantForAutofill="no"
+                        android:inputType="numberDecimal"
+                        android:text="@string/map_default_range"
+                        android:textAlignment="center"
+                        android:textColor="@color/quantum_white_text"
+                        android:textColorHint="@color/quantum_white_text"
+                        tools:ignore="UnusedAttribute" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/map_search_submit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/map_search_input"
+                    android:layout_alignRight="@id/range_block"
+                    android:contentDescription="@string/map_search_button_search_content"
+                    android:text="@string/map_search_button"
+                    android:textColor="@color/quantum_white_text"
+                    android:onClick="@{(v) -> mapFrag.onClick(v)}"
+                    tools:ignore="RtlHardcoded" />
+
+            </RelativeLayout>
+            <!--            Form end     -->
         </RelativeLayout>
+        <!--        Top content end: insert relative for recycler-->
 
     </RelativeLayout>
 

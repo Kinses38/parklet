@@ -60,6 +60,10 @@
     <string name="create_a_vehicle_booking">Create a vehicle booking</string>
     <string name="no_bookings">You have no current bookings</string>
     <string name="map_search_area">Search area</string>
+    <string name="map_range">Range in Km: </string>
+    <string name="map_default_range">5.00</string>
+    <string name="map_search_button">Search</string>
+    <string name="map_search_button_search_content">Search for property in an area</string>
     <!--    Map fragment end -->
 
 </resources>
