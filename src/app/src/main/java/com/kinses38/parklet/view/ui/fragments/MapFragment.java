@@ -20,7 +20,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.databinding.FragmentMapBinding;
@@ -28,6 +30,7 @@ import com.kinses38.parklet.utilities.InputHandler;
 import com.kinses38.parklet.viewmodels.MapViewModel;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -55,8 +58,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
           https://stackoverflow.com/questions/16536414/how-to-use-mapview-in-android-using-google-map-v2
          */
 
-
-        mapView = mapBinding.mapBlock;
         mapView.onCreate(savedInstanceState);
 
         mapView.getMapAsync(this);
@@ -73,17 +74,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
             @Override
             public void onChanged(List<Property> properties) {
                 if (!properties.isEmpty()) {
-                    for (Property property : properties) {
-                        Log.i(TAG, "Properties found nearby: " + property.getAddressLine());
-                        //map update func
-                        //recyclerview func
-                    }
+                    updateMap(properties, latLng);
+                }else{
+                    map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                    Toast.makeText(getActivity(), "No properties in this area, try expanding your Search", Toast.LENGTH_LONG).show();
+                    //TODO handle not found case
                 }
             }
         });
     }
 
     private void initBindings() {
+        mapView = mapBinding.mapBlock;
         mapBinding.setMapFrag(this);
         mapBinding.setFormClicked(false);
         mapSearchInput = mapBinding.mapSearchInput;
@@ -94,7 +96,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
     //Variadic method, takes 0 or more arguments, 0 or 1 in this case
     private LatLng getGeo(String... areaToSearch) {
         //Need to add suffix Ireland for general queries to work. Might be solved with querying user location and storing.
-        // What happens if user is searching for properties abroad though? Useless use case?
         LatLng latLng;
         String addressText = " Ireland";
         if (areaToSearch.length != 0) {
@@ -127,18 +128,46 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         //TODO fix permissions issue;
 //        map.setMyLocationEnabled(true);
         // The map should default to their position showing properties nearby? Or is that too intensive to start off?
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(53.463314, -6.231833), 10));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(53.463314, -6.231833), 10));
 
 
     }
 
 
+    private void updateMap(List<Property> properties, LatLng latLng) {
+        //clear all currently existing markers
+        map.clear();
+        List<MarkerOptions> markers = createMarkers(properties);
+        map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+        for(MarkerOptions marker: markers){
+            map.addMarker(marker.visible(true));
+        //TODO get upper bounds for camera here
+        }
+    }
+
+
+    private List<MarkerOptions> createMarkers(List<Property> properties){
+        List<MarkerOptions> propertyMarkers= new ArrayList<>();
+        for(Property property: properties){
+            String [] brokenAddress = property.getAddressLine().split(",");
+            propertyMarkers.add(new MarkerOptions()
+                    .position(new LatLng(property.getLatitude(), property.getLongitude()))
+                    .title(String.format("%s, %s", brokenAddress[0], brokenAddress[1]))
+                    .snippet(String.format(Locale.getDefault(),"%s %.2f", getString(R.string.daily_rate) , property.getDailyRate()))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                    .draggable(false)
+                    .visible(false));
+
+        }
+        return propertyMarkers;
+    }
+
     //DONE Get area and range input from user. 2 x Edit Texts. Button or watcher?
     //DONE Convert area to long/lat (GeoCode)
     //DONE Query firebase for nearby properties within that range
     //DONE Get the properties that match
-    // Process them for markers for maps
-    // Function to update and move map camera to area with zoom
+    //DONE Process them for markers for maps
+    //DONE Function to update and move map camera to area with zoom
     // populate recyclerview with properties.
     // Break view up between recycler and map view
 
@@ -161,7 +190,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         double range = Double.parseDouble(mapRangeInput.getText().toString());
 
         latLng = getGeo(areaToSearch);
-        if(latLng != null) {
+        if (latLng != null) {
             initObserver(latLng, range);
         }
     }

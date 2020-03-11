@@ -27,7 +27,7 @@ import java.util.Map;
 public class PropertyRepo {
 
     //TODO refactor to static global paths?
-    //TODO check for existing property using....?Eircode?
+
 
     private final String TAG = this.getClass().getSimpleName();
 
@@ -38,6 +38,7 @@ public class PropertyRepo {
 
 
     public void create(Property property) {
+        //TODO check for existing property using....?Eircode?
         String propertyKey = DB.child("properties").push().getKey();
         DatabaseReference propertyRef = DB.child("properties/" + propertyKey);
         property.setPropertyUID(propertyKey);
@@ -92,17 +93,21 @@ public class PropertyRepo {
             public void onKeyEntered(String key, GeoLocation location) {
                 Log.i(TAG, "Near property: " + key);
                 propertyKeys.add(key);
+                propertiesInRangeMutableLiveData.postValue(propertyKeys);
                 //get key, run query for property, retrieve property, add to list, post.
+
+                //TODO filter user_propertys
             }
 
             @Override
             public void onKeyExited(String key) {
-                //unused
+                propertyKeys.remove(key);
+                propertiesInRangeMutableLiveData.postValue(propertyKeys);
             }
 
             @Override
             public void onKeyMoved(String key, GeoLocation location) {
-                //unused
+              //Unused
             }
 
             @Override
