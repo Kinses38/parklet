@@ -32,7 +32,7 @@ public class PropertyRepo {
     private final String TAG = this.getClass().getSimpleName();
 
     private DatabaseReference DB = FirebaseDatabase.getInstance().getReference();
-    private final String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private final FirebaseAuth ADB = FirebaseAuth.getInstance();
     private DatabaseReference geoFireRef = FirebaseDatabase.getInstance().getReference("propertyLocations");
     private GeoFire geoFire = new GeoFire(geoFireRef);
 
@@ -42,7 +42,7 @@ public class PropertyRepo {
         String propertyKey = DB.child("properties").push().getKey();
         DatabaseReference propertyRef = DB.child("properties/" + propertyKey);
         property.setPropertyUID(propertyKey);
-        property.setOwnerUID(userUid);
+        property.setOwnerUID(ADB.getCurrentUser().getUid());
         propertyRef.setValue(property).addOnSuccessListener(aVoid -> {
             Log.i(TAG, "Property added");
         })
@@ -64,7 +64,7 @@ public class PropertyRepo {
     public MutableLiveData<List<Property>> selectAll() {
         MutableLiveData<List<Property>> userPropertiesMutableLiveData = new MutableLiveData<>();
         DatabaseReference allProperties = DB.child("properties/");
-        allProperties.orderByChild("ownerUID").equalTo(userUid).addValueEventListener(new ValueEventListener() {
+        allProperties.orderByChild("ownerUID").equalTo(ADB.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Property> properties = new ArrayList<>();
