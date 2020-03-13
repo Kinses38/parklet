@@ -13,8 +13,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +30,7 @@ import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.databinding.FragmentMapBinding;
 import com.kinses38.parklet.utilities.InputHandler;
+import com.kinses38.parklet.utilities.MapAdapter;
 import com.kinses38.parklet.viewmodels.MapViewModel;
 
 import java.io.IOException;
@@ -38,19 +42,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
 
     private final String TAG = this.getClass().getSimpleName();
 
+    private MapViewModel mapViewModel;
+    private FragmentMapBinding mapBinding;
+
+    private RecyclerView recyclerView;
+    private MapAdapter adapter;
+
     private MapView mapView;
     private GoogleMap map;
-    private FragmentMapBinding mapBinding;
-    private MapViewModel mapViewModel;
-
     private TextView mapSearchInput, mapRangeInput;
-
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mapBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false);
         mapViewModel = new ViewModelProvider(getActivity()).get(MapViewModel.class);
         mapBinding.setLifecycleOwner(this);
         initBindings();
+        initRecyclerView();
 
         /*
           Map tutorial
@@ -59,50 +66,50 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
          */
 
         mapView.onCreate(savedInstanceState);
-
         mapView.getMapAsync(this);
-
-        //Has to be before observer or provide defaults
-        //Call geo after submit, then call initObserver with parameters?
         getGeo();
         return mapBinding.getRoot();
     }
 
-    private void initObserver(LatLng latLng, Double range) {
-        //observe this with defaults used by user location????
-        mapViewModel.getPropertiesInRange(latLng.longitude, latLng.latitude, range).observe(getViewLifecycleOwner(), new Observer<List<Property>>() {
-            @Override
-            public void onChanged(List<Property> properties) {
-                if (!properties.isEmpty()) {
-                    updateMap(properties, latLng);
-                }else{
-                    map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                    Toast.makeText(getActivity(), "No properties in this area, try expanding your Search", Toast.LENGTH_LONG).show();
-                    //TODO handle not found case
-                }
+    private void searchPropertiesInRange(LatLng latLng, Double range) {
+        mapViewModel.getPropertiesInRange(latLng.longitude, latLng.latitude, range).observe(getViewLifecycleOwner(), properties -> {
+            if (!properties.isEmpty()) {
+                MapFragment.this.updateMap(properties, latLng);
+                mapBinding.setHasProperty(true);
+                adapter.refreshList(properties);
+                recyclerView.setAdapter(adapter);
+            } else {
+                map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                Toast.makeText(MapFragment.this.getActivity(), "No properties in this area, try expanding your Search", Toast.LENGTH_LONG).show();
+                //TODO handle not found case
             }
         });
+    }
+
+    private void initRecyclerView(){
+        adapter = new MapAdapter(getActivity());
+        recyclerView = mapBinding.mapPropertyRecycler;
+        SnapHelper helper = new LinearSnapHelper();
+        helper.attachToRecyclerView(recyclerView);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
     }
 
     private void initBindings() {
         mapView = mapBinding.mapBlock;
         mapBinding.setMapFrag(this);
-        mapBinding.setFormClicked(false);
         mapSearchInput = mapBinding.mapSearchInput;
         mapRangeInput = mapBinding.mapRangeInput;
     }
 
-
     //Variadic method, takes 0 or more arguments, 0 or 1 in this case
     private LatLng getGeo(String... areaToSearch) {
-        //Need to add suffix Ireland for general queries to work. Might be solved with querying user location and storing.
         LatLng latLng;
         String addressText = " Ireland";
         if (areaToSearch.length != 0) {
             addressText = areaToSearch[0] + addressText;
         }
         try {
-            Toast.makeText(getActivity(), String.format("Searching for properties in %s", addressText), Toast.LENGTH_SHORT).show();
             Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
             List addressList = geocoder.getFromLocationName(addressText, 1);
             if (!addressList.isEmpty()) {
@@ -125,14 +132,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.getUiSettings().setMyLocationButtonEnabled(false);
+        map.setPadding(0, 0, 10, 400);
+
         //TODO fix permissions issue;
 //        map.setMyLocationEnabled(true);
         // The map should default to their position showing properties nearby? Or is that too intensive to start off?
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(53.463314, -6.231833), 10));
-
-
     }
-
 
     private void updateMap(List<Property> properties, LatLng latLng) {
         //clear all currently existing markers
@@ -141,10 +147,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         for(MarkerOptions marker: markers){
             map.addMarker(marker.visible(true));
-        //TODO get upper bounds for camera here
+            //TODO get upper bounds for camera here. Bounds object;
         }
     }
-
 
     private List<MarkerOptions> createMarkers(List<Property> properties){
         List<MarkerOptions> propertyMarkers= new ArrayList<>();
@@ -157,20 +162,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                     .draggable(false)
                     .visible(false));
-
+            //TODO get marker position of each marker to synch with recyclerview
         }
         return propertyMarkers;
     }
-
-    //DONE Get area and range input from user. 2 x Edit Texts. Button or watcher?
-    //DONE Convert area to long/lat (GeoCode)
-    //DONE Query firebase for nearby properties within that range
-    //DONE Get the properties that match
-    //DONE Process them for markers for maps
-    //DONE Function to update and move map camera to area with zoom
-    // populate recyclerview with properties.
-    // Break view up between recycler and map view
-
 
     @Override
     public void onResume() {
@@ -191,7 +186,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
 
         latLng = getGeo(areaToSearch);
         if (latLng != null) {
-            initObserver(latLng, range);
+            searchPropertiesInRange(latLng, range);
         }
     }
 
@@ -201,9 +196,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
                 Log.i(TAG, "search button clicked");
                 //TODO Check form is not empty
                 InputHandler.hideKeyboard(requireActivity());
-                //Form boolean necessary here?
-                mapBinding.setFormClicked(!mapBinding.getFormClicked());
                 submitSearchValues();
+                mapBinding.setSearchClicked(true);
                 break;
             default:
                 break;
