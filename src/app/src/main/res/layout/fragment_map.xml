@@ -4,122 +4,156 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
+
         <variable
             name="mapFrag"
             type="com.kinses38.parklet.view.ui.fragments.MapFragment" />
+
         <variable
-            name="formClicked"
+            name="hasProperty"
+            type="java.lang.Boolean" />
+
+        <variable
+            name="searchClicked"
             type="java.lang.Boolean" />
 
     </data>
 
-    <RelativeLayout
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/map_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map_block"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <RelativeLayout
-            android:id="@+id/map_top_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:id="@+id/map_form"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#5A000000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/text_map"
+            <EditText
+                android:id="@+id/map_search_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:textAlignment="center"
-                android:textSize="15sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:autofillHints="AUTOFILL_HINT_POSTAL_ADDRESS"
+                android:backgroundTint="@android:drawable/edit_text"
+                android:backgroundTintMode="add"
+                android:hint="@string/map_search_area"
+                android:singleLine="true"
+                android:inputType="textPostalAddress"
+                android:textColor="@color/quantum_white_text"
+                android:textColorHint="@color/quantum_white_text"
+                app:autoSizeMinTextSize="12sp"
+                app:autoSizeTextType="uniform"
+                tools:ignore="UnusedAttribute" />
 
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/map_block"
+            <LinearLayout
+                android:id="@+id/range_block"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <!--            Form start      -->
-            <!--            Show initially then hide the form when results come and show a button to change area instead?-->
-            <RelativeLayout
-                android:id="@+id/map_form_block"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#5A000000">
-                <!--Get both texts, check if null, hide form, replace with button to reshow form-->
-                <EditText
-                    android:id="@+id/map_search_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:autofillHints="AUTOFILL_HINT_POSTAL_ADDRESS"
-                    android:backgroundTint="@android:drawable/edit_text"
-                    android:backgroundTintMode="add"
-                    android:hint="@string/map_search_area"
-                    android:textColor="@color/quantum_white_text"
-                    android:textColorHint="@color/quantum_white_text"
-                    tools:ignore="UnusedAttribute"
-                    android:layout_marginRight="15dp"
-                    android:layout_marginLeft="15dp"/>
+                android:layout_below="@id/map_search_input"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp">
 
-                <LinearLayout
-                    android:id="@+id/range_block"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/map_search_input"
-                    android:layout_marginRight="15dp"
-                    android:layout_marginLeft="15dp">
-
-                    <TextView
-                        android:id="@+id/map_range_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:backgroundTint="@android:drawable/edit_text"
-                        android:backgroundTintMode="add"
-                        android:text="@string/map_range"
-                        android:textColor="@color/quantum_white_text"
-                        android:textColorHint="@color/quantum_white_text"
-                        android:textSize="15sp"
-                        tools:ignore="UnusedAttribute" />
-
-                    <EditText
-                        android:id="@+id/map_range_input"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:backgroundTint="@android:drawable/edit_text"
-                        android:backgroundTintMode="add"
-                        android:importantForAutofill="no"
-                        android:inputType="numberDecimal"
-                        android:text="@string/map_default_range"
-                        android:textAlignment="center"
-                        android:textColor="@color/quantum_white_text"
-                        android:textColorHint="@color/quantum_white_text"
-                        tools:ignore="UnusedAttribute" />
-
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/map_search_submit"
+                <TextView
+                    android:id="@+id/map_range_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/map_search_input"
-                    android:layout_alignRight="@id/range_block"
-                    android:contentDescription="@string/map_search_button_search_content"
-                    android:text="@string/map_search_button"
+                    android:backgroundTint="@android:drawable/edit_text"
+                    android:backgroundTintMode="add"
+                    android:text="@string/map_range"
                     android:textColor="@color/quantum_white_text"
-                    android:onClick="@{(v) -> mapFrag.onClick(v)}"
-                    tools:ignore="RtlHardcoded" />
+                    android:textColorHint="@color/quantum_white_text"
+                    app:autoSizeMinTextSize="12sp"
+                    app:autoSizeTextType="uniform"
+                    tools:ignore="UnusedAttribute" />
 
-            </RelativeLayout>
-            <!--            Form end     -->
+                <EditText
+                    android:id="@+id/map_range_input"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@android:drawable/edit_text"
+                    android:backgroundTintMode="add"
+                    android:importantForAutofill="no"
+                    android:inputType="numberDecimal"
+                    android:text="@string/map_default_range"
+                    android:textAlignment="center"
+                    android:textColor="@color/quantum_white_text"
+                    android:textColorHint="@color/quantum_white_text"
+                    app:autoSizeMinTextSize="12sp"
+                    app:autoSizeTextType="uniform"
+                    tools:ignore="UnusedAttribute" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/map_search_submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/map_search_input"
+                android:layout_alignRight="@id/range_block"
+                android:contentDescription="@string/map_search_button_search_content"
+                android:onClick="@{(v) -> mapFrag.onClick(v)}"
+                android:text="@string/map_search_button"
+                android:textColor="@color/quantum_white_text"
+                tools:ignore="RtlHardcoded" />
+
         </RelativeLayout>
+
+        <!--            Form end     -->
+
         <!--        Top content end: insert relative for recycler-->
 
-    </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/property_result_block"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:visibility="@{searchClicked? View.VISIBLE: View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/no_property_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:background="#5A000000"
+                android:text="@string/map_no_properties"
+                android:textAlignment="center"
+                android:textColor="@color/quantum_white_text"
+                android:visibility="@{hasProperty? View.GONE : View.VISIBLE}"
+                app:autoSizeMinTextSize="18sp"
+                app:autoSizeTextType="uniform" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/map_property_recycler"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:scrollbars="vertical"
+                android:visibility="@{hasProperty? View.VISIBLE : View.GONE}" />
+        </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </layout>

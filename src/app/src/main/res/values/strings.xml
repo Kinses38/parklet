@@ -64,6 +64,7 @@
     <string name="map_default_range">5.00</string>
     <string name="map_search_button">Search</string>
     <string name="map_search_button_search_content">Search for property in an area</string>
+    <string name="map_no_properties">There are no properties in this area,   try expanding your search</string>
     <!--    Map fragment end -->
 
 </resources>
