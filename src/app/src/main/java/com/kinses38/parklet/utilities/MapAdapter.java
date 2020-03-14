@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.viewmodels.MapViewModel;
@@ -70,5 +71,20 @@ public class MapAdapter extends RecyclerView.Adapter<MapAdapter.MapViewHolder> {
     @Override
     public int getItemCount(){
         return properties.size();
+    }
+
+    public Property getCurrentItem(int position){
+        return properties.get(position);
+    }
+
+    public int findItem(LatLng latLng){
+        Property matchingProperty;
+        for(Property p : properties){
+            if(p.getLatLng().equals(latLng)){
+                matchingProperty = p;
+                return properties.indexOf(matchingProperty);
+            }
+        }
+        return -1;
     }
 }

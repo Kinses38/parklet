@@ -15,6 +15,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
@@ -46,7 +47,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
     private FragmentMapBinding mapBinding;
 
     private RecyclerView recyclerView;
+    private LinearLayoutManager layoutManager;
     private MapAdapter adapter;
+    private RecyclerView.SmoothScroller smoothScroller;
 
     private MapView mapView;
     private GoogleMap map;
@@ -74,7 +77,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
     private void searchPropertiesInRange(LatLng latLng, Double range) {
         mapViewModel.getPropertiesInRange(latLng.longitude, latLng.latitude, range).observe(getViewLifecycleOwner(), properties -> {
             if (!properties.isEmpty()) {
-                MapFragment.this.updateMap(properties, latLng);
+                updateMap(properties, latLng);
                 mapBinding.setHasProperty(true);
                 adapter.refreshList(properties);
                 recyclerView.setAdapter(adapter);
@@ -86,12 +89,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         });
     }
 
-    private void initRecyclerView(){
+    private void initRecyclerView() {
         adapter = new MapAdapter(getActivity());
         recyclerView = mapBinding.mapPropertyRecycler;
         SnapHelper helper = new LinearSnapHelper();
         helper.attachToRecyclerView(recyclerView);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        smoothScroller = new LinearSmoothScroller(getContext()) {
+            @Override
+            protected int getVerticalSnapPreference() {
+                return LinearSmoothScroller.SNAP_TO_START;
+            }
+        };
         recyclerView.setLayoutManager(layoutManager);
     }
 
@@ -133,6 +142,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         map = googleMap;
         map.getUiSettings().setMyLocationButtonEnabled(false);
         map.setPadding(0, 0, 10, 400);
+        map.setOnMarkerClickListener(marker -> {
+            smoothScroller.setTargetPosition(adapter.findItem(marker.getPosition()));
+            layoutManager.startSmoothScroll(smoothScroller);
+            // Return false to enable standard Marker behaviour for infotags
+            return false;
+        });
 
         //TODO fix permissions issue;
 //        map.setMyLocationEnabled(true);
@@ -145,24 +160,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         map.clear();
         List<MarkerOptions> markers = createMarkers(properties);
         map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-        for(MarkerOptions marker: markers){
+        for (MarkerOptions marker : markers) {
             map.addMarker(marker.visible(true));
             //TODO get upper bounds for camera here. Bounds object;
         }
     }
 
-    private List<MarkerOptions> createMarkers(List<Property> properties){
-        List<MarkerOptions> propertyMarkers= new ArrayList<>();
-        for(Property property: properties){
-            String [] brokenAddress = property.getAddressLine().split(",");
+    private List<MarkerOptions> createMarkers(List<Property> properties) {
+        List<MarkerOptions> propertyMarkers = new ArrayList<>();
+        for (Property property : properties) {
+            String[] brokenAddress = property.getAddressLine().split(",");
             propertyMarkers.add(new MarkerOptions()
-                    .position(new LatLng(property.getLatitude(), property.getLongitude()))
+                    .position(property.getLatLng())
                     .title(String.format("%s, %s", brokenAddress[0], brokenAddress[1]))
-                    .snippet(String.format(Locale.getDefault(),"%s %.2f", getString(R.string.daily_rate) , property.getDailyRate()))
+                    .snippet(String.format(Locale.getDefault(), "%s %.2f", getString(R.string.daily_rate), property.getDailyRate()))
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                     .draggable(false)
                     .visible(false));
-            //TODO get marker position of each marker to synch with recyclerview
         }
         return propertyMarkers;
     }

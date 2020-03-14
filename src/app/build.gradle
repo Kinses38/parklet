@@ -8,7 +8,7 @@ android {
     }
     defaultConfig {
         applicationId "com.kinses38.parklet"
-        minSdkVersion 16
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "0.0.2"
