@@ -1,5 +1,7 @@
 package com.kinses38.parklet.data.model.entity;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class Property {
 
     private String addressLine, eircode, ownerUID, propertyUID;
@@ -94,6 +96,10 @@ public class Property {
 
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
+    }
+
+    public LatLng getLatLng(){
+        return new LatLng(this.getLatitude(), this.getLongitude());
     }
 
     public String getPropertyUID() {
