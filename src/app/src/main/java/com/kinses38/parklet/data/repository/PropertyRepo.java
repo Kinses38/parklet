@@ -129,23 +129,28 @@ public class PropertyRepo {
         DatabaseReference ref = DB.child("properties/");
         List<Property> properties = new ArrayList<>();
         MutableLiveData<List<Property>> propertiesInRange = new MutableLiveData<>();
-        for (String key : keys) {
-            ref.orderByChild("propertyUID").equalTo(key).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        Property prop = ds.getValue(Property.class);
-                        properties.add(prop);
+        if(!keys.isEmpty()){
+            for (String key : keys) {
+                ref.orderByChild("propertyUID").equalTo(key).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            Property prop = ds.getValue(Property.class);
+                            properties.add(prop);
+                        }
+                        propertiesInRange.postValue(properties);
                     }
-                    propertiesInRange.postValue(properties);
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.i(TAG, databaseError.getMessage());
-                }
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.i(TAG, databaseError.getMessage());
+                    }
+                });
+            }
+        }else {
+            propertiesInRange.postValue(properties);
         }
+
         return propertiesInRange;
     }
 
