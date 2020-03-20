@@ -84,7 +84,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
             } else {
                 map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 mapBinding.setHasProperty(false);
-                Toast.makeText(MapFragment.this.getActivity(), "No properties in this area, try expanding your Search", Toast.LENGTH_LONG).show();
             }
         });
     }

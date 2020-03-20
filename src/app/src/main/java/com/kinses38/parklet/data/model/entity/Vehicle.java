@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 public class Vehicle extends BaseObservable implements Serializable{
 
-    private String reg, model, make;
+    private String reg, model, make, ownerUID;
     //TODO do we need user uuid here?
 
     public Vehicle(){
@@ -50,5 +50,13 @@ public class Vehicle extends BaseObservable implements Serializable{
     {
         this.make = make;
         notifyPropertyChanged(BR.vehicle);
+    }
+
+    public String getOwnerUID() {
+        return ownerUID;
+    }
+
+    public void setOwnerUID(String ownerUID) {
+        this.ownerUID = ownerUID;
     }
 }
