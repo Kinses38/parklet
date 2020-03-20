@@ -3,7 +3,9 @@ package com.kinses38.parklet.data.model.entity;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.Exclude;
 
-public class Property {
+import java.io.Serializable;
+
+public class Property implements Serializable {
 
     private String addressLine, eircode, ownerUID, propertyUID;
     private Double dailyRate, propertyRating = 0.0;

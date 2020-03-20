@@ -38,7 +38,21 @@
         android:id="@+id/nav_map"
         android:name="com.kinses38.parklet.view.ui.fragments.MapFragment"
         android:label="Map search"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map">
+        <action
+            android:id="@+id/action_nav_map_to_nav_booking"
+            app:destination="@+id/nav_booking"
+            app:launchSingleTop="true" />
+    </fragment>
 
+    <fragment
+        android:id="@+id/nav_booking"
+        android:name="com.kinses38.parklet.view.ui.fragments.BookingFragment"
+        android:label="Make a booking"
+        tools:layout="@layout/fragment_booking">
+        <argument
+            android:name="propertyToBook"
+            app:argType="com.kinses38.parklet.data.model.entity.Property" />
+    </fragment>
 
 </navigation>
