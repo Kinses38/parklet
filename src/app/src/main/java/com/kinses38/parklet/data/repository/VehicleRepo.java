@@ -17,25 +17,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VehicleRepo {
+    
+    private final String TAG = this.getClass().getSimpleName();
+    
     private DatabaseReference DB = FirebaseDatabase.getInstance().getReference();
-    private final String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
+    private final FirebaseAuth ADB = FirebaseAuth.getInstance();
+    
+    
+    
     public void create(Vehicle vehicle) {
-        String vehicleKey = DB.child("vehicles" + userUid).push().getKey();
-        DatabaseReference vehicleRef = DB.child("vehicles/" + userUid + "/" + vehicleKey);
+        String vehicleKey = DB.child("vehicles").push().getKey();
+        DatabaseReference vehicleRef = DB.child("vehicles/" + vehicleKey);
+        vehicle.setOwnerUID(ADB.getCurrentUser().getUid());
         vehicleRef.setValue(vehicle)
                 .addOnSuccessListener(aVoid -> {
-                    Log.i("VehicleRepo", "Add worked");
+                    Log.i(TAG, "Add worked");
                 })
                 .addOnFailureListener(e ->
-                        Log.i("VehicleRepo", "add failed"));
+                        Log.i(TAG, "add failed"));
     }
 
 
     public MutableLiveData<List<Vehicle>> selectAll() {
         MutableLiveData<List<Vehicle>> userVehiclesMutableLiveData = new MutableLiveData<>();
-        DatabaseReference allVehicles = DB.child("vehicles/"+userUid);
-        allVehicles.addValueEventListener(new ValueEventListener() {
+        DatabaseReference allVehicles = DB.child("vehicles/");
+        allVehicles.orderByChild("ownerUID").equalTo(ADB.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Vehicle> vehicles = new ArrayList<>();
@@ -56,7 +62,7 @@ public class VehicleRepo {
     }
 
     public void remove(Vehicle vehicle){
-        DatabaseReference userVehicles = DB.child("vehicles/"+userUid);
+        DatabaseReference userVehicles = DB.child("vehicles/");
         userVehicles.orderByChild("reg").equalTo(vehicle.getReg()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -71,7 +77,7 @@ public class VehicleRepo {
 
             }
         });
-        Log.i("Delete", "delete here");
+        Log.i(TAG, String.format("Vehicle %s deleted", vehicle.getReg()));
     }
 
 }
