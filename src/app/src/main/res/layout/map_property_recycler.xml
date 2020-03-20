@@ -19,8 +19,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            >
+            android:padding="8dp">
 
             <ImageView
                 android:id="@+id/house_svg"
@@ -28,23 +27,23 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
+                android:contentDescription="@string/house_icon_svg"
                 android:paddingRight="18dp"
                 app:srcCompat="@drawable/ic_home_black_24dp"
-                tools:ignore="RtlHardcoded,RtlSymmetry"
-                android:contentDescription="@string/house_icon_svg" />
+                tools:ignore="RtlHardcoded,RtlSymmetry" />
 
             <TextView
                 android:id="@+id/rv_house_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:paddingTop="8dp"
+                android:layout_toEndOf="@id/house_svg"
                 android:layout_toRightOf="@id/house_svg"
+                android:paddingTop="8dp"
                 android:text="@string/house_address"
-                app:autoSizeTextType="uniform"
-                app:autoSizeMinTextSize="14sp"
                 android:textStyle="bold"
-                android:layout_toEndOf="@id/house_svg" />
+                app:autoSizeMinTextSize="14sp"
+                app:autoSizeTextType="uniform" />
 
             <TextView
                 android:id="@+id/rv_daily_rate"
@@ -53,8 +52,8 @@
                 android:layout_below="@id/rv_house_address"
                 android:layout_toRightOf="@id/house_svg"
                 android:text="@string/daily_rate"
-                app:autoSizeTextType="uniform"
                 app:autoSizeMinTextSize="14sp"
+                app:autoSizeTextType="uniform"
                 tools:ignore="RtlHardcoded" />
 
             <TextView
@@ -64,8 +63,8 @@
                 android:layout_below="@+id/rv_daily_rate"
                 android:layout_toRightOf="@id/house_svg"
                 android:text="@string/available_to_book"
-                app:autoSizeTextType="uniform"
                 app:autoSizeMinTextSize="14sp"
+                app:autoSizeTextType="uniform"
                 tools:ignore="RtlHardcoded" />
 
             <TextView
@@ -75,9 +74,19 @@
                 android:layout_below="@+id/rv_available_booking"
                 android:layout_toRightOf="@id/house_svg"
                 android:text="@string/available_weekends"
-                app:autoSizeTextType="uniform"
                 app:autoSizeMinTextSize="14sp"
+                app:autoSizeTextType="uniform"
                 tools:ignore="RtlHardcoded" />
+
+            <ImageButton
+                android:id="@+id/rv_map_booking_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rv_available_booking"
+                android:layout_alignParentRight="true"
+                android:background="#0000"
+                app:srcCompat="@drawable/booking_forward_arrow_36dp" />
+
         </RelativeLayout>
 
 
