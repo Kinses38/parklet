@@ -1,6 +1,7 @@
 package com.kinses38.parklet.data.model.entity;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.Exclude;
 
 public class Property {
 
@@ -98,6 +99,7 @@ public class Property {
         this.latitude = latitude;
     }
 
+    @Exclude
     public LatLng getLatLng(){
         return new LatLng(this.getLatitude(), this.getLongitude());
     }
