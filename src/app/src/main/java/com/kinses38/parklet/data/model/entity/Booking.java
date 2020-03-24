@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Booking implements Serializable {
 
-    private String ownerUID, renterUID, propertyUID;
+    private String ownerUID, renterUID, propertyUID, renterVehicleReg;
     private double priceAtTime, priceTotal;
     private boolean customerCancelled, ownerCancelled, bookingComplete;
     private List<Long> bookingDates;
@@ -13,11 +13,11 @@ public class Booking implements Serializable {
         //Firebase empty constructor required
     }
 
-    public Booking(String ownerUID, String renterUID, String propertyUID, double priceAtTime, double priceTotal,
+    public Booking(String ownerUID, String propertyUID, String renterVehicleReg, double priceAtTime, double priceTotal,
                    List<Long> bookingDates) {
         this.ownerUID = ownerUID;
-        this.renterUID = renterUID;
         this.propertyUID = propertyUID;
+        this.renterVehicleReg = renterVehicleReg;
         this.priceAtTime = priceAtTime;
         this.priceTotal = priceTotal;
         this.bookingDates = bookingDates;
@@ -93,5 +93,13 @@ public class Booking implements Serializable {
 
     public void setBookingDates(List<Long> bookingDates) {
         this.bookingDates = bookingDates;
+    }
+
+    public String getRenterVehicleReg() {
+        return renterVehicleReg;
+    }
+
+    public void setRenterVehicleReg(String renterVehicleReg) {
+        this.renterVehicleReg = renterVehicleReg;
     }
 }

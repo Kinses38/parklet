@@ -6,16 +6,16 @@ import androidx.databinding.library.baseAdapters.BR;
 
 import java.io.Serializable;
 
-public class Vehicle extends BaseObservable implements Serializable{
+public class Vehicle extends BaseObservable implements Serializable {
 
     private String reg, model, make, ownerUID;
     //TODO do we need user uuid here?
 
-    public Vehicle(){
+    public Vehicle() {
         //Empty constructor for firebase
     }
 
-    public Vehicle(String make, String model, String reg){
+    public Vehicle(String make, String model, String reg) {
         this.make = make;
         this.model = model;
         this.reg = reg;
@@ -46,8 +46,7 @@ public class Vehicle extends BaseObservable implements Serializable{
         return make;
     }
 
-    public void setMake(String make)
-    {
+    public void setMake(String make) {
         this.make = make;
         notifyPropertyChanged(BR.vehicle);
     }
@@ -58,5 +57,10 @@ public class Vehicle extends BaseObservable implements Serializable{
 
     public void setOwnerUID(String ownerUID) {
         this.ownerUID = ownerUID;
+    }
+
+    @Override
+    public String toString() {
+        return this.getMake() + ": " + this.getModel();
     }
 }

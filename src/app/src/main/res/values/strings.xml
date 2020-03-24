@@ -67,4 +67,12 @@
     <string name="map_no_properties">There are no properties in this area,   try expanding your search</string>
     <!--    Map fragment end -->
 
+    <!--    Booking fragment start-->
+    <string name="confirm_booking_button">Place booking</string>
+    <string name="price_per_day">Price per day: €</string>
+    <string name="price_total">Price total: €</string>
+    <string name="select_a_vehicle">Select a vehicle: </string>
+    <string name="no_vehicle_booking">\u0020 You must add a vehicle to make a booking</string>
+    <!--Booking fragment end-->
+
 </resources>
