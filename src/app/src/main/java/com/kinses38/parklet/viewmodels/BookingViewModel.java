@@ -11,7 +11,6 @@ import com.kinses38.parklet.data.model.entity.Vehicle;
 import com.kinses38.parklet.data.repository.BookingRepo;
 import com.kinses38.parklet.data.repository.VehicleRepo;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -31,13 +30,16 @@ public class BookingViewModel extends ViewModel {
     private LiveData<List<Booking>> propertyBookings;
     private LiveData<List<Vehicle>> renterVehicles;
 
-    private VehicleRepo vehicleRepo = new VehicleRepo();
-    private BookingRepo bookingRepo = new BookingRepo();
+    private VehicleRepo vehicleRepo;
+    private BookingRepo bookingRepo;
 
+    public BookingViewModel(BookingRepo bookingRepo, VehicleRepo vehicleRepo){
+        this.bookingRepo = bookingRepo;
+        this.vehicleRepo = vehicleRepo;
+    }
     public void createBooking(Booking booking) {
         bookingRepo.create(booking);
     }
-
 
     public LiveData<List<Date>> getBookingsForProperty(String propertyUID) {
         if (propertyBookings == null) {
