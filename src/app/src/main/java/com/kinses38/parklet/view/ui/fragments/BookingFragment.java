@@ -19,12 +19,13 @@ import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Booking;
 import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.data.model.entity.Vehicle;
+import com.kinses38.parklet.data.repository.BookingRepo;
+import com.kinses38.parklet.data.repository.VehicleRepo;
 import com.kinses38.parklet.databinding.FragmentBookingBinding;
 import com.kinses38.parklet.utilities.ParkLetCalendarView;
+import com.kinses38.parklet.utilities.ViewModelFactory;
 import com.kinses38.parklet.viewmodels.BookingViewModel;
 
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class BookingFragment extends Fragment implements View.OnClickListener {
@@ -33,6 +34,7 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
 
     private FragmentBookingBinding binding;
     private BookingViewModel bookingViewModel;
+    private ViewModelFactory viewModelFactory;
     private ParkLetCalendarView calendarView;
     private Spinner spinner;
 
@@ -41,7 +43,9 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_booking, container, false);
-        bookingViewModel = new ViewModelProvider(this).get(BookingViewModel.class);
+        //TODO dagger dependency injection to sort this Repo mess?
+        viewModelFactory = new ViewModelFactory(new BookingRepo(), new VehicleRepo());
+        bookingViewModel = new ViewModelProvider(this, viewModelFactory).get(BookingViewModel.class);
         Property propertyToBook = BookingFragmentArgs.fromBundle(requireArguments()).getPropertyToBook();
 
         initBindings(propertyToBook);
