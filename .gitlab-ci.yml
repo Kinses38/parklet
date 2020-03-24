@@ -31,14 +31,17 @@ assembleDebug:
 lint:
   stage: lint
   script:
-    - sh src/script/run-gradle.sh -Pci --console=plain :app:lintDebug -PbuildDir=lint
+    - sh src/script/run-gradle.sh -Pc --console=plain :app:lintDebug -PbuildDir=lint
 
 debugTests:
   stage: debugTests
   script:
-    - sh src/script/run-gradle.sh -Pci --console=plain :app:testDebug
+    - sh src/script/run-gradle.sh -Pc --console=plain :app:testDebug
 
 unitTests:
   stage: unitTests
   script:
-    - sh src/script/run-gradle.sh test
+  - sh src/script/run-gradle.sh test
+  artifacts:
+    reports:
+      junit: src/app/build/test-results/**/TEST-*.xml
