@@ -55,22 +55,12 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
     }
 
     private void observeBookings() {
-        //Todo get all bookings for this property and populate calendar. Filter by date, or retired old dates on firebase side.
-        bookingViewModel.getBookingsForProperty(binding.getPropertyToBook().getPropertyUID()).observe(getViewLifecycleOwner(), bookings -> {
-            if (!bookings.isEmpty()) {
-                List<Calendar> bookingDates = new ArrayList<>();
-                for (Booking b : bookings) {
-                    for (Long timestamp : b.getBookingDates()) {
-                        Calendar c = Calendar.getInstance();
-                        c.setTimeInMillis(timestamp);
-                        bookingDates.add(c);
-                    }
-                }
+        bookingViewModel.getBookingsForProperty(binding.getPropertyToBook().getPropertyUID()).observe(getViewLifecycleOwner(), bookingDates -> {
+            if (!bookingDates.isEmpty()) {
                 calendarView.refreshCalendar(bookingDates);
-            } else {
+                } else {
                 calendarView.refreshCalendar();
-            }
-        });
+            }});
     }
 
     private void observeVehicles() {
