@@ -5,6 +5,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,47 +15,121 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.applandeo.materialcalendarview.CalendarView;
 import com.kinses38.parklet.R;
+import com.kinses38.parklet.data.model.entity.Booking;
 import com.kinses38.parklet.data.model.entity.Property;
+import com.kinses38.parklet.data.model.entity.Vehicle;
 import com.kinses38.parklet.databinding.FragmentBookingBinding;
+import com.kinses38.parklet.utilities.ParkLetCalendarView;
 import com.kinses38.parklet.viewmodels.BookingViewModel;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
-public class BookingFragment extends Fragment {
+public class BookingFragment extends Fragment implements View.OnClickListener {
 
     private final String TAG = this.getClass().getSimpleName();
 
     private FragmentBookingBinding binding;
     private BookingViewModel bookingViewModel;
-    private CalendarView calendarView;
+    private ParkLetCalendarView calendarView;
+    private Spinner spinner;
+
+    private String renterVehicleReg;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_booking, container, false);
         bookingViewModel = new ViewModelProvider(this).get(BookingViewModel.class);
-        initBindings();
-        initCalendar();
-        Property propertyToBook = BookingFragmentArgs.fromBundle(getArguments()).getPropertyToBook();
+        Property propertyToBook = BookingFragmentArgs.fromBundle(requireArguments()).getPropertyToBook();
+
+        initBindings(propertyToBook);
+        observeBookings();
+        observeVehicles();
+
+        calendarView.initCalendar(propertyToBook.getWeekendBookings());
         Log.i(TAG, propertyToBook.getAddressLine());
         return binding.getRoot();
 
     }
 
-    private void observeBookings(Property property) {
+    private void observeBookings() {
         //Todo get all bookings for this property and populate calendar. Filter by date, or retired old dates on firebase side.
+        bookingViewModel.getBookingsForProperty(binding.getPropertyToBook().getPropertyUID()).observe(getViewLifecycleOwner(), bookings -> {
+            if (!bookings.isEmpty()) {
+                List<Calendar> bookingDates = new ArrayList<>();
+                for (Booking b : bookings) {
+                    for (Long timestamp : b.getBookingDates()) {
+                        Calendar c = Calendar.getInstance();
+                        c.setTimeInMillis(timestamp);
+                        bookingDates.add(c);
+                    }
+                }
+                calendarView.refreshCalendar(bookingDates);
+            } else {
+                calendarView.refreshCalendar();
+            }
+        });
     }
 
-    private void initBindings() {
+    private void observeVehicles() {
+        bookingViewModel.getUserVehicles().observe(getViewLifecycleOwner(), vehicles -> {
+            if (!vehicles.isEmpty()) {
+                binding.setHasVehicle(true);
+                ArrayAdapter<Vehicle> adapter = new ArrayAdapter<>(requireActivity(), R.layout.support_simple_spinner_dropdown_item, vehicles);
+                adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                spinner.setAdapter(adapter);
+            } else {
+                binding.setHasVehicle(false);
+                //TODO show button to navigate to vehicle page instead
+            }
+        });
+    }
+
+    private void initBindings(Property property) {
+        binding.setBookingFrag(this);
         calendarView = binding.calendarView;
+        binding.setPropertyToBook(property);
+        spinner = binding.vehicleSpinner;
+        binding.setHasVehicle(false);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                renterVehicleReg = ((Vehicle) parent.getSelectedItem()).getReg();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //not needed.
+            }
+        });
     }
 
-    //Todo: placeholder, calendar have its own utility class?
-    private void initCalendar() {
-        Calendar minDate = Calendar.getInstance();
-        minDate.add(Calendar.DATE, -1);
-        calendarView.setMinimumDate(minDate);
-
+    private void submitBooking() {
+        Property propertyToBook = binding.getPropertyToBook();
+        List<Long> datesTimeStamp = calendarView.getAndConvertDates();
+        Log.i(TAG, "Dates gathered");
+        Booking booking = new Booking(propertyToBook.getOwnerUID(),
+                propertyToBook.getPropertyUID(),
+                renterVehicleReg,
+                propertyToBook.getDailyRate(),
+                propertyToBook.getDailyRate() * calendarView.getSelectedCount(),
+                datesTimeStamp);
+        bookingViewModel.createBooking(booking);
+        calendarView.clearSelectedDates();
     }
+
+    public void onClick(View v) {
+        Log.i("ID here: ", "" + v.getId());
+        switch (v.getId()) {
+            case R.id.confirm_booking_button:
+                Log.i(TAG, "Confirm booking button clicked");
+                submitBooking();
+                break;
+            default:
+                break;
+        }
+    }
+
 }

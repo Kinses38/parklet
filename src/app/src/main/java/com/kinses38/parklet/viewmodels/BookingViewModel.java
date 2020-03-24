@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.kinses38.parklet.data.model.entity.Booking;
+import com.kinses38.parklet.data.model.entity.Vehicle;
 import com.kinses38.parklet.data.repository.BookingRepo;
+import com.kinses38.parklet.data.repository.VehicleRepo;
 
 import java.util.List;
 
@@ -17,15 +19,17 @@ import java.util.List;
 public class BookingViewModel extends ViewModel {
 
     private LiveData<List<Booking>> propertyBookings;
+    private LiveData<List<Vehicle>> renterVehicles;
+
+    private VehicleRepo vehicleRepo = new VehicleRepo();
     private BookingRepo bookingRepo = new BookingRepo();
 
-    //Todo create booking object here?
     public void createBooking(Booking booking) {
         bookingRepo.create(booking);
     }
 
 
-    //Todo conversion of longs to dates here?
+    //Todo expose only dates taken here? Rather than full booking object
     public LiveData<List<Booking>> getBookingsForProperty(String propertyUID) {
         if (propertyBookings == null) {
             propertyBookings = new MutableLiveData<>();
@@ -35,4 +39,12 @@ public class BookingViewModel extends ViewModel {
         return propertyBookings;
     }
 
+    public LiveData<List<Vehicle>> getUserVehicles() {
+        if (renterVehicles == null) {
+            renterVehicles = new MutableLiveData<>();
+        }
+        renterVehicles = vehicleRepo.selectAll();
+
+        return renterVehicles;
+    }
 }
