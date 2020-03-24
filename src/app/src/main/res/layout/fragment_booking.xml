@@ -29,10 +29,9 @@
         <com.kinses38.parklet.utilities.ParkLetCalendarView
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:scrollbarStyle="outsideOverlay"
-            app:layout_constraintHeight_percent="0.65"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tsquare_orientation_horizontal="true" />

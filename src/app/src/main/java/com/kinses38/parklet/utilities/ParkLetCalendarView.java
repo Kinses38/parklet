@@ -49,13 +49,10 @@ public class ParkLetCalendarView extends CalendarPickerView {
                 .withDeactivateDates(disableWeekends);
     }
 
-    public void refreshCalendar(List<Calendar> calendar) {
+    public void refreshCalendar(List<Date> bookingDates) {
+        //Conversion and flattening logic moved to bookingViewModel.
         this.clearHighlightedDates();
-        ArrayList<Date> d = new ArrayList<>();
-        for (Calendar c : calendar) {
-            d.add(c.getTime());
-        }
-        this.highlightDates(d);
+        this.highlightDates(bookingDates);
     }
 
     //In the case that all bookings are cleared.
@@ -63,7 +60,6 @@ public class ParkLetCalendarView extends CalendarPickerView {
         this.clearHighlightedDates();
     }
 
-    //Todo be cleverer with date conversions. Also will timestamps containing hours mess with date comparison in firebase?
     public List<Long> getAndConvertDates() {
         List<Date> selectedDates = this.getSelectedDates();
         List<Long> datesTimeStamp = new ArrayList<>();
