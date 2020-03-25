@@ -33,12 +33,22 @@ public class BookingViewModel extends ViewModel {
     private VehicleRepo vehicleRepo;
     private BookingRepo bookingRepo;
 
+    private Booking booking;
+
     public BookingViewModel(BookingRepo bookingRepo, VehicleRepo vehicleRepo){
         this.bookingRepo = bookingRepo;
         this.vehicleRepo = vehicleRepo;
     }
     public void createBooking(Booking booking) {
         bookingRepo.create(booking);
+    }
+
+    public void setBookingDetails(Booking booking){
+        this.booking = booking;
+    }
+
+    public Booking getBooking(){
+        return this.booking;
     }
 
     public LiveData<List<Date>> getBookingsForProperty(String propertyUID) {
