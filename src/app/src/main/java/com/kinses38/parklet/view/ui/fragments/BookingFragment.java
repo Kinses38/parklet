@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.kinses38.parklet.R;
@@ -28,7 +29,7 @@ import com.kinses38.parklet.viewmodels.BookingViewModel;
 
 import java.util.List;
 
-public class BookingFragment extends Fragment implements View.OnClickListener {
+public class BookingFragment extends Fragment implements View.OnClickListener{
 
     private final String TAG = this.getClass().getSimpleName();
 
@@ -45,7 +46,7 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_booking, container, false);
         //TODO dagger dependency injection to sort this Repo mess?
         viewModelFactory = new ViewModelFactory(new BookingRepo(), new VehicleRepo());
-        bookingViewModel = new ViewModelProvider(this, viewModelFactory).get(BookingViewModel.class);
+        bookingViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(BookingViewModel.class);
         Property propertyToBook = BookingFragmentArgs.fromBundle(requireArguments()).getPropertyToBook();
 
         initBindings(propertyToBook);
@@ -101,6 +102,12 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
     }
 
     private void submitBooking() {
+        //Click place booking
+        //check all necessary things are present
+        //inform customer of state
+        // get confirmation from customer
+        //call VM save
+
         Property propertyToBook = binding.getPropertyToBook();
         List<Long> datesTimeStamp = calendarView.getAndConvertDates();
         Log.i(TAG, "Dates gathered");
@@ -110,8 +117,20 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
                 propertyToBook.getDailyRate(),
                 propertyToBook.getDailyRate() * calendarView.getSelectedCount(),
                 datesTimeStamp);
-        bookingViewModel.createBooking(booking);
-        calendarView.clearSelectedDates();
+
+        bookingViewModel.setBookingDetails(booking);
+        confirmationDialog();
+
+//        bookingViewModel.createBooking(booking);
+//        calendarView.clearSelectedDates();
+
+    }
+
+    //Using share ViewModel this time to deal with fragment to fragment communication
+    public void confirmationDialog(){
+        FragmentTransaction fragTrans = getChildFragmentManager().beginTransaction();
+        ConfirmationFragmentDialog dialog = ConfirmationFragmentDialog.newInstance();
+        dialog.show(fragTrans, dialog.getClass().getSimpleName());
     }
 
     public void onClick(View v) {
@@ -125,5 +144,4 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
                 break;
         }
     }
-
 }
