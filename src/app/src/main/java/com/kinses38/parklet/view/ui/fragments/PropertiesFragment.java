@@ -46,21 +46,20 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         propertiesBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_properties, container, false);
-        propertyViewModel = new ViewModelProvider(getActivity()).get(PropertyViewModel.class);
+        propertyViewModel = new ViewModelProvider(requireActivity()).get(PropertyViewModel.class);
         propertiesBinding.setLifecycleOwner(this);
 
         initRecyclerView();
         initBindings();
         initPropertyObserver();
-        //TODO tutorial text
-        textProperties.setText("This is the properties view");
+
         return propertiesBinding.getRoot();
     }
 
     private void initRecyclerView() {
         adapter = new UserPropertyAdapter(getActivity());
         recyclerView = propertiesBinding.getRoot().findViewById(R.id.property_recycler);
-        layoutManager = new LinearLayoutManager(getContext());
+        layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
     }
 

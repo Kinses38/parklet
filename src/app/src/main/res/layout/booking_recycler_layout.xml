@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="currentUser"
+            type="String" />
+
+        <variable
+            name="owner"
+            type="String" />
+
+        <variable
+            name="renter"
+            type="String" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            card_view:cardCornerRadius="4dp"
+            card_view:cardElevation="8dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <!--            Change icon to house if owner is owner, car if renter -->
+                <RelativeLayout
+                    android:id="@+id/booking_icon_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:paddingRight="18dp">
+
+                    <ImageView
+                        android:id="@+id/booking_house_svg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:contentDescription="@string/house_icon_svg"
+
+                        android:visibility="@{currentUser.equals(owner)? View.VISIBLE : View.GONE}"
+                        app:srcCompat="@drawable/ic_home_black_24dp"
+                        tools:ignore="RtlHardcoded,RtlSymmetry" />
+
+                    <ImageView
+                        android:id="@+id/booking_car_svg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:contentDescription="@string/vehicle_image"
+
+                        android:visibility="@{currentUser.equals(owner)? View.GONE : View.VISIBLE}"
+                        app:srcCompat="@drawable/ic_directions_car_black_24dp"
+                        tools:ignore="RtlHardcoded,RtlSymmetry" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/rv_house_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@id/booking_icon_container"
+                    android:layout_toRightOf="@id/booking_icon_container"
+                    android:paddingTop="8dp"
+                    android:text="@string/house_address"
+                    android:textStyle="bold"
+                    app:autoSizeMinTextSize="14sp"
+                    app:autoSizeTextType="uniform" />
+
+                <TextView
+                    android:id="@+id/rv_total_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/rv_house_address"
+                    android:layout_toRightOf="@id/booking_icon_container"
+                    android:text="@string/price_total"
+                    app:autoSizeMinTextSize="14sp"
+                    app:autoSizeTextType="uniform"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:id="@+id/rv_booking_dates"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rv_total_price"
+                    android:layout_toRightOf="@id/booking_icon_container"
+                    android:text="@string/days_booked"
+                    app:autoSizeMinTextSize="14sp"
+                    app:autoSizeTextType="uniform"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:id="@+id/rv_owner_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rv_booking_dates"
+                    android:layout_toRightOf="@id/booking_icon_container"
+                    android:text="@string/property_owner"
+                    android:visibility="@{currentUser.equals(owner)? View.GONE : View.VISIBLE}"
+                    app:autoSizeMinTextSize="14sp"
+                    app:autoSizeTextType="uniform"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:id="@+id/rv_renter_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rv_owner_name"
+                    android:layout_toRightOf="@id/booking_icon_container"
+                    android:text="@string/renter_name"
+                    android:visibility="@{currentUser.equals(renter)? View.GONE : View.VISIBLE}"
+                    app:autoSizeMinTextSize="14sp"
+                    app:autoSizeTextType="uniform"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:id="@+id/rv_booked_car"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rv_renter_name"
+                    android:layout_toRightOf="@id/booking_icon_container"
+                    android:text="@string/car_booked"
+                    app:autoSizeMinTextSize="14sp"
+                    app:autoSizeTextType="uniform"
+                    tools:ignore="RtlHardcoded" />
+
+
+                <!-- Remove button, bring up dialog to confirm, Trigger cancellation boolean fb side-->
+                <!-- If user.id not renter.id then set ownerCancelled-->
+                <ImageButton
+                    android:id="@+id/rv_cancel_booking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rv_booked_car"
+                    android:layout_alignParentRight="true"
+                    android:background="#0000"
+                    app:srcCompat="@drawable/booking_forward_arrow_36dp" />
+
+            </RelativeLayout>
+
+
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+</layout>

@@ -22,7 +22,7 @@
             android:padding="8dp">
 
             <ImageView
-                android:id="@+id/house_svg"
+                android:id="@+id/booking_house_svg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -37,8 +37,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_toEndOf="@id/house_svg"
-                android:layout_toRightOf="@id/house_svg"
+                android:layout_toEndOf="@id/booking_house_svg"
+                android:layout_toRightOf="@id/booking_house_svg"
                 android:paddingTop="8dp"
                 android:text="@string/house_address"
                 android:textStyle="bold"
@@ -46,33 +46,33 @@
                 app:autoSizeTextType="uniform" />
 
             <TextView
-                android:id="@+id/rv_daily_rate"
+                android:id="@+id/rv_total_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/rv_house_address"
-                android:layout_toRightOf="@id/house_svg"
+                android:layout_toRightOf="@id/booking_house_svg"
                 android:text="@string/daily_rate"
                 app:autoSizeMinTextSize="14sp"
                 app:autoSizeTextType="uniform"
                 tools:ignore="RtlHardcoded" />
 
             <TextView
-                android:id="@+id/rv_available_booking"
+                android:id="@+id/booking_dates"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/rv_daily_rate"
-                android:layout_toRightOf="@id/house_svg"
+                android:layout_below="@+id/rv_total_price"
+                android:layout_toRightOf="@id/booking_house_svg"
                 android:text="@string/available_to_book"
                 app:autoSizeMinTextSize="14sp"
                 app:autoSizeTextType="uniform"
                 tools:ignore="RtlHardcoded" />
 
             <TextView
-                android:id="@+id/rv_weekend_booking"
+                android:id="@+id/rv_owner_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/rv_available_booking"
-                android:layout_toRightOf="@id/house_svg"
+                android:layout_below="@+id/booking_dates"
+                android:layout_toRightOf="@id/booking_house_svg"
                 android:text="@string/available_weekends"
                 app:autoSizeMinTextSize="14sp"
                 app:autoSizeTextType="uniform"
@@ -82,7 +82,7 @@
                 android:id="@+id/rv_map_booking_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/rv_available_booking"
+                android:layout_below="@+id/booking_dates"
                 android:layout_alignParentRight="true"
                 android:background="#0000"
                 app:srcCompat="@drawable/booking_forward_arrow_36dp" />

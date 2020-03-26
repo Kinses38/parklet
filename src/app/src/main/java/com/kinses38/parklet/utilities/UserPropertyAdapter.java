@@ -34,9 +34,9 @@ public class UserPropertyAdapter extends RecyclerView.Adapter<UserPropertyAdapte
         UserPropertyViewHolder(@NonNull View userPropertyView){
             super(userPropertyView);
             rv_house_address = userPropertyView.findViewById(R.id.rv_house_address);
-            rv_daily_rate = userPropertyView.findViewById(R.id.rv_daily_rate);
-            rv_available_booking = userPropertyView.findViewById(R.id.rv_available_booking);
-            rv_weekend_booking = userPropertyView.findViewById(R.id.rv_weekend_booking);
+            rv_daily_rate = userPropertyView.findViewById(R.id.rv_total_price);
+            rv_available_booking = userPropertyView.findViewById(R.id.booking_dates);
+            rv_weekend_booking = userPropertyView.findViewById(R.id.rv_owner_name);
             rv_delete = userPropertyView.findViewById(R.id.rv_property_delete);
             rv_nfc_write = userPropertyView.findViewById(R.id.rv_nfc_write);
         }

@@ -21,8 +21,7 @@ import java.util.stream.Collectors;
 /**
  * Responsible for the publishing new bookings to the Booking repository and and fetching all
  * bookings relating to a homeowner/renter/property.
- * Shared with homepage so user can see upcoming bookings. Lifecycle is tied to main activity but
- * only when either home or booking fragment is active.
+ *
  **/
 
 public class BookingViewModel extends ViewModel {
@@ -56,8 +55,7 @@ public class BookingViewModel extends ViewModel {
             propertyBookings = new MutableLiveData<>();
         }
         propertyBookings = bookingRepo.selectAllForProperty(propertyUID);
-        LiveData<List<Date>> allDatesOfBookings = Transformations.map(propertyBookings,
-                this::convertAndFilter);
+        LiveData<List<Date>> allDatesOfBookings = Transformations.map(propertyBookings, bookings -> convertAndFilter(bookings));
 
         return allDatesOfBookings;
     }

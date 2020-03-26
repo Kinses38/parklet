@@ -43,6 +43,7 @@ public class PropertyRepo {
         DatabaseReference propertyRef = DB.child("properties/" + propertyKey);
         property.setPropertyUID(propertyKey);
         property.setOwnerUID(ADB.getCurrentUser().getUid());
+        property.setOwnerName(ADB.getCurrentUser().getDisplayName());
         propertyRef.setValue(property).addOnSuccessListener(aVoid -> {
             Log.i(TAG, "Property added");
         })

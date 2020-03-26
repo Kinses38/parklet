@@ -29,8 +29,8 @@
 
     <!--    Properties fragment start-->
     <string name="properties">My Properties</string>
-    <string name="your_address">Property address</string>
-    <string name="address_lookup_button">Look up address</string>
+    <string name="your_address">Property Address</string>
+    <string name="address_lookup_button">Look up propertyAddress</string>
     <string name="daily_rate">Daily Rate: €</string>
     <string name="addressEntry">Address:</string>
     <string name="add_property">Add a new property</string>
@@ -76,5 +76,14 @@
     <string name="confirm_booking">Confirm</string>
     <string name="cancel_booking">Cancel</string>
     <!--Booking fragment end-->
+
+    <!--    Home fragment start-->
+    <string name="days_booked">Days booked:</string>
+    <string name="property_owner">Owner:</string>
+    <string name="renter_name">Renter:</string>
+    <string name="car_booked">Car booked:</string>
+    <string name="vehicle_image">vehicle image</string>
+    <!--    Home fragment end-->
+
 
 </resources>

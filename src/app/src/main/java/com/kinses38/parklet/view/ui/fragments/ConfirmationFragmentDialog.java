@@ -80,6 +80,7 @@ public class ConfirmationFragmentDialog extends DialogFragment implements View.O
     }
 
     private String summariseDates(List<Long> dates) {
+        //TODO this format breaks dates
         SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM");
         String daysBooked = dates.stream()
                 .map(Date::new)
