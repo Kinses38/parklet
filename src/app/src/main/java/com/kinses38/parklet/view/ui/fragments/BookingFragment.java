@@ -112,7 +112,9 @@ public class BookingFragment extends Fragment implements View.OnClickListener{
         List<Long> datesTimeStamp = calendarView.getAndConvertDates();
         Log.i(TAG, "Dates gathered");
         Booking booking = new Booking(propertyToBook.getOwnerUID(),
+                propertyToBook.getOwnerName(),
                 propertyToBook.getPropertyUID(),
+                propertyToBook.getAddressLine(),
                 renterVehicleReg,
                 propertyToBook.getDailyRate(),
                 propertyToBook.getDailyRate() * calendarView.getSelectedCount(),

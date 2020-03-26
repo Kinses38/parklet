@@ -36,9 +36,9 @@ public class MapAdapter extends RecyclerView.Adapter<MapAdapter.MapViewHolder> {
         MapViewHolder(@NonNull View mapView){
             super(mapView);
             rv_house_address = mapView.findViewById(R.id.rv_house_address);
-            rv_daily_rate = mapView.findViewById(R.id.rv_daily_rate);
-            rv_available_booking = mapView.findViewById(R.id.rv_available_booking);
-            rv_weekend_booking = mapView.findViewById(R.id.rv_weekend_booking);
+            rv_daily_rate = mapView.findViewById(R.id.rv_total_price);
+            rv_available_booking = mapView.findViewById(R.id.booking_dates);
+            rv_weekend_booking = mapView.findViewById(R.id.rv_owner_name);
             rv_map_booking_button = mapView.findViewById(R.id.rv_map_booking_button);
         }
     }

@@ -12,40 +12,58 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.kinses38.parklet.R;
-import com.kinses38.parklet.databinding.FragmentHomeBinding;
-import com.kinses38.parklet.viewmodels.HomeViewModel;
 import com.kinses38.parklet.data.model.entity.User;
+import com.kinses38.parklet.data.repository.BookingRepo;
+import com.kinses38.parklet.data.repository.UserRepo;
+import com.kinses38.parklet.databinding.FragmentHomeBinding;
+import com.kinses38.parklet.utilities.HomeAdapter;
+import com.kinses38.parklet.utilities.ViewModelFactory;
+import com.kinses38.parklet.viewmodels.HomeViewModel;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
+    private final String TAG = this.getClass().getSimpleName();
     private TextView textView;
     private HomeViewModel homeViewModel;
-    private FragmentHomeBinding fragmentHomeBinding;
+    private FragmentHomeBinding binding;
+    private ViewModelFactory viewModelFactory;
 
+    private RecyclerView recyclerView;
+    private LinearLayoutManager layoutManager;
+    private HomeAdapter adapter;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        fragmentHomeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
-        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
+
+        viewModelFactory = new ViewModelFactory(new UserRepo(), new BookingRepo());
+        homeViewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
+                .get(HomeViewModel.class);
 
         Bundle bundle = this.getArguments();
-
-        //TODO button to create booking, block until user has a vehicle? Where to implement the check?
-
-        //TODO get all current bookings for user.
-        // Separate them into two different recyclerview? Or allow filter between property bookings and car bookings?
-
         initBindings();
+        initRecyclerView();
         initProfileView(bundle);
+        observerUsersBookings();
 
-        return fragmentHomeBinding.getRoot();
+        return binding.getRoot();
     }
 
     private void initBindings() {
-        textView = fragmentHomeBinding.textHome;
-        fragmentHomeBinding.setHomeFrag(this);
+        textView = binding.textHome;
+        binding.setHomeFrag(this);
+        binding.setHasBookings(false);
+    }
+
+    private void initRecyclerView() {
+        adapter = new HomeAdapter(getActivity());
+        recyclerView = binding.homeRecycler;
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
     }
 
     private void initProfileView(Bundle bundle) {
@@ -53,13 +71,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             User user = (User) bundle.getSerializable("User");
             String welcome = getString(R.string.user_welcome, user.getFirstName());
             if (user.checkIsNew()) {
-                //TODO tags
-                Log.i("HomeFragment", "New user profile: " + user.getName());
+                Log.i(TAG, "New user profile: " + user.getName());
                 textView.setText(welcome);
                 createNewUserProfile(user);
             } else {
                 textView.setText(welcome);
-                Log.i("Homefragment", "Old user profile:" + user.getName());
+                Log.i(TAG, "Old user profile:" + user.getName());
             }
         }
     }
@@ -68,12 +85,25 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         homeViewModel.createUserProfile(user);
     }
 
+    private void observerUsersBookings() {
+        homeViewModel.getUsersBookings().observe(getViewLifecycleOwner(), bookings -> {
+            if (bookings != null && !bookings.isEmpty()) {
+                Log.i(TAG, "Bookings found");
+                adapter.refreshList(bookings);
+                recyclerView.setAdapter(adapter);
+                binding.setHasBookings(true);
+            } else {
+                binding.setHasBookings(false);
+            }
+        });
+    }
+
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.create_booking_button:
-                Log.i("Home", "create booking button clicked");
-                //TODO do we need burger menu once we go to map view?
-                Navigation.findNavController(fragmentHomeBinding.getRoot()).navigate(R.id.action_nav_home_to_nav_map);
+                Log.i(TAG, "create booking button clicked");
+                Navigation.findNavController(binding.getRoot())
+                        .navigate(R.id.action_nav_home_to_nav_map);
                 break;
             default:
                 break;

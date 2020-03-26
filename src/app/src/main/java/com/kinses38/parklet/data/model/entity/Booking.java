@@ -1,10 +1,12 @@
 package com.kinses38.parklet.data.model.entity;
+
 import java.io.Serializable;
 import java.util.List;
 
 public class Booking implements Serializable {
 
     private String ownerUID, renterUID, propertyUID, renterVehicleReg;
+    private String propertyAddress, renterName, ownerName;
     private double priceAtTime, priceTotal;
     private boolean customerCancelled, ownerCancelled, bookingComplete;
     private List<Long> bookingDates;
@@ -13,10 +15,13 @@ public class Booking implements Serializable {
         //Firebase empty constructor required
     }
 
-    public Booking(String ownerUID, String propertyUID, String renterVehicleReg, double priceAtTime, double priceTotal,
+    public Booking(String ownerUID, String ownerName, String propertyUID, String propertyAddress,
+                   String renterVehicleReg, double priceAtTime, double priceTotal,
                    List<Long> bookingDates) {
         this.ownerUID = ownerUID;
+        this.ownerName = ownerName;
         this.propertyUID = propertyUID;
+        this.propertyAddress = propertyAddress;
         this.renterVehicleReg = renterVehicleReg;
         this.priceAtTime = priceAtTime;
         this.priceTotal = priceTotal;
@@ -101,5 +106,29 @@ public class Booking implements Serializable {
 
     public void setRenterVehicleReg(String renterVehicleReg) {
         this.renterVehicleReg = renterVehicleReg;
+    }
+
+    public String getPropertyAddress() {
+        return propertyAddress;
+    }
+
+    public void setPropertyAddress(String propertyAddress) {
+        this.propertyAddress = propertyAddress;
+    }
+
+    public String getRenterName() {
+        return renterName;
+    }
+
+    public void setRenterName(String renterName) {
+        this.renterName = renterName;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 }
