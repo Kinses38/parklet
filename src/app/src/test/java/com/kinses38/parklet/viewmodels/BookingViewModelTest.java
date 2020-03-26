@@ -42,9 +42,9 @@ public class BookingViewModelTest {
     @Before
     public void setup() {
         //Booking object one
-        long wed25March = 1585094400000L;
+        long Thurs26March2030 = 1900752610000L;
         List<Long> bookingDatesOne = new ArrayList<>();
-        bookingDatesOne.add(wed25March);
+        bookingDatesOne.add(Thurs26March2030);
         //Booking object two
         long sun22March = 1584896528000L;
         List<Long> bookingDatesTwo = new ArrayList<>();
@@ -74,7 +74,7 @@ public class BookingViewModelTest {
     public void filteredDateIsEqualTest() {
         //Correctly converts timestamp to date
         Date actual = bookingViewModel.convertAndFilter(allPropertyBookings).get(0);
-        Date expected = new Date(1585094400000L);
+        Date expected = new Date(1900752610000L);
 
         assertEquals("Correct Date conversion:", expected, actual);
     }
