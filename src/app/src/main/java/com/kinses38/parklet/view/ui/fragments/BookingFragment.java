@@ -29,25 +29,28 @@ import com.kinses38.parklet.viewmodels.BookingViewModel;
 
 import java.util.List;
 
-public class BookingFragment extends Fragment implements View.OnClickListener{
+public class BookingFragment extends Fragment implements View.OnClickListener {
 
     private final String TAG = this.getClass().getSimpleName();
 
     private FragmentBookingBinding binding;
     private BookingViewModel bookingViewModel;
-    private ViewModelFactory viewModelFactory;
     private ParkLetCalendarView calendarView;
     private Spinner spinner;
 
     private String renterVehicleReg;
 
 
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_booking, container, false);
         //TODO dagger dependency injection to sort this Repo mess?
-        viewModelFactory = new ViewModelFactory(new BookingRepo(), new VehicleRepo());
-        bookingViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(BookingViewModel.class);
-        Property propertyToBook = BookingFragmentArgs.fromBundle(requireArguments()).getPropertyToBook();
+        ViewModelFactory viewModelFactory = new ViewModelFactory(new BookingRepo(),
+                new VehicleRepo());
+        bookingViewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
+                .get(BookingViewModel.class);
+        Property propertyToBook = BookingFragmentArgs.fromBundle(requireArguments())
+                .getPropertyToBook();
 
         initBindings(propertyToBook);
         observeBookings();
@@ -60,19 +63,22 @@ public class BookingFragment extends Fragment implements View.OnClickListener{
     }
 
     private void observeBookings() {
-        bookingViewModel.getBookingsForProperty(binding.getPropertyToBook().getPropertyUID()).observe(getViewLifecycleOwner(), bookingDates -> {
-            if (!bookingDates.isEmpty()) {
-                calendarView.refreshCalendar(bookingDates);
-                } else {
-                calendarView.refreshCalendar();
-            }});
+        bookingViewModel.getBookingsForProperty(binding.getPropertyToBook().getPropertyUID())
+                .observe(getViewLifecycleOwner(), bookingDates -> {
+                    if (!bookingDates.isEmpty()) {
+                        calendarView.refreshCalendar(bookingDates);
+                    } else {
+                        calendarView.refreshCalendar();
+                    }
+                });
     }
 
     private void observeVehicles() {
         bookingViewModel.getUserVehicles().observe(getViewLifecycleOwner(), vehicles -> {
             if (!vehicles.isEmpty()) {
                 binding.setHasVehicle(true);
-                ArrayAdapter<Vehicle> adapter = new ArrayAdapter<>(requireActivity(), R.layout.support_simple_spinner_dropdown_item, vehicles);
+                ArrayAdapter<Vehicle> adapter = new ArrayAdapter<>(requireActivity(),
+                        R.layout.support_simple_spinner_dropdown_item, vehicles);
                 adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
                 spinner.setAdapter(adapter);
             } else {
@@ -102,16 +108,11 @@ public class BookingFragment extends Fragment implements View.OnClickListener{
     }
 
     private void submitBooking() {
-        //Click place booking
-        //check all necessary things are present
-        //inform customer of state
-        // get confirmation from customer
-        //call VM save
-
         Property propertyToBook = binding.getPropertyToBook();
         List<Long> datesTimeStamp = calendarView.getAndConvertDates();
         Log.i(TAG, "Dates gathered");
-        Booking booking = new Booking(propertyToBook.getOwnerUID(),
+        Booking booking = new Booking(
+                propertyToBook.getOwnerUID(),
                 propertyToBook.getOwnerName(),
                 propertyToBook.getPropertyUID(),
                 propertyToBook.getAddressLine(),
@@ -122,14 +123,12 @@ public class BookingFragment extends Fragment implements View.OnClickListener{
 
         bookingViewModel.setBookingDetails(booking);
         confirmationDialog();
-
-//        bookingViewModel.createBooking(booking);
-//        calendarView.clearSelectedDates();
+        calendarView.clearSelectedDates();
 
     }
 
     //Using share ViewModel this time to deal with fragment to fragment communication
-    public void confirmationDialog(){
+    public void confirmationDialog() {
         FragmentTransaction fragTrans = getChildFragmentManager().beginTransaction();
         ConfirmationFragmentDialog dialog = ConfirmationFragmentDialog.newInstance();
         dialog.show(fragTrans, dialog.getClass().getSimpleName());
