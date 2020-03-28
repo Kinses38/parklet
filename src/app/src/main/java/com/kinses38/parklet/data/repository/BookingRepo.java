@@ -31,7 +31,7 @@ public class BookingRepo {
         booking.setRenterName(ADB.getCurrentUser().getDisplayName());
 
         bookingRef.setValue(booking).addOnSuccessListener(aVoid -> Log.i(TAG, "Booking added"))
-                .addOnFailureListener(e -> Log.i(TAG, "Booking not added" + e.getMessage()));
+                .addOnFailureListener(e -> Log.i(TAG, "Booking not added" + e.getLocalizedMessage()));
     }
 
     public MutableLiveData<List<Booking>> selectAllForProperty(String propertyUID) {
@@ -45,6 +45,7 @@ public class BookingRepo {
                         List<Booking> bookings = new ArrayList<>();
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             Booking booking = ds.getValue(Booking.class);
+                            booking.setBookingUID(ds.getKey());
                             bookings.add(booking);
                         }
                         propertyBookingMutableLiveData.postValue(bookings);
@@ -70,6 +71,7 @@ public class BookingRepo {
                         List<Booking> userRentals = new ArrayList<>();
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             Booking booking = ds.getValue(Booking.class);
+                            booking.setBookingUID(ds.getKey());
                             userRentals.add(booking);
                         }
                         userRentalsMutableLiveData.postValue(userRentals);
@@ -96,6 +98,7 @@ public class BookingRepo {
                         List<Booking> propertiesBookings = new ArrayList<>();
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             Booking booking = ds.getValue(Booking.class);
+                            booking.setBookingUID(ds.getKey());
                             propertiesBookings.add(booking);
                         }
                         userPropertiesBookings.postValue(propertiesBookings);
@@ -108,6 +111,13 @@ public class BookingRepo {
                 });
 
         return userPropertiesBookings;
+    }
+
+    public void cancelBooking(Booking booking){
+        DatabaseReference allBookings = DB.child("bookings/");
+        allBookings.child(booking.getBookingUID()).setValue(booking)
+                .addOnSuccessListener(aVoid -> Log.i(TAG, "Booking cancelled"))
+                .addOnFailureListener(e -> Log.i(TAG, e.getLocalizedMessage()));
     }
 }
 

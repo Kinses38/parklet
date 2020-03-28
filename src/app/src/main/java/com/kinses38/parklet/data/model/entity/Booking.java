@@ -1,5 +1,7 @@
 package com.kinses38.parklet.data.model.entity;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -7,8 +9,10 @@ public class Booking implements Serializable {
 
     private String ownerUID, renterUID, propertyUID, renterVehicleReg;
     private String propertyAddress, renterName, ownerName;
+    @Exclude
+    private String bookingUID;
     private double priceAtTime, priceTotal;
-    private boolean customerCancelled, ownerCancelled, bookingComplete;
+    private boolean renterCancelled, ownerCancelled, bookingComplete;
     private List<Long> bookingDates;
 
     public Booking() {
@@ -68,12 +72,12 @@ public class Booking implements Serializable {
         this.priceTotal = priceTotal;
     }
 
-    public boolean isCustomerCancelled() {
-        return customerCancelled;
+    public boolean isRenterCancelled() {
+        return renterCancelled;
     }
 
-    public void setCustomerCancelled(boolean customerCancelled) {
-        this.customerCancelled = customerCancelled;
+    public void setRenterCancelled(boolean renterCancelled) {
+        this.renterCancelled = renterCancelled;
     }
 
     public boolean isOwnerCancelled() {
@@ -130,5 +134,13 @@ public class Booking implements Serializable {
 
     public void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
+    }
+
+    public String getBookingUID() {
+        return bookingUID;
+    }
+
+    public void setBookingUID(String bookingUID) {
+        this.bookingUID = bookingUID;
     }
 }

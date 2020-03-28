@@ -66,6 +66,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         recyclerView.setLayoutManager(layoutManager);
     }
 
+    //Todo refactor out to viewmodel
     private void initProfileView(Bundle bundle) {
         if (bundle != null) {
             User user = (User) bundle.getSerializable("User");

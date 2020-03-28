@@ -83,6 +83,10 @@
     <string name="renter_name">Renter:</string>
     <string name="car_booked">Car booked:</string>
     <string name="vehicle_image">vehicle image</string>
+    <string name="booking_status">Booking status:</string>
+    <string name="current_status_of_booking">Current status of booking</string>
+    <string name="status_cancelled_by_owner">Status: Cancelled by Owner</string>
+    <string name="status_cancelled_by_renter">Status: Cancelled by Renter</string>
     <!--    Home fragment end-->
 
 

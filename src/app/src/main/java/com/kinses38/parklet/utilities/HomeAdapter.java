@@ -2,7 +2,6 @@ package com.kinses38.parklet.utilities;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -37,8 +36,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         TextView rv_houseAddress, rv_total_price, rv_booking_dates, rv_owner_name, rv_renter_name
                 , rv_booked_car;
         ImageButton rv_cancel_booking;
-        private FirebaseAuth ADB = FirebaseAuth.getInstance();
-        private BookingRecyclerLayoutBinding binding;
+        FirebaseAuth ADB = FirebaseAuth.getInstance();
+        BookingRecyclerLayoutBinding binding;
 
         HomeViewHolder(BookingRecyclerLayoutBinding binding) {
             super(binding.getRoot());
@@ -56,9 +55,11 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
 
         //Need this to dynamically update bindings for each property
         public void bind(Booking booking) {
-
-            binding.setOwner(booking.getOwnerName());
-            binding.setRenter(booking.getRenterName());
+            binding.setBooking(booking);
+            if(booking.isOwnerCancelled() || booking.isRenterCancelled())
+            {
+                binding.setBookingCancelled(true);
+            }
             binding.executePendingBindings();
         }
     }
@@ -100,10 +101,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         viewHolder.rv_booked_car.setText(String
                 .format("%s %s", context.getText(R.string.car_booked), booking
                         .getRenterVehicleReg()));
-        viewHolder.rv_cancel_booking.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Todo viewmodel cancel booking. Logic for renter or owner cancellation
+        viewHolder.rv_cancel_booking.setOnClickListener(v -> {
+            switch (v.getId()){
+                case R.id.rv_cancel_booking:
+                    //Todo Dialog to confirm
+                    homeViewModel.cancelBooking(viewHolder.ADB.getCurrentUser().getUid(), booking);
+                    break;
+                default:
+                    break;
             }
         });
 
@@ -116,7 +121,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
     }
 
     private String formatDates(List<Long> dates) {
-        //Todo this format breaks dates
         SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM");
         String daysBooked = dates.stream().map(Date::new).map(format::format)
                 .collect(Collectors.joining(",\n"));
