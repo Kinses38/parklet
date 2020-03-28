@@ -9,17 +9,16 @@
         <import type="android.view.View" />
 
         <variable
+            name="booking"
+            type="com.kinses38.parklet.data.model.entity.Booking" />
+
+        <variable
             name="currentUser"
             type="String" />
 
         <variable
-            name="owner"
-            type="String" />
-
-        <variable
-            name="renter"
-            type="String" />
-
+            name="bookingCancelled"
+            type="Boolean" />
     </data>
 
     <LinearLayout
@@ -37,7 +36,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp">
+                android:padding="8dp"
+                android:paddingBottom="8dp">
 
                 <!--            Change icon to house if owner is owner, car if renter -->
                 <RelativeLayout
@@ -52,10 +52,8 @@
                         android:id="@+id/booking_house_svg"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:contentDescription="@string/house_icon_svg"
-
-                        android:visibility="@{currentUser.equals(owner)? View.VISIBLE : View.GONE}"
+                        android:visibility="@{currentUser.equals(booking.getOwnerName)? View.VISIBLE : View.GONE}"
                         app:srcCompat="@drawable/ic_home_black_24dp"
                         tools:ignore="RtlHardcoded,RtlSymmetry" />
 
@@ -63,10 +61,8 @@
                         android:id="@+id/booking_car_svg"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:contentDescription="@string/vehicle_image"
-
-                        android:visibility="@{currentUser.equals(owner)? View.GONE : View.VISIBLE}"
+                        android:visibility="@{currentUser.equals(booking.getOwnerName)? View.GONE : View.VISIBLE}"
                         app:srcCompat="@drawable/ic_directions_car_black_24dp"
                         tools:ignore="RtlHardcoded,RtlSymmetry" />
                 </RelativeLayout>
@@ -81,7 +77,7 @@
                     android:paddingTop="8dp"
                     android:text="@string/house_address"
                     android:textStyle="bold"
-                    app:autoSizeMinTextSize="14sp"
+                    app:autoSizeMinTextSize="@dimen/recycler_text_min_size"
                     app:autoSizeTextType="uniform" />
 
                 <TextView
@@ -91,7 +87,7 @@
                     android:layout_below="@id/rv_house_address"
                     android:layout_toRightOf="@id/booking_icon_container"
                     android:text="@string/price_total"
-                    app:autoSizeMinTextSize="14sp"
+                    app:autoSizeMinTextSize="@dimen/recycler_text_min_size"
                     app:autoSizeTextType="uniform"
                     tools:ignore="RtlHardcoded" />
 
@@ -102,7 +98,7 @@
                     android:layout_below="@+id/rv_total_price"
                     android:layout_toRightOf="@id/booking_icon_container"
                     android:text="@string/days_booked"
-                    app:autoSizeMinTextSize="14sp"
+                    app:autoSizeMinTextSize="@dimen/recycler_text_min_size"
                     app:autoSizeTextType="uniform"
                     tools:ignore="RtlHardcoded" />
 
@@ -113,8 +109,8 @@
                     android:layout_below="@+id/rv_booking_dates"
                     android:layout_toRightOf="@id/booking_icon_container"
                     android:text="@string/property_owner"
-                    android:visibility="@{currentUser.equals(owner)? View.GONE : View.VISIBLE}"
-                    app:autoSizeMinTextSize="14sp"
+                    android:visibility="@{currentUser.equals(booking.getOwnerName())? View.GONE : View.VISIBLE}"
+                    app:autoSizeMinTextSize="@dimen/recycler_text_min_size"
                     app:autoSizeTextType="uniform"
                     tools:ignore="RtlHardcoded" />
 
@@ -125,8 +121,8 @@
                     android:layout_below="@+id/rv_owner_name"
                     android:layout_toRightOf="@id/booking_icon_container"
                     android:text="@string/renter_name"
-                    android:visibility="@{currentUser.equals(renter)? View.GONE : View.VISIBLE}"
-                    app:autoSizeMinTextSize="14sp"
+                    android:visibility="@{currentUser.equals(booking.getRenterName)? View.GONE : View.VISIBLE}"
+                    app:autoSizeMinTextSize="@dimen/recycler_text_min_size"
                     app:autoSizeTextType="uniform"
                     tools:ignore="RtlHardcoded" />
 
@@ -137,13 +133,10 @@
                     android:layout_below="@+id/rv_renter_name"
                     android:layout_toRightOf="@id/booking_icon_container"
                     android:text="@string/car_booked"
-                    app:autoSizeMinTextSize="14sp"
+                    app:autoSizeMinTextSize="@dimen/recycler_text_min_size"
                     app:autoSizeTextType="uniform"
                     tools:ignore="RtlHardcoded" />
 
-
-                <!-- Remove button, bring up dialog to confirm, Trigger cancellation boolean fb side-->
-                <!-- If user.id not renter.id then set ownerCancelled-->
                 <ImageButton
                     android:id="@+id/rv_cancel_booking"
                     android:layout_width="wrap_content"
@@ -151,7 +144,40 @@
                     android:layout_below="@+id/rv_booked_car"
                     android:layout_alignParentRight="true"
                     android:background="#0000"
-                    app:srcCompat="@drawable/booking_forward_arrow_36dp" />
+                    android:enabled="@{bookingCancelled? false : true}"
+                    android:tint="@{bookingCancelled? @color/disabled_grey : @color/cancel_red}"
+                    app:srcCompat="@drawable/ic_cancel_red_36dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/rv_booked_car"
+                    android:layout_toRightOf="@id/booking_icon_container"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/rv_cust_cancellation_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription=""
+                        android:text="@string/status_cancelled_by_renter"
+                        android:visibility="@{booking.isRenterCancelled? View.VISIBLE : View.GONE}"
+                        app:autoSizeMinTextSize="@dimen/recycler_text_min_size"
+                        app:autoSizeTextType="uniform" />
+
+                    <TextView
+                        android:id="@+id/rv_owner_cancellation_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription=""
+                        android:text="@string/status_cancelled_by_owner"
+                        android:visibility="@{booking.isOwnerCancelled? View.VISIBLE : View.GONE}"
+                        app:autoSizeMinTextSize="@dimen/recycler_text_min_size"
+                        app:autoSizeTextType="uniform" />
+
+                </LinearLayout>
+                <!--                booking complete visible if true green text-->
+                <!--                checked-in visible if true -->
 
             </RelativeLayout>
 

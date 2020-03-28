@@ -63,4 +63,14 @@ public class HomeViewModel extends ViewModel {
 
         return combinedBookings;
     }
+
+    public void cancelBooking(String currentUserUID, Booking booking){
+        if(currentUserUID.equals(booking.getOwnerUID())){
+            booking.setOwnerCancelled(true);
+
+        }else if(currentUserUID.equals(booking.getRenterUID())){
+            booking.setRenterCancelled(true);
+        }
+        bookingRepo.cancelBooking(booking);
+    }
 }
