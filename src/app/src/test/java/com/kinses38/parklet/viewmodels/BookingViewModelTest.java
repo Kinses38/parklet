@@ -35,30 +35,46 @@ public class BookingViewModelTest {
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     BookingViewModel bookingViewModel = new BookingViewModel(bookingRepo, vehicleRepo);
-    static Booking bookingOne;
-    static Booking bookingTwo;
+    static Booking futureBooking;
+    static Booking pastBooking;
+    static Booking cancelledBookingOne;
+    static Booking cancelledBookingTwo;
     static List<Booking> allPropertyBookings;
+    static List<Booking> allCancelledBookings;
 
     @Before
     public void setup() {
         //Booking object one
         long Thurs26March2030 = 1900752610000L;
-        List<Long> bookingDatesOne = new ArrayList<>();
-        bookingDatesOne.add(Thurs26March2030);
+        List<Long> futureDate = new ArrayList<>();
+        futureDate.add(Thurs26March2030);
         //Booking object two
         long sun22March = 1584896528000L;
-        List<Long> bookingDatesTwo = new ArrayList<>();
-        bookingDatesTwo.add(sun22March);
+        List<Long> pastDate = new ArrayList<>();
+        pastDate.add(sun22March);
 
-
-        bookingOne = new Booking();
-        bookingOne.setBookingDates(bookingDatesOne);
-        bookingTwo = new Booking();
-        bookingTwo.setBookingDates(bookingDatesTwo);
+        futureBooking = new Booking();
+        futureBooking.setBookingDates(futureDate);
+        pastBooking = new Booking();
+        pastBooking.setBookingDates(pastDate);
 
         allPropertyBookings = new ArrayList<>();
-        allPropertyBookings.add(bookingOne);
-        allPropertyBookings.add(bookingTwo);
+        allPropertyBookings.add(futureBooking);
+        allPropertyBookings.add(pastBooking);
+
+        cancelledBookingOne = new Booking();
+        cancelledBookingOne.setBookingDates(futureDate);
+        cancelledBookingOne.setRenterCancelled(true);
+
+
+        cancelledBookingTwo = new Booking();
+        cancelledBookingTwo.setBookingDates(futureDate);
+        cancelledBookingTwo.setOwnerCancelled(true);
+
+
+        allCancelledBookings = new ArrayList<>();
+        allCancelledBookings.add(cancelledBookingOne);
+        allCancelledBookings.add(cancelledBookingTwo);
 
 
 //       bookingViewModel.getBookingsForProperty("test").observeForever(observer);
@@ -86,6 +102,13 @@ public class BookingViewModelTest {
         int expected = 1;
 
         assertEquals("Correct Length",expected, actual);
+    }
+
+    @Test
+    public void convertAndFilterRemoveCancelledTest(){
+        int actual = bookingViewModel.convertAndFilter(allCancelledBookings).size();
+        int expected = 0;
+        assertEquals("Cancelled Bookings removed", expected, actual);
     }
 
     //Todo

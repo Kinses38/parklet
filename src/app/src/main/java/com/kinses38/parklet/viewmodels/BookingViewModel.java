@@ -76,6 +76,8 @@ public class BookingViewModel extends ViewModel {
         //Get yesterdays date.
         yesterday.add(Calendar.DATE, oneDay);
         List<Date> allDates = bookings.stream()
+                .filter(booking -> !booking.isRenterCancelled())
+                .filter(booking -> !booking.isOwnerCancelled())
                 .map(Booking::getBookingDates)
                 .flatMap(Collection::stream)
                 .map(Date::new)
