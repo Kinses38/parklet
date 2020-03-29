@@ -128,6 +128,7 @@ public class PropertyRepo {
 
     public MutableLiveData<List<Property>> selectProperty(List<String> keys) {
         DatabaseReference ref = DB.child("properties/");
+        String currentUserUid = ADB.getCurrentUser().getUid();
         List<Property> properties = new ArrayList<>();
         MutableLiveData<List<Property>> propertiesInRange = new MutableLiveData<>();
         if(!keys.isEmpty()){
@@ -137,7 +138,10 @@ public class PropertyRepo {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             Property prop = ds.getValue(Property.class);
-                            properties.add(prop);
+                            if(!prop.getOwnerUID().equals(currentUserUid)){
+                                properties.add(prop);
+                            }
+
                         }
                         propertiesInRange.postValue(properties);
                     }

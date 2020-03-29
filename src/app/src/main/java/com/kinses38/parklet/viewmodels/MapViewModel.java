@@ -9,6 +9,7 @@ import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.data.repository.PropertyRepo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MapViewModel extends ViewModel {
 
@@ -19,11 +20,14 @@ public class MapViewModel extends ViewModel {
     }
 
     public LiveData<List<Property>> getPropertiesInRange(double lon, double lat, double range) {
-        MutableLiveData<List<String>> propertyKeysLiveData = propertyRepo.selectAllInRange(lon, lat, range);
+        MutableLiveData<List<String>> propertyKeysLiveData = propertyRepo
+                .selectAllInRange(lon, lat, range);
 
-        LiveData<List<Property>> propertiesInRangeLiveData =
-                Transformations.switchMap(propertyKeysLiveData, keys ->
-                        propertyRepo.selectProperty(keys));
+        LiveData<List<Property>> propertiesInRangeLiveData = Transformations
+                .switchMap(propertyKeysLiveData, keys -> propertyRepo.selectProperty(keys));
+
         return propertiesInRangeLiveData;
     }
+
+
 }

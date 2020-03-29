@@ -82,6 +82,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
                 adapter.refreshList(properties);
                 recyclerView.setAdapter(adapter);
             } else {
+                map.clear();
                 map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 mapBinding.setHasProperty(false);
             }
