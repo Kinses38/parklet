@@ -56,8 +56,8 @@ dependencies {
     implementation 'com.firebase:geofire-android:3.0.0'
 
     //Navbar
-    implementation 'androidx.navigation:navigation-fragment:2.2.0'
-    implementation 'androidx.navigation:navigation-ui:2.2.0'
+    implementation 'androidx.navigation:navigation-fragment:2.2.1'
+    implementation 'androidx.navigation:navigation-ui:2.2.1'
 
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
 
