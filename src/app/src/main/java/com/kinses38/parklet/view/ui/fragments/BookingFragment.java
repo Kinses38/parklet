@@ -8,13 +8,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Booking;
@@ -55,6 +58,7 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
         initBindings(propertyToBook);
         observeBookings();
         observeVehicles();
+        observeBookingStatus();
 
         calendarView.initCalendar(propertyToBook.getWeekendBookings());
         Log.i(TAG, propertyToBook.getAddressLine());
@@ -84,6 +88,16 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
             } else {
                 binding.setHasVehicle(false);
                 //TODO show button to navigate to vehicle page instead
+            }
+        });
+    }
+
+    private void observeBookingStatus(){
+        bookingViewModel.getBookingStatus().observe(getViewLifecycleOwner(), status -> {
+            if(status){
+                bookingViewModel.setBookingStatus(false);
+                Toast.makeText(getActivity(), "Booking successfully made", Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(binding.getRoot()).navigate(R.id.action_nav_booking_to_nav_home);
             }
         });
     }
@@ -141,6 +155,8 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
                 Log.i(TAG, "Confirm booking button clicked");
                 submitBooking();
                 break;
+            case R.id.booking_confirm_button:
+                Log.i(TAG, "Dialog button working");
             default:
                 break;
         }

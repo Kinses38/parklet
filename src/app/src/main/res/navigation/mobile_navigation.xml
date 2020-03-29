@@ -37,7 +37,7 @@
     <fragment
         android:id="@+id/nav_map"
         android:name="com.kinses38.parklet.view.ui.fragments.MapFragment"
-        android:label="Map search"
+        android:label="Search for a Driveway"
         tools:layout="@layout/fragment_map">
         <action
             android:id="@+id/action_nav_map_to_nav_booking"
@@ -53,6 +53,9 @@
         <argument
             android:name="propertyToBook"
             app:argType="com.kinses38.parklet.data.model.entity.Property" />
+        <action
+            android:id="@+id/action_nav_booking_to_nav_home"
+            app:destination="@id/nav_home" />
     </fragment>
 
 </navigation>

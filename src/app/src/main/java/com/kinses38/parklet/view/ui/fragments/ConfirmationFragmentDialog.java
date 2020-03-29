@@ -86,7 +86,7 @@ public class ConfirmationFragmentDialog extends DialogFragment implements View.O
         return daysBooked;
     }
 
-    public void bookingSummary(Booking booking) {
+    private void bookingSummary(Booking booking) {
         if (!errorState) {
             bookingSummaryText.setText("Confirm all booking details are correct?");
             bookingTotalDays.setText("Days Booked: \n" + summariseDates(booking.getBookingDates()));

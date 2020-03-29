@@ -28,6 +28,8 @@ public class BookingViewModel extends ViewModel {
 
     private LiveData<List<Booking>> propertyBookings;
     private LiveData<List<Vehicle>> renterVehicles;
+    private boolean status;
+    private MutableLiveData<Boolean> bookingConfirmedText = new MutableLiveData<>();
 
     private VehicleRepo vehicleRepo;
     private BookingRepo bookingRepo;
@@ -38,8 +40,22 @@ public class BookingViewModel extends ViewModel {
         this.bookingRepo = bookingRepo;
         this.vehicleRepo = vehicleRepo;
     }
+
     public void createBooking(Booking booking) {
+        //Todo set response in repo, return response code?
         bookingRepo.create(booking);
+        //Booking fragment observes
+        status = true;
+        bookingConfirmedText.setValue(status);
+    }
+
+    public LiveData<Boolean> getBookingStatus(){
+        return bookingConfirmedText;
+    }
+
+    public void setBookingStatus(boolean status){
+        this.status = status;
+        bookingConfirmedText.setValue(status);
     }
 
     public void setBookingDetails(Booking booking){
