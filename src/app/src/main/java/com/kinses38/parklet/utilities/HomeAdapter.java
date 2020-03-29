@@ -1,6 +1,8 @@
 package com.kinses38.parklet.utilities;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -33,9 +35,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
 
 
     static class HomeViewHolder extends RecyclerView.ViewHolder {
-        TextView rv_houseAddress, rv_total_price, rv_booking_dates, rv_owner_name, rv_renter_name
-                , rv_booked_car;
-        ImageButton rv_cancel_booking;
+        TextView rv_houseAddress, rv_total_price, rv_booking_dates, rv_owner_name, rv_renter_name,
+                rv_booked_car;
+        ImageButton rv_cancel_booking, rv_directions_button;
         FirebaseAuth ADB = FirebaseAuth.getInstance();
         BookingRecyclerLayoutBinding binding;
 
@@ -48,6 +50,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
             rv_owner_name = binding.rvOwnerName;
             rv_renter_name = binding.rvRenterName;
             rv_cancel_booking = binding.rvCancelBooking;
+            rv_directions_button = binding.rvDirectionsButton;
             rv_booked_car = binding.rvBookedCar;
             binding.setCurrentUser(ADB.getCurrentUser().getDisplayName());
             binding.executePendingBindings();
@@ -101,18 +104,19 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         viewHolder.rv_booked_car.setText(String
                 .format("%s %s", context.getText(R.string.car_booked), booking
                         .getRenterVehicleReg()));
-        viewHolder.rv_cancel_booking.setOnClickListener(v -> {
-            switch (v.getId()){
-                case R.id.rv_cancel_booking:
-                    //Todo Dialog to confirm
-                    homeViewModel.cancelBooking(viewHolder.ADB.getCurrentUser().getUid(), booking);
-                    break;
-                default:
-                    break;
-            }
-        });
+        viewHolder.rv_cancel_booking.setOnClickListener(v ->
+                homeViewModel.cancelBooking(viewHolder.ADB.getCurrentUser().getUid(), booking));
 
+        viewHolder.rv_directions_button.setOnClickListener(v ->
+                showDirections(booking.getPropertyAddress()));
+    }
 
+    //https://developers.google.com/maps/documentation/urls/android-intents
+    private void showDirections(@NonNull String address){
+        Uri addressUri = Uri.parse("geo:0,0?q=" + Uri.encode(address));
+        Intent gmapsIntent = new Intent(Intent.ACTION_VIEW, addressUri);
+        gmapsIntent.setPackage("com.google.android.apps.maps");
+        context.startActivity(gmapsIntent);
     }
 
     public void refreshList(List<Booking> newBookings) {

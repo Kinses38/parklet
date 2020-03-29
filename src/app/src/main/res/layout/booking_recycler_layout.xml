@@ -138,6 +138,18 @@
                     tools:ignore="RtlHardcoded" />
 
                 <ImageButton
+                    android:visibility="@{currentUser.equals(booking.getOwnerName())? View.GONE : View.VISIBLE}"
+                    android:id="@+id/rv_directions_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/directions_to_property"
+                    android:layout_below="@id/rv_booked_car"
+                    android:layout_toLeftOf="@id/rv_cancel_booking"
+                    android:paddingHorizontal="8dp"
+                    android:background="#0000"
+                    app:srcCompat="@drawable/ic_map_green_36dp"/>
+
+                <ImageButton
                     android:id="@+id/rv_cancel_booking"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
