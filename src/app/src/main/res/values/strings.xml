@@ -88,6 +88,11 @@
     <string name="status_cancelled_by_owner">Status: Cancelled by Owner</string>
     <string name="status_cancelled_by_renter">Status: Cancelled by Renter</string>
     <string name="directions_to_property">Directions to property</string>
+    <string name="wrote_tag">Successfully wrote tag for:</string>
+    <string name="hold_tag">Hold the tag to your phone!</string>
+    <string name="nfc_write_failed">Write Failed!</string>
+    <string name="empty_property_tag">Property Tag is empty!</string>
+    <string name="checkin_in_progress">Checking you in now!</string>
     <!--    Home fragment end-->
 
 

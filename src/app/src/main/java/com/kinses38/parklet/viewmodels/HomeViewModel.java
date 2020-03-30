@@ -11,6 +11,8 @@ import com.kinses38.parklet.data.repository.UserRepo;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,5 +74,15 @@ public class HomeViewModel extends ViewModel {
             booking.setRenterCancelled(true);
         }
         bookingRepo.cancelBooking(booking);
+    }
+
+    public LiveData<String> updateCheckInStatus(String propertyUID){
+        //get current date and concatenate with todays date to check firebase for booking
+        long timestamp = LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        String bookingQuery = propertyUID + timestamp;
+        LiveData<String> checkInStatus = bookingRepo.updateCheckInStatus(bookingQuery);
+        return checkInStatus;
+        //return status to person
     }
 }
