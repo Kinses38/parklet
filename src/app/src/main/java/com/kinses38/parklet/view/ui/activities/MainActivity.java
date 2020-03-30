@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -87,11 +88,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         // https://developer.android.com/reference/androidx/fragment/app/DialogFragment
         FragmentTransaction fragTrans = getSupportFragmentManager().beginTransaction();
         Fragment previous = getSupportFragmentManager().findFragmentByTag("NfcWriteDialogFragment");
-        if(previous != null){
-            nfcWriteDialogFragment.dismiss();
+        if(previous != null && previous.isAdded()){
             fragTrans.remove(previous);
         }
-        fragTrans.addToBackStack(null);
+
         nfcWriteDialogFragment = NfcWriteDialogFragment.newInstance();
         nfcWriteDialogFragment.show(fragTrans, "NfcWriteDialogFragment");
     }
@@ -232,9 +232,15 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         Log.i("NFCTEST", "DIALOGDISPLAY");
     }
 
+    /**
+     * Setting propertyToWrite to null prevents the dialog from being re-shown incorrectly after it was dismissed
+     * ie: On screen orientation change. The propertyViewModel retains the property on the activity being destroyed
+     * and will emit it through livedata as a new event even if the user is no longer writing the tag.
+     */
     @Override
     public void onDialogDismissed(){
         writeMode = false;
+        propertyViewModel.setPropertyToWrite(null);
         Log.i("NFCTEST", "WRITEMODE" + writeMode);
         Log.i("NFCTEST", "DIALOGDISMISSED");
     }
