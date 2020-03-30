@@ -11,17 +11,15 @@ import java.nio.charset.Charset;
 
 public class NfcUtil {
 
-
     public static boolean writeNfc(Ndef ndef, String propertyUid) {
         boolean successState = false;
         if (ndef != null) {
             try {
-                NdefMessage tag = new NdefMessage(
-                        new NdefRecord[]{
-                                NdefRecord.createMime("text/plain",
-                                        propertyUid.getBytes(Charset.forName("US-ASCII"))),
-                                //Only launches app, doesnt launch activity.
-                                NdefRecord.createApplicationRecord("com.kinses38.parklet")});
+                NdefMessage tag =
+                        new NdefMessage(new NdefRecord[] {NdefRecord.createMime("text" + "/plain",
+                                propertyUid.getBytes(Charset.forName("US-ASCII"))),
+                        //Only launches app, doesn't launch NFC read intent.
+                        NdefRecord.createApplicationRecord("com.kinses38.parklet")});
                 ndef.connect();
                 ndef.writeNdefMessage(tag);
                 ndef.close();
@@ -38,7 +36,15 @@ public class NfcUtil {
     }
 
     public static String readNfc(Ndef ndef) {
-        //TODO
+        if(ndef != null){
+            NdefMessage message = ndef.getCachedNdefMessage();
+            if(message.getRecords().length != 0){
+                NdefRecord addressRecord = message.getRecords()[0];
+                String propertyAddress = new String(addressRecord.getPayload());
+                Log.i("NFCTEST", propertyAddress);
+                return propertyAddress;
+            }
+        }
         return null;
     }
 }

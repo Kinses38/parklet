@@ -12,7 +12,7 @@ public class Booking implements Serializable {
     @Exclude
     private String bookingUID;
     private double priceAtTime, priceTotal;
-    private boolean renterCancelled, ownerCancelled, bookingComplete;
+    private boolean renterCancelled, ownerCancelled, bookingComplete, renterAtProperty;
     private List<Long> bookingDates;
 
     public Booking() {
@@ -142,5 +142,13 @@ public class Booking implements Serializable {
 
     public void setBookingUID(String bookingUID) {
         this.bookingUID = bookingUID;
+    }
+
+    public boolean isRenterAtProperty() {
+        return renterAtProperty;
+    }
+
+    public void setRenterAtProperty(boolean renterAtProperty) {
+        this.renterAtProperty = renterAtProperty;
     }
 }
