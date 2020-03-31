@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -28,9 +27,13 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.data.model.entity.User;
@@ -42,6 +45,7 @@ import com.kinses38.parklet.viewmodels.PropertyViewModel;
 public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener,
         DialogListener {
 
+    private final String TAG = this.getClass().getSimpleName();
     private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
 
@@ -64,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         initDrawer();
         initObserver();
         initNfc();
-
 
         initGoogleSignInClient();
     }
@@ -143,7 +146,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
 
         Bundle bundle = new Bundle();
-
         bundle.putSerializable("User", getUserFromIntent());
         navController.setGraph(R.navigation.mobile_navigation, bundle);
 
@@ -245,8 +247,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     public void onDialogDisplayed() {
         if (nfcWriteDialogFragment != null && nfcWriteDialogFragment.isAdded()) {
             writeMode = true;
-            Log.i("NFCTEST", "WRITEMODE" + writeMode);
-            Log.i("NFCTEST", "DIALOGDISPLAY");
+            Log.i(TAG, "WRITEMODE" + writeMode);
+            Log.i(TAG, "DIALOGDISPLAY");
         }
     }
 
@@ -260,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     public void onDialogDismissed() {
         writeMode = false;
         propertyViewModel.setPropertyToWrite(null);
-        Log.i("NFCTEST", "WRITEMODE" + writeMode);
-        Log.i("NFCTEST", "DIALOGDISMISSED");
+        Log.i(TAG, "WRITEMODE" + writeMode);
+        Log.i(TAG, "DIALOGDISMISSED");
     }
 }

@@ -15,12 +15,17 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.User;
 import com.kinses38.parklet.data.repository.BookingRepo;
 import com.kinses38.parklet.data.repository.UserRepo;
 import com.kinses38.parklet.databinding.FragmentHomeBinding;
 import com.kinses38.parklet.utilities.HomeAdapter;
+import com.kinses38.parklet.utilities.ParkLetFirebaseMessagingService;
 import com.kinses38.parklet.utilities.ViewModelFactory;
 import com.kinses38.parklet.viewmodels.HomeViewModel;
 
@@ -31,18 +36,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
     private ViewModelFactory viewModelFactory;
-
+    private ParkLetFirebaseMessagingService messagingService;
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private HomeAdapter adapter;
 
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
-
         viewModelFactory = new ViewModelFactory(new UserRepo(), new BookingRepo());
-        homeViewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
-                .get(HomeViewModel.class);
+        homeViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(HomeViewModel.class);
 
         Bundle bundle = this.getArguments();
         initBindings();
@@ -79,12 +81,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 textView.setText(welcome);
                 Log.i(TAG, "Old user profile:" + user.getName());
             }
+            getCurrentFcmToken(user);
         }
     }
 
     private void createNewUserProfile(User user) {
         homeViewModel.createUserProfile(user);
     }
+
+    //https://firebase.google.com/docs/cloud-messaging/android/client#retrieve-the-current-registration-token
+    private void getCurrentFcmToken(User user) {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+            String fcmToken = task.getResult().getToken();
+            user.setFcmToken(fcmToken);
+            homeViewModel.updateUserFcmToken(user);
+        });
+    }
+
 
     private void observerUsersBookings() {
         homeViewModel.getUsersBookings().observe(getViewLifecycleOwner(), bookings -> {

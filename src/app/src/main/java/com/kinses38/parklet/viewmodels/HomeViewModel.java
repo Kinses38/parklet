@@ -32,6 +32,9 @@ public class HomeViewModel extends ViewModel {
         userRepo.setNewUser(user);
     }
 
+    public void updateUserFcmToken(User user){
+        userRepo.updateUserFcmToken(user);
+    }
 
     public LiveData<List<Booking>> getUsersBookings() {
         if (allBookings == null) {
