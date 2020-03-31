@@ -24,6 +24,13 @@
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexWarning">
 
+        <service android:name=".utilities.ParkLetFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
 
         <activity android:name=".view.ui.activities.LandingActivity">
             <intent-filter>

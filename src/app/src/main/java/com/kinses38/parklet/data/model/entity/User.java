@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class User implements Serializable {
 
-    private String uid, name, email;
+    private String uid, name, email, fcmToken;
 
     @Exclude
     private boolean isNew, isCreated, isAuthenticated;
@@ -37,6 +37,7 @@ public class User implements Serializable {
         this.name = name;
     }
 
+    @Exclude
     public String getFirstName(){
         if(name.contains(" ")){
             return name.split(" ")[0];
@@ -75,5 +76,13 @@ public class User implements Serializable {
 
     public void setAuthenticated(boolean authenticated) {
         isAuthenticated = authenticated;
+    }
+
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 }
