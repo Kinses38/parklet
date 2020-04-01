@@ -68,20 +68,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         recyclerView.setLayoutManager(layoutManager);
     }
 
-    //Todo refactor out to viewmodel
+
     private void initProfileView(Bundle bundle) {
         if (bundle != null) {
             User user = (User) bundle.getSerializable("User");
-            String welcome = getString(R.string.user_welcome, user.getFirstName());
-            if (user.checkIsNew()) {
-                Log.i(TAG, "New user profile: " + user.getName());
-                textView.setText(welcome);
-                createNewUserProfile(user);
-            } else {
-                textView.setText(welcome);
-                Log.i(TAG, "Old user profile:" + user.getName());
+            if(user != null){
+                String welcome = getString(R.string.user_welcome, user.getFirstName());
+                if (user.checkIsNew()) {
+                    Log.i(TAG, "New user profile: " + user.getName());
+                    textView.setText(welcome);
+                    createNewUserProfile(user);
+                } else {
+                    textView.setText(welcome);
+                    Log.i(TAG, "Old user profile:" + user.getName());
+                }
+                getCurrentFcmToken(user);
             }
-            getCurrentFcmToken(user);
         }
     }
 
