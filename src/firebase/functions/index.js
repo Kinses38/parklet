@@ -68,7 +68,6 @@ exports.checkInStatusChanged = functions.region("europe-west2").database.ref('bo
             console.log("OwnerUID: ", ownerUID);
             console.log("Owner FCM: ", ownerToken);
 
-
             let payloadTitle;
             let payloadBody;
             /*
@@ -84,7 +83,6 @@ exports.checkInStatusChanged = functions.region("europe-west2").database.ref('bo
                 payloadBody = `${booking.renterName} just checked into ${booking.propertyAddress.split(",", 1)} at ${convertedTime}. \nVehicle reg is ${booking.renterVehicleReg}!`;
             }
 
-
             try {
                 const message = {
                     notification: {
@@ -98,5 +96,73 @@ exports.checkInStatusChanged = functions.region("europe-west2").database.ref('bo
             }
         } catch (e) {
             console.log(e);
+        }
+    });
+
+exports.ownerBookingCancellation = functions.region("europe-west2").database.ref('bookings/{bookingID}/ownerCancelled')
+    .onUpdate(async (change, context) => {
+        const newVal = change.after.val();
+        const bookingID = context.params.bookingID;
+
+        let booking = (await admin.database().ref(`bookings/${bookingID}`).once('value')).val();
+        let renterUID = booking.renterUID;
+
+        let renterToken = (await admin.database().ref(`users/${renterUID}/fcmToken`).once('value')).val();
+
+        let timestamps = booking.bookingDates;
+        let dates = Array.from(timestamps, date => dateFormat(new Date(date), "ddd d mmm"))
+        console.log("Converted dates: ", dates);
+
+        let payloadBody;
+        if (newVal === true) {
+            payloadBody = `Hi ${booking.renterName.split(" ", 1)}, unfortunately your booking for `
+            + `${booking.propertyAddress.split(",", 1)} on:\n${dates.join(',\n')}`
+            + `\nwas cancelled by the owner. Your refund is on the way. Please have a look for alternative driveways!`;
+
+            try {
+                const message = {
+                    notification: {
+                        title: "Booking cancellation",
+                        body: payloadBody
+                    }
+                };
+                const result = await admin.messaging().sendToDevice(renterToken, message);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    });
+
+exports.renterBookingCancellation = functions.region("europe-west2").database.ref('bookings/{bookingID}/renterCancelled')
+    .onUpdate( async (change, context) => {
+        const newVal = change.after.val();
+        const bookingID = context.params.bookingID;
+
+        let booking = (await admin.database().ref(`bookings/${bookingID}`).once('value')).val();
+        let ownerUID = booking.ownerUID;
+
+        let ownerToken = (await admin.database().ref(`users/${ownerUID}/fcmToken`).once('value')).val();
+
+        let timestamps = booking.bookingDates;
+        let dates = Array.from(timestamps, date => dateFormat(new Date(date), "ddd d mmm"))
+        console.log("Converted dates: ", dates);
+
+        let payloadBody;
+        if (newVal === true) {
+            payloadBody = `Hi ${booking.ownerName.split(" ", 1)}, unfortunately your booking for `
+                + `${booking.propertyAddress.split(",", 1)} on:\n${dates.join(',\n')}`
+                + `\nwas cancelled by the renter. Your property is now re-listed as available for these days`;
+
+            try {
+                const message = {
+                    notification: {
+                        title: "Booking cancellation",
+                        body: payloadBody
+                    }
+                };
+                const result = await admin.messaging().sendToDevice(ownerToken, message);
+            } catch (e) {
+                console.log(e);
+            }
         }
     });
