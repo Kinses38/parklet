@@ -80,7 +80,8 @@ public class ParkLetFirebaseMessagingService extends FirebaseMessagingService {
                 .setSmallIcon(R.drawable.ic_stat_parklet_fcm_logo)
                 .setColor(getResources().getColor(R.color.colorPrimary))
                 .setContentTitle(remoteMessage.getNotification().getTitle())
-                .setContentText(remoteMessage.getNotification().getBody()).setAutoCancel(unimportant)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(remoteMessage.getNotification().getBody()))
+                .setAutoCancel(unimportant)
                 .setContentIntent(pendingIntent).setOngoing(!unimportant);
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
