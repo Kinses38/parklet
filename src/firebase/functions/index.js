@@ -1,7 +1,6 @@
 'use strict';
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const dateFormat = require('dateformat');
 const moment = require('moment-timezone');
 admin.initializeApp();
 
@@ -9,6 +8,7 @@ admin.initializeApp();
 
 /**
  * Notifies home owner of new booking being placed at their property
+ * @type {CloudFunction<DataSnapshot>}
  */
 exports.newBookingNotification = functions.region('europe-west2').database.ref('bookings/{bookingID}')
     .onCreate(async (snapshot, context) => {
@@ -21,7 +21,11 @@ exports.newBookingNotification = functions.region('europe-west2').database.ref('
             console.log("Owner :", ownerToken);
 
             let timestamps = booking.bookingDates;
-            let dates = Array.from(timestamps, date => dateFormat(new Date(date), "ddd d mmm"))
+            let dates = Array.from(timestamps, date => {
+                let currentMoment = moment(date);
+                return currentMoment.tz('Europe/Dublin').format("ddd Do MMM");
+            });
+
             console.log("Converted dates: ", dates);
 
             try {
@@ -41,16 +45,16 @@ exports.newBookingNotification = functions.region('europe-west2').database.ref('
         }
     });
 
+/**
+ * Notifies owner of renters arrival or departure from their property with timestamp
+ * @type {CloudFunction<Change<DataSnapshot>>}
+ */
 exports.checkInStatusChanged = functions.region("europe-west2").database.ref('bookings/{bookingID}/renterAtProperty')
     .onUpdate(async (change, context) => {
         try {
             const oldVal = change.before.val();
             const newVal = change.after.val();
             const bookingID = context.params.bookingID;
-            /*
-               https://stackoverflow.com/questions/9529368/how-do-i-set-my-default-timezone-to-ireland-dublin-in-javascript
-               Hard to get time for dst
-            */
 
             const today = new Date();
             let momentTime = moment(today);
@@ -99,6 +103,10 @@ exports.checkInStatusChanged = functions.region("europe-west2").database.ref('bo
         }
     });
 
+/**
+ * Notifies renter of owner cancelling their booking.
+ * @type {CloudFunction<Change<DataSnapshot>>}
+ */
 exports.ownerBookingCancellation = functions.region("europe-west2").database.ref('bookings/{bookingID}/ownerCancelled')
     .onUpdate(async (change, context) => {
         const newVal = change.after.val();
@@ -110,14 +118,16 @@ exports.ownerBookingCancellation = functions.region("europe-west2").database.ref
         let renterToken = (await admin.database().ref(`users/${renterUID}/fcmToken`).once('value')).val();
 
         let timestamps = booking.bookingDates;
-        let dates = Array.from(timestamps, date => dateFormat(new Date(date), "ddd d mmm"))
-        console.log("Converted dates: ", dates);
+        let dates = Array.from(timestamps, date => {
+            let currentMoment = moment(date);
+            return currentMoment.tz('Europe/Dublin').format("ddd Do MMM");
+        });
 
         let payloadBody;
         if (newVal === true) {
             payloadBody = `Hi ${booking.renterName.split(" ", 1)}, unfortunately your booking for `
-            + `${booking.propertyAddress.split(",", 1)} on:\n${dates.join(',\n')}`
-            + `\nwas cancelled by the owner. Your refund is on the way. Please have a look for alternative driveways!`;
+                + `${booking.propertyAddress.split(",", 1)} on:\n${dates.join(',\n')}`
+                + `\nwas cancelled by the owner. Your refund is on the way. Please have a look for alternative driveways!`;
 
             try {
                 const message = {
@@ -133,8 +143,12 @@ exports.ownerBookingCancellation = functions.region("europe-west2").database.ref
         }
     });
 
+/**
+ * Notifies owner that a renter has cancelled their booking.
+ * @type {CloudFunction<Change<DataSnapshot>>}
+ */
 exports.renterBookingCancellation = functions.region("europe-west2").database.ref('bookings/{bookingID}/renterCancelled')
-    .onUpdate( async (change, context) => {
+    .onUpdate(async (change, context) => {
         const newVal = change.after.val();
         const bookingID = context.params.bookingID;
 
@@ -144,8 +158,10 @@ exports.renterBookingCancellation = functions.region("europe-west2").database.re
         let ownerToken = (await admin.database().ref(`users/${ownerUID}/fcmToken`).once('value')).val();
 
         let timestamps = booking.bookingDates;
-        let dates = Array.from(timestamps, date => dateFormat(new Date(date), "ddd d mmm"))
-        console.log("Converted dates: ", dates);
+        let dates = Array.from(timestamps, date => {
+            let currentMoment = moment(date);
+            return currentMoment.tz('Europe/Dublin').format("ddd Do MMM");
+        });
 
         let payloadBody;
         if (newVal === true) {
