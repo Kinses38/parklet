@@ -27,7 +27,6 @@ exports.newBookingNotification = functions.region('europe-west2').database.ref('
             });
 
             console.log("Converted dates: ", dates);
-
             try {
                 const message = {
                     notification: {
@@ -180,5 +179,79 @@ exports.renterBookingCancellation = functions.region("europe-west2").database.re
             } catch (e) {
                 console.log(e);
             }
+        }
+    });
+
+
+/**
+ * When a user adds a new property this function is called to aggregate the prices in their area for the average.
+ * By using the geohash of a property, we can truncate it from 10 characters to 5 giving a geographical grid of 4.9km squared.
+ * We can then use these shortened geohashes as buckets to contain aggregated data for an properties falling into that area.
+ * Calculating a running average price so it is available for when a renter queries for property.
+ *
+ * @type {CloudFunction<Change<DataSnapshot>>}
+ */
+exports.aggregatePropertyPrices = functions.region("europe-west2").database.ref('propertyLocations/{propertyKey}')
+    .onWrite(async (change, context) => {
+        //returns only the new property
+        const newState = change.after.val();
+        const propertyUID = context.params.propertyKey;
+        console.log("state", newState);
+        console.log("Property", propertyUID);
+
+        //If property was added
+        if (newState !== null) {
+            const geohash = newState.g;
+            //get geohash, reduce to 5 points for 4.9km x 4.9km (Some precision bits are square others are rectangles with a greater height)
+            const geoBucket = geohash.substring(0, 5);
+            //get property price to store in bucket as when the user deletes the property we wont be able to retrieve it to update average.
+            let propertyPrice = (await admin.database().ref(`properties/${propertyUID}/dailyRate`).once('value')).val();
+            console.log("Property Price:", propertyPrice);
+
+            //Create or update bucket using transaction to ensure atomic transaction.
+            console.log("Geohash before: ", geohash + " after: " + geoBucket);
+            await admin.database().ref(`geoPriceBucket/${geoBucket}`).transaction((currentBucket) => {
+                if (currentBucket === null) {
+                    console.log("Bucket doesnt exist, creating");
+                    return {
+                        average: propertyPrice,
+                        count: 1,
+                        [propertyUID]: propertyPrice
+                    };
+                } else {
+                    // running average
+                    currentBucket.average = (currentBucket.count * currentBucket.average + propertyPrice) / (currentBucket.count + 1);
+                    currentBucket.count = (currentBucket.count + 1);
+                    currentBucket[propertyUID] = propertyPrice;
+                    console.log("Bucket updated", currentBucket);
+                    return currentBucket;
+                }
+            })
+        } else {
+            // The property was just deleted
+            const oldState = change.before.val();
+            console.log("Deleted: ", oldState);
+            const geohash = oldState.g;
+            const geoBucket = geohash.substring(0, 5);
+            console.log("Geohash before: ", geohash + " after: " + geoBucket);
+            await admin.database().ref(`geoPriceBucket/${geoBucket}`).transaction((currentBucket) => {
+                if (currentBucket === null) {
+                    //edge case for currentBucket returning null. It will reattempt.
+                    return null;
+                } else {
+                    if (currentBucket.count > 1) {
+                        //propertyUID acts as a key to the given properties price within the bucket.
+                        currentBucket.average = (currentBucket.count * currentBucket.average - currentBucket[propertyUID]) / (currentBucket.count - 1);
+                        currentBucket.count = (currentBucket.count - 1);
+                        currentBucket[propertyUID] = null;
+                        console.log("Bucket updated", currentBucket);
+                        return currentBucket;
+                    } else {
+                        //last property in a bucket so set to null and firebase will prune.
+                        console.log("Last property, deleting bucket", currentBucket);
+                        return currentBucket = {};
+                    }
+                }
+            })
         }
     });
