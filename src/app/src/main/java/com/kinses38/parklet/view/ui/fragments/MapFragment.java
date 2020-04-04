@@ -1,5 +1,6 @@
 package com.kinses38.parklet.view.ui.fragments;
 
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -75,8 +76,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
     }
 
     private void searchPropertiesInRange(LatLng latLng, Double range) {
-        mapViewModel.getPropertiesInRange(latLng.longitude, latLng.latitude, range).observe(getViewLifecycleOwner(), properties -> {
-            if (!properties.isEmpty()) {
+        mapViewModel.queryPropertiesInRange(latLng.longitude, latLng.latitude, range).observe(getViewLifecycleOwner(), properties -> {
+            if (properties != null && !properties.isEmpty()) {
                 updateMap(properties, latLng);
                 mapBinding.setHasProperty(true);
                 adapter.refreshList(properties);
@@ -173,12 +174,31 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
             propertyMarkers.add(new MarkerOptions()
                     .position(property.getLatLng())
                     .title(String.format("%s, %s", brokenAddress[0], brokenAddress[1]))
-                    .snippet(String.format(Locale.getDefault(), "%s %.2f", getString(R.string.daily_rate), property.getDailyRate()))
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                    .snippet(formatPriceSnippet(property.getAverageComparison()))
+                    .icon(BitmapDescriptorFactory.defaultMarker(formatPriceColor(property.getAverageComparison())))
                     .draggable(false)
                     .visible(false));
         }
         return propertyMarkers;
+    }
+
+    private Float formatPriceColor(Double percentPriceComparison){
+        if(percentPriceComparison <= -5){
+            return BitmapDescriptorFactory.HUE_RED;
+        }else if(percentPriceComparison > 5){
+            return BitmapDescriptorFactory.HUE_GREEN;
+        }
+        return BitmapDescriptorFactory.HUE_ORANGE;
+
+    }
+
+    private String formatPriceSnippet(Double percentPriceComparison){
+       if(percentPriceComparison < 0){
+           return String.format("More expensive than average by %.0f%%", Math.abs(percentPriceComparison));
+       }else if(percentPriceComparison > 0){
+           return String.format("Cheaper than average by %.0f%%", Math.abs(percentPriceComparison));
+       }
+        return String.format("Priced on average");
     }
 
     @Override

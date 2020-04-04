@@ -9,6 +9,7 @@ import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
+import com.firebase.geofire.core.GeoHash;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -108,7 +109,7 @@ public class PropertyRepo {
 
             @Override
             public void onKeyMoved(String key, GeoLocation location) {
-              //Unused
+                //Unused
             }
 
             @Override
@@ -131,14 +132,14 @@ public class PropertyRepo {
         String currentUserUid = ADB.getCurrentUser().getUid();
         List<Property> properties = new ArrayList<>();
         MutableLiveData<List<Property>> propertiesInRange = new MutableLiveData<>();
-        if(!keys.isEmpty()){
+        if (!keys.isEmpty()) {
             for (String key : keys) {
                 ref.orderByChild("propertyUID").equalTo(key).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             Property prop = ds.getValue(Property.class);
-                            if(!prop.getOwnerUID().equals(currentUserUid)){
+                            if (!prop.getOwnerUID().equals(currentUserUid)) {
                                 properties.add(prop);
                             }
 
@@ -152,10 +153,9 @@ public class PropertyRepo {
                     }
                 });
             }
-        }else {
+        } else {
             propertiesInRange.postValue(properties);
         }
-
         return propertiesInRange;
     }
 
@@ -163,7 +163,6 @@ public class PropertyRepo {
         Map<String, Object> requestMap = new HashMap<>();
         requestMap.put("properties/" + property.getPropertyUID(), null);
         requestMap.put("propertyLocations/" + property.getPropertyUID(), null);
-
         DB.updateChildren(requestMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -175,5 +174,29 @@ public class PropertyRepo {
             }
         });
 
+    }
+
+    public MutableLiveData<Double> getAverage(double lon, double lat) {
+        /*
+            if range above 5km, trim to 4 positions and get larger area summary. Can create buckets of size 4 and 5 in cloud and aggregate them as well.
+         */
+        MutableLiveData<Double> averagePrice = new MutableLiveData<>(0.0);
+        GeoHash geoHash = new GeoHash(lat, lon, 5);
+        DB.child("geoPriceBucket").child(geoHash.getGeoHashString()).child("average").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    double average = (double) dataSnapshot.getValue();
+                    averagePrice.postValue(average);
+                    Log.i(TAG, "retrieved average:" + average);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.i(TAG, "Error fetching average: " + databaseError.getMessage());
+            }
+        });
+        return averagePrice;
     }
 }
