@@ -11,8 +11,10 @@ public class Property implements Serializable {
     private Double dailyRate, propertyRating = 0.0;
     private Boolean takingBookings = true, weekendBookings = true;
     private Double longitude, latitude;
+    @Exclude
+    private Double averageComparison = 0.0;
 
-    public Property(){
+    public Property() {
         //for firebase
     }
 
@@ -81,7 +83,7 @@ public class Property implements Serializable {
         this.weekendBookings = weekendBookings;
     }
 
-    public void parseWeekend(String availableWeekend){
+    public void parseWeekend(String availableWeekend) {
         this.weekendBookings = availableWeekend.toLowerCase().equals("yes");
     }
 
@@ -102,7 +104,7 @@ public class Property implements Serializable {
     }
 
     @Exclude
-    public LatLng getLatLng(){
+    public LatLng getLatLng() {
         return new LatLng(this.getLatitude(), this.getLongitude());
     }
 
@@ -121,4 +123,20 @@ public class Property implements Serializable {
     public void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
     }
+
+    @Exclude
+    public void setAverageComparison(Double areaAverage) {
+        if (areaAverage != 0) {
+            double percentage = (areaAverage - this.dailyRate) / areaAverage * 100;
+            averageComparison = percentage;
+        } else {
+            averageComparison = 0.0;
+        }
+    }
+
+    @Exclude
+    public double getAverageComparison() {
+        return this.averageComparison;
+    }
 }
+
