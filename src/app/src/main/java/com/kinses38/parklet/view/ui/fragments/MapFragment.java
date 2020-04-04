@@ -1,6 +1,5 @@
 package com.kinses38.parklet.view.ui.fragments;
 
-import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -58,7 +57,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mapBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false);
-        mapViewModel = new ViewModelProvider(getActivity()).get(MapViewModel.class);
+        mapViewModel = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
         mapBinding.setLifecycleOwner(this);
         initBindings();
         initRecyclerView();
@@ -95,8 +94,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         recyclerView = mapBinding.mapPropertyRecycler;
         SnapHelper helper = new LinearSnapHelper();
         helper.attachToRecyclerView(recyclerView);
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        smoothScroller = new LinearSmoothScroller(getContext()) {
+        layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        smoothScroller = new LinearSmoothScroller(requireContext()) {
             @Override
             protected int getVerticalSnapPreference() {
                 return LinearSmoothScroller.SNAP_TO_START;
@@ -182,10 +181,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         return propertyMarkers;
     }
 
+    //todo constants
     private Float formatPriceColor(Double percentPriceComparison){
-        if(percentPriceComparison <= -5){
+        if(percentPriceComparison <= -10){
             return BitmapDescriptorFactory.HUE_RED;
-        }else if(percentPriceComparison > 5){
+        }else if(percentPriceComparison > 10){
             return BitmapDescriptorFactory.HUE_GREEN;
         }
         return BitmapDescriptorFactory.HUE_ORANGE;

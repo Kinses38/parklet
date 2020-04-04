@@ -18,8 +18,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.kinses38.parklet.R;
-import com.kinses38.parklet.viewmodels.AuthViewModel;
 import com.kinses38.parklet.data.model.entity.User;
+import com.kinses38.parklet.viewmodels.AuthViewModel;
 
 /**
  * AuthActivity class responsible for presenting unauthorised users with sign-in options for

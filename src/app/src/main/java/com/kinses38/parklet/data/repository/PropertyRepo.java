@@ -186,7 +186,7 @@ public class PropertyRepo {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    double average = (double) dataSnapshot.getValue();
+                    double average = dataSnapshot.getValue(Double.class);
                     averagePrice.postValue(average);
                     Log.i(TAG, "retrieved average:" + average);
                 }

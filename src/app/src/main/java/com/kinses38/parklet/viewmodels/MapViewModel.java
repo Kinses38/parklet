@@ -14,8 +14,8 @@ import java.util.List;
 public class MapViewModel extends ViewModel {
 
     private PropertyRepo propertyRepo = new PropertyRepo();
-    LiveData<Double> averagePrice;
-    double currentAverage;
+    private LiveData<Double> averagePrice;
+
 
     public MapViewModel() {
 
@@ -28,8 +28,10 @@ public class MapViewModel extends ViewModel {
         LiveData<List<Property>> propertiesInRangeLiveData = getPropertiesInRange(propertyKeysLiveData);
 
         MediatorLiveData<List<Property>> combinedResult = new MediatorLiveData();
-        combinedResult.addSource(averagePrice, price -> currentAverage = price);
-        combinedResult.addSource(propertiesInRangeLiveData, properties -> combinedResult.postValue(updateProperties(propertiesInRangeLiveData, currentAverage)));
+        combinedResult.addSource(averagePrice, price
+                -> combinedResult.setValue(updateProperties(propertiesInRangeLiveData, averagePrice.getValue())));
+        combinedResult.addSource(propertiesInRangeLiveData, properties
+                -> combinedResult.postValue(updateProperties(propertiesInRangeLiveData, averagePrice.getValue())));
         return combinedResult;
     }
 
