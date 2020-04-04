@@ -33,10 +33,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
     public ViewModelFactory(UserRepo userRepo, BookingRepo bookingRepo) {
         this.userRepo = userRepo;
-        this.vehicleRepo = vehicleRepo;
         this.bookingRepo = bookingRepo;
-        this.propertyRepo = propertyRepo;
-
     }
 
 
