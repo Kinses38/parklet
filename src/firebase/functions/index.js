@@ -195,63 +195,88 @@ exports.aggregatePropertyPrices = functions.region("europe-west2").database.ref(
     .onWrite(async (change, context) => {
         //returns only the new property
         const newState = change.after.val();
+        const oldState = change.before.val();
         const propertyUID = context.params.propertyKey;
         console.log("state", newState);
         console.log("Property", propertyUID);
 
         //If property was added
         if (newState !== null) {
-            const geohash = newState.g;
+            const geoHash = newState.g;
             //get geohash, reduce to 5 points for 4.9km x 4.9km (Some precision bits are square others are rectangles with a greater height)
-            const geoBucket = geohash.substring(0, 5);
+            const geoBucket = geoHash.substring(0, 6);
             //get property price to store in bucket as when the user deletes the property we wont be able to retrieve it to update average.
             let propertyPrice = (await admin.database().ref(`properties/${propertyUID}/dailyRate`).once('value')).val();
             console.log("Property Price:", propertyPrice);
 
+
             //Create or update bucket using transaction to ensure atomic transaction.
-            console.log("Geohash before: ", geohash + " after: " + geoBucket);
-            await admin.database().ref(`geoPriceBucket/${geoBucket}`).transaction((currentBucket) => {
-                if (currentBucket === null) {
-                    console.log("Bucket doesnt exist, creating");
-                    return {
-                        average: propertyPrice,
-                        count: 1,
-                        [propertyUID]: propertyPrice
-                    };
-                } else {
-                    // running average
-                    currentBucket.average = (currentBucket.count * currentBucket.average + propertyPrice) / (currentBucket.count + 1);
-                    currentBucket.count = (currentBucket.count + 1);
-                    currentBucket[propertyUID] = propertyPrice;
-                    console.log("Bucket updated", currentBucket);
-                    return currentBucket;
-                }
-            })
-        } else {
+            console.log("Geohash before: ", geoHash + " after: " + geoBucket);
+            //recursive func here
+            await recursiveAddToBucket(propertyUID, propertyPrice, geoBucket);
+
+            //end
+        } else if (oldState !== null) {
             // The property was just deleted
-            const oldState = change.before.val();
             console.log("Deleted: ", oldState);
-            const geohash = oldState.g;
-            const geoBucket = geohash.substring(0, 5);
-            console.log("Geohash before: ", geohash + " after: " + geoBucket);
-            await admin.database().ref(`geoPriceBucket/${geoBucket}`).transaction((currentBucket) => {
-                if (currentBucket === null) {
-                    //edge case for currentBucket returning null. It will reattempt.
-                    return null;
-                } else {
-                    if (currentBucket.count > 1) {
-                        //propertyUID acts as a key to the given properties price within the bucket.
-                        currentBucket.average = (currentBucket.count * currentBucket.average - currentBucket[propertyUID]) / (currentBucket.count - 1);
-                        currentBucket.count = (currentBucket.count - 1);
-                        currentBucket[propertyUID] = null;
-                        console.log("Bucket updated", currentBucket);
-                        return currentBucket;
-                    } else {
-                        //last property in a bucket so set to null and firebase will prune.
-                        console.log("Last property, deleting bucket", currentBucket);
-                        return currentBucket = {};
-                    }
-                }
-            })
+            const geoHash = oldState.g;
+            const geoBucket = geoHash.substring(0, 6);
+            console.log("Geohash before: ", geoHash + " after: " + geoBucket);
+            await recursiveRemoveFromBucket(propertyUID, geoBucket)
         }
     });
+
+
+async function recursiveAddToBucket(propertyUID, propertyPrice, geoBucket) {
+    if (geoBucket.length > 3) {
+        await admin.database().ref(`geoPriceBucket/${geoBucket}`).transaction((currentBucket) => {
+            if (currentBucket === null) {
+                console.log("Bucket doesnt exist, creating");
+                return {
+                    average: propertyPrice,
+                    count: 1,
+                    [propertyUID]: propertyPrice
+                };
+            } else {
+                // running average
+                currentBucket.average = (currentBucket.count * currentBucket.average + propertyPrice) / (currentBucket.count + 1);
+                currentBucket.count = (currentBucket.count + 1);
+                currentBucket[propertyUID] = propertyPrice;
+                console.log("Bucket updated", geoBucket + ': ' + currentBucket);
+                return currentBucket;
+            }
+        });
+        return recursiveAddToBucket(propertyUID, propertyPrice, geoBucket.substring(0, geoBucket.length - 1));
+    } else {
+        return 0;
+    }
+
+}
+
+async function recursiveRemoveFromBucket(propertyUID, geoBucket) {
+    if (geoBucket.length > 3) {
+        await admin.database().ref(`geoPriceBucket/${geoBucket}`).transaction((currentBucket) => {
+            if (currentBucket === null) {
+                //edge case for currentBucket returning null. It will reattempt.
+                return null;
+            } else {
+                if (currentBucket.count > 1) {
+                    //propertyUID acts as a key to the given properties price within the bucket.
+                    currentBucket.average = (currentBucket.count * currentBucket.average - currentBucket[propertyUID]) / (currentBucket.count - 1);
+                    currentBucket.count = (currentBucket.count - 1);
+                    currentBucket[propertyUID] = null;
+                    console.log("Bucket updated", geoBucket + ': ' + currentBucket);
+                    return currentBucket;
+                } else {
+                    //last property in a bucket so set to null and firebase will prune.
+                    console.log("Last property, deleting bucket", geoBucket + ': ' + currentBucket);
+                    return currentBucket = {};
+                }
+            }
+        });
+        return recursiveRemoveFromBucket(propertyUID, geoBucket.substring(0, geoBucket.length - 1));
+    } else {
+        return 0;
+    }
+
+}
