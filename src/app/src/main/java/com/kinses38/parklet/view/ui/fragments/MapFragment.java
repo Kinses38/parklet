@@ -13,7 +13,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
@@ -21,12 +20,14 @@ import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Property;
@@ -73,7 +74,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         //Todo ensure that each query uses the same observer and that multiple are not being instantiated
         mapViewModel.queryPropertiesInRange(latLng.longitude, latLng.latitude, range).observe(getViewLifecycleOwner(), properties -> {
             if (properties != null && !properties.isEmpty()) {
-                updateMap(properties, latLng);
+                updateMap(properties);
                 mapBinding.setHasProperty(true);
                 adapter.refreshList(properties);
                 recyclerView.setAdapter(adapter);
@@ -147,25 +148,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         map.setOnMarkerClickListener(marker -> {
             smoothScroller.setTargetPosition(adapter.findItem(marker.getPosition()));
             layoutManager.startSmoothScroll(smoothScroller);
-            // Return false to enable standard Marker behaviour for infotags
+            // Need to return false here otherwise info tag on markers do not display
             return false;
         });
-
-        //TODO fix permissions issue;
-//        map.setMyLocationEnabled(true);
-        // The map should default to their position showing properties nearby? Or is that too intensive to start off?
+        //TODO should load properties in users area automatically?
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(53.463314, -6.231833), 10));
     }
 
-    private void updateMap(List<Property> properties, LatLng latLng) {
+    private void updateMap(List<Property> properties) {
         //clear all currently existing markers
         map.clear();
         List<MarkerOptions> markers = createMarkers(properties);
-        map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+
+        //https://developers.google.com/android/reference/com/google/android/gms/maps/model/LatLngBounds.Builder
+        LatLngBounds.Builder boundBuilder = new LatLngBounds.Builder();
         for (MarkerOptions marker : markers) {
+            boundBuilder.include(marker.getPosition());
             map.addMarker(marker.visible(true));
-            //TODO get upper bounds for camera here. Bounds object;
         }
+        LatLngBounds bounds = boundBuilder.build();
+        //TODO magic number
+        CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 400);
+        map.animateCamera(update);
+
     }
 
     private List<MarkerOptions> createMarkers(List<Property> properties) {
@@ -184,23 +189,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
     }
 
     //todo constants
-    private Float formatPriceColor(Double percentPriceComparison){
-        if(percentPriceComparison <= -10){
+    private Float formatPriceColor(Double percentPriceComparison) {
+        if (percentPriceComparison <= -10) {
+            //More expensive by 10%
             return BitmapDescriptorFactory.HUE_RED;
-        }else if(percentPriceComparison > 10){
+        } else if (percentPriceComparison > 10) {
+            //Cheaper by more than 10%
             return BitmapDescriptorFactory.HUE_GREEN;
         }
         return BitmapDescriptorFactory.HUE_ORANGE;
 
     }
 
-    private String formatPriceSnippet(Double percentPriceComparison){
-       if(percentPriceComparison < 0){
-           return String.format("More expensive than average by %.0f%%", Math.abs(percentPriceComparison));
-       }else if(percentPriceComparison > 0){
-           return String.format("Cheaper than average by %.0f%%", Math.abs(percentPriceComparison));
-       }
-        return String.format("Priced on average");
+    private String formatPriceSnippet(Double percentPriceComparison) {
+        if (percentPriceComparison < 0) {
+            return String.format(getString(R.string.average_expensive), Math.abs(percentPriceComparison));
+        } else if (percentPriceComparison > 0) {
+            return String.format(getString(R.string.expensive_cheaper), Math.abs(percentPriceComparison));
+        }
+        return "Priced on average";
     }
 
     @Override

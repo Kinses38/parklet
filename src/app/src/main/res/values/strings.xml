@@ -94,6 +94,8 @@
     <string name="nfc_write_failed">Write Failed!</string>
     <string name="empty_property_tag">Property Tag is empty!</string>
     <string name="checkin_in_progress">Checking you in now!</string>
+    <string name="average_expensive">More expensive than average by %.0f%%</string>
+    <string name="expensive_cheaper">Cheaper than average by %.0f%%</string>
     <!--    Home fragment end-->
 
 
