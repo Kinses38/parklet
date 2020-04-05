@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
@@ -62,12 +63,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         initBindings();
         initRecyclerView();
 
-        /*
-          Map tutorial
-          https://developers.google.com/maps/documentation/android-sdk/map-with-marker
-          https://stackoverflow.com/questions/16536414/how-to-use-mapview-in-android-using-google-map-v2
-         */
-
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
         getGeo();
@@ -75,12 +70,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
     }
 
     private void searchPropertiesInRange(LatLng latLng, Double range) {
+        //Todo ensure that each query uses the same observer and that multiple are not being instantiated
         mapViewModel.queryPropertiesInRange(latLng.longitude, latLng.latitude, range).observe(getViewLifecycleOwner(), properties -> {
             if (properties != null && !properties.isEmpty()) {
                 updateMap(properties, latLng);
                 mapBinding.setHasProperty(true);
                 adapter.refreshList(properties);
                 recyclerView.setAdapter(adapter);
+
             } else {
                 map.clear();
                 map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -136,6 +133,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
     }
 
 
+    /*
+          Map tutorial
+          https://developers.google.com/maps/documentation/android-sdk/map-with-marker
+          https://stackoverflow.com/questions/16536414/how-to-use-mapview-in-android-using-google-map-v2
+         */
     // required to notify above callback mapView is ready.
     @Override
     public void onMapReady(GoogleMap googleMap) {

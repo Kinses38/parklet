@@ -176,17 +176,15 @@ public class PropertyRepo {
 
     }
 
-    public MutableLiveData<Double> getAverage(double lon, double lat) {
-        /*
-            if range above 5km, trim to 4 positions and get larger area summary. Can create buckets of size 4 and 5 in cloud and aggregate them as well.
-         */
+    public MutableLiveData<Double> getAverage(double lon, double lat, int precision) {
         MutableLiveData<Double> averagePrice = new MutableLiveData<>(0.0);
-        GeoHash geoHash = new GeoHash(lat, lon, 5);
+        GeoHash geoHash = new GeoHash(lat, lon, precision);
         DB.child("geoPriceBucket").child(geoHash.getGeoHashString()).child("average").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    double average = dataSnapshot.getValue(Double.class);
+                    //Null exception is protected by snapshot.exists() IDE error
+                    @SuppressWarnings("ConstantConditions") double average = dataSnapshot.getValue(Double.class);
                     averagePrice.postValue(average);
                     Log.i(TAG, "retrieved average:" + average);
                 }

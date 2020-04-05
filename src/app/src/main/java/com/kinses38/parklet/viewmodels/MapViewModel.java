@@ -14,7 +14,7 @@ import java.util.List;
 public class MapViewModel extends ViewModel {
 
     private PropertyRepo propertyRepo = new PropertyRepo();
-    private LiveData<Double> averagePrice;
+    private MutableLiveData<Double> averagePrice = new MutableLiveData<>(0.0);
 
 
     public MapViewModel() {
@@ -24,7 +24,7 @@ public class MapViewModel extends ViewModel {
     public LiveData<List<Property>> queryPropertiesInRange(double lon, double lat, double range) {
         MutableLiveData<List<String>> propertyKeysLiveData = propertyRepo
                 .selectAllInRange(lon, lat, range);
-        getPricingForArea(lon, lat);
+        averagePrice = getPricingForArea(lon, lat, range);
         LiveData<List<Property>> propertiesInRangeLiveData = getPropertiesInRange(propertyKeysLiveData);
 
         MediatorLiveData<List<Property>> combinedResult = new MediatorLiveData();
@@ -41,8 +41,15 @@ public class MapViewModel extends ViewModel {
         return propertiesInRange;
     }
 
-    private void getPricingForArea(double lon, double lat) {
-        averagePrice = propertyRepo.getAverage(lon, lat);
+    private MutableLiveData<Double> getPricingForArea(double lon, double lat, double range) {
+        //TODO constants
+        if(range <= 2){
+            return propertyRepo.getAverage(lon, lat, 6);
+        }else if (range > 2 && range < 4){
+            return  propertyRepo.getAverage(lon, lat, 5);
+        }else {
+            return propertyRepo.getAverage(lon, lat, 4);
+        }
     }
 
     private List<Property> updateProperties(LiveData<List<Property>> propertiesLiveData, double average) {
