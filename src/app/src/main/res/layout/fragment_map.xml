@@ -87,11 +87,13 @@
 
                 <EditText
                     android:id="@+id/map_range_input"
-                    android:layout_width="50dp"
+                    android:layout_width="wrap_content"
+                    android:minWidth="55dp"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@android:drawable/edit_text"
                     android:backgroundTintMode="add"
                     android:importantForAutofill="no"
+                    android:hint="@string/distance_in_km"
                     android:inputType="numberDecimal"
                     android:singleLine="true"
                     android:text="@string/map_default_range"
