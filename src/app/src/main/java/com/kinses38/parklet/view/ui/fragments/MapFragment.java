@@ -29,22 +29,28 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.kinses38.parklet.ParkLet;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.databinding.FragmentMapBinding;
 import com.kinses38.parklet.utilities.InputHandler;
 import com.kinses38.parklet.utilities.MapAdapter;
 import com.kinses38.parklet.viewmodels.MapViewModel;
+import com.kinses38.parklet.viewmodels.ViewModelFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 public class MapFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener {
 
     private final String TAG = this.getClass().getSimpleName();
 
+    @Inject
+    ViewModelFactory viewModelFactory;
     private MapViewModel mapViewModel;
     private FragmentMapBinding mapBinding;
 
@@ -59,7 +65,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mapBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false);
-        mapViewModel = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
+
+        ParkLet.getParkLetApp().getPropertyRepoComponent().inject(this);
+        mapViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(MapViewModel.class);
         mapBinding.setLifecycleOwner(this);
         initBindings();
         initRecyclerView();

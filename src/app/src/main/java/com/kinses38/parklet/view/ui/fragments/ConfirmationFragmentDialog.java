@@ -12,18 +12,19 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.kinses38.parklet.ParkLet;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Booking;
-import com.kinses38.parklet.data.repository.BookingRepo;
-import com.kinses38.parklet.data.repository.VehicleRepo;
 import com.kinses38.parklet.databinding.FragmentConfirmationDialogBinding;
-import com.kinses38.parklet.utilities.ViewModelFactory;
 import com.kinses38.parklet.viewmodels.BookingViewModel;
+import com.kinses38.parklet.viewmodels.ViewModelFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 public class ConfirmationFragmentDialog extends DialogFragment implements View.OnClickListener {
 
@@ -32,6 +33,8 @@ public class ConfirmationFragmentDialog extends DialogFragment implements View.O
     private Booking booking;
     private BookingViewModel bookingViewModel;
     private boolean errorState;
+    @Inject
+    ViewModelFactory viewModelFactory;
 
     public static ConfirmationFragmentDialog newInstance() {
         ConfirmationFragmentDialog dialog = new ConfirmationFragmentDialog();
@@ -42,8 +45,8 @@ public class ConfirmationFragmentDialog extends DialogFragment implements View.O
                              Bundle savedInstanceState) {
         binding = DataBindingUtil
                 .inflate(inflater, R.layout.fragment_confirmation_dialog, container, true);
-        ViewModelFactory viewModelFactory = new ViewModelFactory(new BookingRepo(),
-                new VehicleRepo());
+        ParkLet.getParkLetApp().getVehicleRepoComponent().inject(this);
+        ParkLet.getParkLetApp().getBookingRepoComponent().inject(this);
         bookingViewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
                 .get(BookingViewModel.class);
         initBinding();

@@ -44,11 +44,11 @@ public class BookingViewModelTest {
 
     @Before
     public void setup() {
-        //Booking object one
+        //Future booking
         long Thurs26March2030 = 1900752610000L;
         List<Long> futureDate = new ArrayList<>();
         futureDate.add(Thurs26March2030);
-        //Booking object two
+        //Past booking
         long sun22March = 1584896528000L;
         List<Long> pastDate = new ArrayList<>();
         pastDate.add(sun22March);

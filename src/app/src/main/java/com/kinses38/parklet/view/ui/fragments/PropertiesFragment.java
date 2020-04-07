@@ -20,19 +20,25 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.kinses38.parklet.ParkLet;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.databinding.FragmentPropertiesBinding;
 import com.kinses38.parklet.utilities.InputHandler;
 import com.kinses38.parklet.utilities.UserPropertyAdapter;
 import com.kinses38.parklet.viewmodels.PropertyViewModel;
+import com.kinses38.parklet.viewmodels.ViewModelFactory;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 public class PropertiesFragment extends Fragment implements View.OnClickListener {
 
+    @Inject
+    ViewModelFactory viewModelFactory;
     private PropertyViewModel propertyViewModel;
     private FragmentPropertiesBinding propertiesBinding;
 
@@ -46,7 +52,8 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         propertiesBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_properties, container, false);
-        propertyViewModel = new ViewModelProvider(requireActivity()).get(PropertyViewModel.class);
+        ParkLet.getParkLetApp().getPropertyRepoComponent().inject(this);
+        propertyViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(PropertyViewModel.class);
         propertiesBinding.setLifecycleOwner(this);
 
         initRecyclerView();
@@ -83,15 +90,15 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
         });
     }
 
-    private void initPropertyObserver(){
+    private void initPropertyObserver() {
         propertyViewModel.getProperties().observe(getViewLifecycleOwner(), new Observer<List<Property>>() {
             @Override
             public void onChanged(List<Property> properties) {
-                if(!properties.isEmpty()){
+                if (!properties.isEmpty()) {
                     propertiesBinding.setHasProperty(true);
                     adapter.refreshList(properties);
                     recyclerView.setAdapter(adapter);
-                }else{
+                } else {
                     propertiesBinding.setHasProperty(false);
                 }
 
@@ -123,9 +130,9 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
     }
 
     //TODO disable save button until fields filled
-    private void saveProperty(){
+    private void saveProperty() {
         int radioSelected = weekends.getCheckedRadioButtonId();
-        RadioButton r = (RadioButton)propertiesBinding.getRoot().findViewById(radioSelected);
+        RadioButton r = (RadioButton) propertiesBinding.getRoot().findViewById(radioSelected);
         String availableWeekends = r.getText().toString();
         Double rate = Double.parseDouble(dailyRate.getText().toString());
 
@@ -133,7 +140,7 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
 
     }
 
-    private void resetForm(){
+    private void resetForm() {
         propertyAddress.setText("");
         textProperties.setText("");
         addressLine.setText("");

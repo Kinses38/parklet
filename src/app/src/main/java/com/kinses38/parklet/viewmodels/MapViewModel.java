@@ -13,12 +13,12 @@ import java.util.List;
 
 public class MapViewModel extends ViewModel {
 
-    private PropertyRepo propertyRepo = new PropertyRepo();
+    private PropertyRepo propertyRepo;
     private MutableLiveData<Double> averagePrice = new MutableLiveData<>(0.0);
 
 
-    public MapViewModel() {
-
+    public MapViewModel(PropertyRepo propertyRepo) {
+        this.propertyRepo = propertyRepo;
     }
 
     public LiveData<List<Property>> queryPropertiesInRange(double lon, double lat, double range) {

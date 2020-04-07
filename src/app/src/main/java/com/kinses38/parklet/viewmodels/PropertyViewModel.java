@@ -14,10 +14,11 @@ import java.util.List;
 public class PropertyViewModel extends ViewModel {
 
     private Property property;
-    private PropertyRepo propertyRepo = new PropertyRepo();
+    private PropertyRepo propertyRepo;
     private MutableLiveData<Property> propertyToWriteMutableLiveData = new MutableLiveData<>();
 
-    public PropertyViewModel() {
+    public PropertyViewModel(PropertyRepo propertyRepo) {
+        this.propertyRepo = propertyRepo;
     }
 
     //todo save address in more human readable/ui friendly form.

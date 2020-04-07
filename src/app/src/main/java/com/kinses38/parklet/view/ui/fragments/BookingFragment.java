@@ -18,18 +18,19 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.kinses38.parklet.ParkLet;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Booking;
 import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.data.model.entity.Vehicle;
-import com.kinses38.parklet.data.repository.BookingRepo;
-import com.kinses38.parklet.data.repository.VehicleRepo;
 import com.kinses38.parklet.databinding.FragmentBookingBinding;
 import com.kinses38.parklet.utilities.ParkLetCalendarView;
-import com.kinses38.parklet.utilities.ViewModelFactory;
 import com.kinses38.parklet.viewmodels.BookingViewModel;
+import com.kinses38.parklet.viewmodels.ViewModelFactory;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class BookingFragment extends Fragment implements View.OnClickListener {
 
@@ -41,16 +42,19 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
     private Spinner spinner;
 
     private String renterVehicleReg;
+    @Inject
+    ViewModelFactory viewModelFactory;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_booking, container, false);
-        //TODO dagger dependency injection to sort this Repo mess?
-        ViewModelFactory viewModelFactory = new ViewModelFactory(new BookingRepo(),
-                new VehicleRepo());
+
+        ParkLet.getParkLetApp().getBookingRepoComponent().inject(this);
+        ParkLet.getParkLetApp().getVehicleRepoComponent().inject(this);
         bookingViewModel = new ViewModelProvider(requireActivity(), viewModelFactory)
                 .get(BookingViewModel.class);
+
         Property propertyToBook = BookingFragmentArgs.fromBundle(requireArguments())
                 .getPropertyToBook();
 
@@ -91,9 +95,9 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void observeBookingStatus(){
+    private void observeBookingStatus() {
         bookingViewModel.getBookingStatus().observe(getViewLifecycleOwner(), status -> {
-            if(status){
+            if (status) {
                 bookingViewModel.setBookingStatus(false);
                 Toast.makeText(getActivity(), "Booking successfully made", Toast.LENGTH_SHORT).show();
                 Navigation.findNavController(binding.getRoot()).navigate(R.id.action_nav_booking_to_nav_home);

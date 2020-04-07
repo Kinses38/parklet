@@ -19,7 +19,7 @@ import com.kinses38.parklet.data.repository.UserRepo;
 import com.kinses38.parklet.databinding.FragmentNfcDialogBinding;
 import com.kinses38.parklet.utilities.DialogListener;
 import com.kinses38.parklet.utilities.NfcUtil;
-import com.kinses38.parklet.utilities.ViewModelFactory;
+import com.kinses38.parklet.viewmodels.ViewModelFactory;
 import com.kinses38.parklet.view.ui.activities.MainActivity;
 import com.kinses38.parklet.viewmodels.HomeViewModel;
 
