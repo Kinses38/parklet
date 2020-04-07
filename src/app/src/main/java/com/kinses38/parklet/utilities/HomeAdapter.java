@@ -20,6 +20,7 @@ import com.kinses38.parklet.data.repository.BookingRepo;
 import com.kinses38.parklet.data.repository.UserRepo;
 import com.kinses38.parklet.databinding.BookingRecyclerLayoutBinding;
 import com.kinses38.parklet.viewmodels.HomeViewModel;
+import com.kinses38.parklet.viewmodels.ViewModelFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

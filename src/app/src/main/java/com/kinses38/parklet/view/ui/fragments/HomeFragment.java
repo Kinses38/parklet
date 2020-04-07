@@ -16,31 +16,34 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.kinses38.parklet.ParkLet;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.User;
 import com.kinses38.parklet.data.repository.BookingRepo;
 import com.kinses38.parklet.data.repository.UserRepo;
 import com.kinses38.parklet.databinding.FragmentHomeBinding;
 import com.kinses38.parklet.utilities.HomeAdapter;
-import com.kinses38.parklet.utilities.ParkLetFirebaseMessagingService;
-import com.kinses38.parklet.utilities.ViewModelFactory;
 import com.kinses38.parklet.viewmodels.HomeViewModel;
+import com.kinses38.parklet.viewmodels.ViewModelFactory;
+
+import javax.inject.Inject;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private final String TAG = this.getClass().getSimpleName();
     private TextView textView;
     private HomeViewModel homeViewModel;
+    @Inject
+    ViewModelFactory viewModelFactory;
+
     private FragmentHomeBinding binding;
-    private ViewModelFactory viewModelFactory;
-    private ParkLetFirebaseMessagingService messagingService;
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private HomeAdapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
-        viewModelFactory = new ViewModelFactory(new UserRepo(), new BookingRepo());
+        ParkLet.getParkLetApp().getUserRepoComponent().inject(this);
         homeViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(HomeViewModel.class);
 
         Bundle bundle = this.getArguments();

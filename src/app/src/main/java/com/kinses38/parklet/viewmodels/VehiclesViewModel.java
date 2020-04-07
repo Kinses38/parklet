@@ -1,22 +1,20 @@
 package com.kinses38.parklet.viewmodels;
 
-import android.app.Application;
-
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.ViewModel;
 
 import com.kinses38.parklet.data.model.entity.Vehicle;
 import com.kinses38.parklet.data.repository.VehicleRepo;
 
 import java.util.List;
 
-public class VehiclesViewModel extends AndroidViewModel {
+public class VehiclesViewModel extends ViewModel {
 
     private Vehicle vehicle;
-    private VehicleRepo vehicleRepo = new VehicleRepo();
+    private VehicleRepo vehicleRepo;
 
-    public VehiclesViewModel(Application application) {
-        super(application);
+    public VehiclesViewModel(VehicleRepo vehicleRepo) {
+        this.vehicleRepo = vehicleRepo;
     }
 
     public void onClickVehicleSubmit(String make, String model, String reg){

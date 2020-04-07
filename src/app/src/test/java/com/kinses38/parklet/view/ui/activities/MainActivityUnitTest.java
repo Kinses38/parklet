@@ -2,7 +2,7 @@ package com.kinses38.parklet.view.ui.activities;
 
 import android.view.MenuItem;
 
-import com.kinses38.parklet.ParkLetTest;
+import com.kinses38.parklet.ParkLet;
 import com.kinses38.parklet.R;
 
 import org.junit.Before;
@@ -19,10 +19,10 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(RobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
-@Config(sdk = 28, application = ParkLetTest.class)
+@Config(sdk = 28, application = ParkLet.class)
 public class MainActivityUnitTest {
 
-    private MainActivity mainActivity;
+    MainActivity mainActivity;
 
     @Before
     public void setUp() {
@@ -30,11 +30,10 @@ public class MainActivityUnitTest {
                 .create()
                 .visible()
                 .get();
-
     }
 
     @Test
-    public void shouldExist(){
+    public void shouldExist() {
         assertNotNull(mainActivity);
     }
 
@@ -44,7 +43,7 @@ public class MainActivityUnitTest {
     }
 
     @Test
-    public void testMenuOptionsSelected(){
+    public void testMenuOptionsSelected() {
         MenuItem menuItem = new RoboMenuItem((R.id.sign_out_button));
         mainActivity.onOptionsItemSelected(menuItem);
 

@@ -30,6 +30,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.kinses38.parklet.ParkLet;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Property;
 import com.kinses38.parklet.data.model.entity.User;
@@ -37,6 +38,9 @@ import com.kinses38.parklet.utilities.DialogListener;
 import com.kinses38.parklet.view.ui.fragments.NfcReadDialogFragment;
 import com.kinses38.parklet.view.ui.fragments.NfcWriteDialogFragment;
 import com.kinses38.parklet.viewmodels.PropertyViewModel;
+import com.kinses38.parklet.viewmodels.ViewModelFactory;
+
+import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener,
         DialogListener {
@@ -45,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
 
+    @Inject
+    ViewModelFactory viewModelFactory;
     private PropertyViewModel propertyViewModel;
     private NfcAdapter nfcAdapter;
     private boolean writeMode;
@@ -69,7 +75,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     }
 
     private void initViewModel() {
-        propertyViewModel = new ViewModelProvider(this).get(PropertyViewModel.class);
+        ParkLet.getParkLetApp().getPropertyRepoComponent().inject(this);
+        propertyViewModel = new ViewModelProvider(this, viewModelFactory).get(PropertyViewModel.class);
     }
 
     private void initObserver() {

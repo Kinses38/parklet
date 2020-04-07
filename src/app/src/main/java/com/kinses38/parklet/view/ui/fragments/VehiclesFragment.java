@@ -16,18 +16,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.annotations.Nullable;
+import com.kinses38.parklet.ParkLet;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.Vehicle;
 import com.kinses38.parklet.databinding.FragmentVehiclesBinding;
 import com.kinses38.parklet.utilities.InputHandler;
 import com.kinses38.parklet.utilities.VehicleAdapter;
 import com.kinses38.parklet.viewmodels.VehiclesViewModel;
+import com.kinses38.parklet.viewmodels.ViewModelFactory;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class VehiclesFragment extends Fragment implements View.OnClickListener {
 
-    private VehiclesViewModel vehiclesViewModel;
+    private final String TAG = getClass().getSimpleName();
     private FragmentVehiclesBinding vehiclesLandingBinding;
 
     private RecyclerView recyclerView;
@@ -35,10 +39,15 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
     private RecyclerView.LayoutManager layoutManager;
     private TextView carMake, carModel, carReg;
 
+    private VehiclesViewModel vehiclesViewModel;
+    @Inject
+    ViewModelFactory viewModelFactory;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         vehiclesLandingBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_vehicles, container, false);
-        vehiclesViewModel = new ViewModelProvider(getActivity()).get(VehiclesViewModel.class);
+        ParkLet.getParkLetApp().getVehicleRepoComponent().inject(this);
+        vehiclesViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(VehiclesViewModel.class);
         initRecyclerView();
         initBindings();
         initVehicleObserver();
@@ -54,7 +63,7 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
                     vehiclesLandingBinding.setHasVehicle(true);
                     adapter.refreshList(vehicles);
                     recyclerView.setAdapter(adapter);
-                    Log.i("Livedata: ", String.valueOf(this.hashCode()));
+                    Log.i(TAG, String.valueOf(this.hashCode()));
                 }
                 else{
                     vehiclesLandingBinding.setHasVehicle(false);
@@ -100,20 +109,20 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.vehicle_form_toggle_button:
                 vehiclesLandingBinding.setFormClicked(!vehiclesLandingBinding.getFormClicked());
-                Log.i("1st button", "toggle form");
+                Log.i(TAG, "toggle form");
                 break;
             case R.id.vehicle_form_save_button:
                 saveVehicle();
                 InputHandler.hideKeyboard(requireActivity());
                 resetTextViews();
                 vehiclesLandingBinding.setFormClicked(!vehiclesLandingBinding.getFormClicked());
-                Log.i("2nd button", "save");
+                Log.i(TAG, "save");
                 break;
             case R.id.vehicle_form_cancel_button:
                 InputHandler.hideKeyboard(requireActivity());
                 resetTextViews();
                 vehiclesLandingBinding.setFormClicked(!vehiclesLandingBinding.getFormClicked());
-                Log.i("3rd button", "cancel");
+                Log.i(TAG, "cancel");
                 break;
             default:
                 break;
