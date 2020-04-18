@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         appBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_vehicles,
-                R.id.nav_properties, R.id.nav_nfc)
+                R.id.nav_properties)
                 .setDrawerLayout(drawer).build();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
