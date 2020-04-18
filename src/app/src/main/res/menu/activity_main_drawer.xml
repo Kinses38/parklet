@@ -15,9 +15,6 @@
         <item
             android:id="@+id/nav_properties"
             android:title="@string/properties"/>
-        <item
-            android:id="@+id/nav_nfc"
-            android:title="@string/nfc_page"/>
     </group>
 
 
