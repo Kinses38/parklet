@@ -11,47 +11,89 @@ import com.kinses38.parklet.data.repository.PropertyRepo;
 
 import java.util.List;
 
+/**
+ * Responsible for populating the MapView with properties given the users query of area and range.
+ */
 public class MapViewModel extends ViewModel {
 
     private PropertyRepo propertyRepo;
     private MutableLiveData<Double> averagePrice = new MutableLiveData<>(0.0);
 
-
-    public MapViewModel(PropertyRepo propertyRepo) {
+    /**
+     * Provided by ViewModel Factory, PropertyRepo injected by Dagger
+     *
+     * @param propertyRepo singleton property Repository
+     */
+    MapViewModel(PropertyRepo propertyRepo) {
         this.propertyRepo = propertyRepo;
     }
 
+    /**
+     * Pass users query to Property Repository.
+     * Query first for the keys of properties that fall in the range of the query.
+     * Then query for the resulting properties.
+     * Query corresponding geoHashBucket for the given areas average price.
+     */
     public LiveData<List<Property>> queryPropertiesInRange(double lon, double lat, double range) {
+        //Get all the property keys within the range.
         MutableLiveData<List<String>> propertyKeysLiveData = propertyRepo
                 .selectAllInRange(lon, lat, range);
+        //Fetch precomputed average price from GeoBucket
         averagePrice = getPricingForArea(lon, lat, range);
+        //For the keys in range that are returned, get the properties.
         LiveData<List<Property>> propertiesInRangeLiveData = getPropertiesInRange(propertyKeysLiveData);
 
+        /*
+            Mediator combined result watches both propertiesInRange and averagePrice livedata
+            for updates then updates each property with an average price comparison.
+         */
         MediatorLiveData<List<Property>> combinedResult = new MediatorLiveData();
         combinedResult.addSource(averagePrice, price
-                -> combinedResult.setValue(updateProperties(propertiesInRangeLiveData, averagePrice.getValue())));
+                -> combinedResult.postValue(updateProperties(propertiesInRangeLiveData, averagePrice.getValue())));
         combinedResult.addSource(propertiesInRangeLiveData, properties
                 -> combinedResult.postValue(updateProperties(propertiesInRangeLiveData, averagePrice.getValue())));
         return combinedResult;
     }
 
+    /**
+     * Takes livedata of keys in range corresponding to propertyIDs and returns livedata list of properties.
+     *
+     * @param propertyKeys the ids of the properties in range
+     * @return livedata list of properties that match the users query.
+     */
     private LiveData<List<Property>> getPropertiesInRange(LiveData<List<String>> propertyKeys) {
         LiveData propertiesInRange = Transformations
                 .switchMap(propertyKeys, keys -> propertyRepo.selectProperty(keys));
         return propertiesInRange;
     }
 
+    /**
+     * Maps the users range query to an approximation of area using GeoHashBuckets that
+     * hold a precomputed average price of an area.
+     *
+     * @param lon   longitude of search area
+     * @param lat   latitude of search area
+     * @param range users given range of interest.
+     * @return the average price from the GeoHashBucket.
+     */
     private MutableLiveData<Double> getPricingForArea(double lon, double lat, double range) {
         //TODO constants
-        if(range <= 2){
+        if (range <= 2) {
             return propertyRepo.getAverage(lon, lat, 6);
-        }else if (range > 2 && range < 4){
-            return  propertyRepo.getAverage(lon, lat, 5);
-        }else {
+        } else if (range > 2 && range < 4) {
+            return propertyRepo.getAverage(lon, lat, 5);
+        } else {
             return propertyRepo.getAverage(lon, lat, 4);
         }
     }
 
+    /**
+     * Updates the properties average price comparison relative to the current area of search
+     *
+     * @param propertiesLiveData properties list to be updated
+     * @param average            given average price for current area
+     * @return properties with average price comparison set.
+     */
     private List<Property> updateProperties(LiveData<List<Property>> propertiesLiveData, double average) {
         List<Property> properties = propertiesLiveData.getValue();
         if (properties != null && !properties.isEmpty()) {

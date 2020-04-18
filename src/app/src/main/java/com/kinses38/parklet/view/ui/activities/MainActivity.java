@@ -42,6 +42,12 @@ import com.kinses38.parklet.viewmodels.ViewModelFactory;
 
 import javax.inject.Inject;
 
+/**
+ * Main Activity responsible for:
+ * for hosting navigation controller
+ * starting the appropriate fragment for a users action.
+ * Detecting an NFC read, and starting nfc utility.
+ */
 public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener,
         DialogListener {
 
@@ -79,6 +85,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         propertyViewModel = new ViewModelProvider(this, viewModelFactory).get(PropertyViewModel.class);
     }
 
+    /**
+     * Observes Property ViewModel propertyToWrite. If there is a non-null property,
+     * the user is attempting to write a property nfc tag and the nfc write Dialog will be launched.
+     */
     private void initObserver() {
         propertyViewModel.getPropertyToWriteMutableLiveData().observe(this, property -> {
             if (property != null) {
@@ -92,6 +102,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
     }
 
+    /**
+     * Dialog window for showing the progress of writing a Property NFC tag. Launched by user selecting
+     * NFC tag write on their property overview.
+     */
     private void showNfcWriteDialog() {
         // https://developer.android.com/reference/androidx/fragment/app/DialogFragment
         FragmentTransaction fragTrans = getSupportFragmentManager().beginTransaction();
@@ -103,8 +117,12 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         nfcWriteDialogFragment = NfcWriteDialogFragment.newInstance();
         nfcWriteDialogFragment.show(fragTrans, "NfcWriteDialogFragment");
     }
-    
-    private void showNfcReadDialog(){
+
+    /**
+     * Dialog window to show progress of user checking in or out of a property. Launched by
+     * the detection of an nfc tag
+     */
+    private void showNfcReadDialog() {
         FragmentTransaction fragTrans = getSupportFragmentManager().beginTransaction();
         Fragment previous = getSupportFragmentManager().findFragmentByTag("NfcReadDialogFragment");
         if (previous != null && previous.isAdded()) {
@@ -115,6 +133,13 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         nfcReadDialogFragment.show(fragTrans, "NfcReadDialogFragment");
     }
 
+    /**
+     * NFC read has triggered new Intent. Check if app is currently in write mode.
+     * If so, attempt to write the propertyID to the tag and show progress.
+     * Else the user is attempting to check in or out of a property, show progress of the check-in.
+     *
+     * @param intent carrying discovered nfc Tag.
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -126,7 +151,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 nfcWriteDialogFragment.writeNfc(ndef, propertyToWrite);
                 Toast.makeText(this, "This is NFC in write mode", Toast.LENGTH_SHORT).show();
             } else {
-                //TODO check-in functionality
                 showNfcReadDialog();
                 nfcReadDialogFragment.readNfc(ndef);
                 Toast.makeText(this, "This is NFC in read mode", Toast.LENGTH_SHORT).show();
@@ -139,6 +163,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         setSupportActionBar(toolbar);
     }
 
+    /**
+     * Initialize app navigation using nav components from AndroidX. Sets NavController and provides
+     * NavGraph to it. Passes user as serialized object for the Home Fragment to use.
+     */
     private void initDrawer() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -161,13 +189,19 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         return (User) getIntent().getSerializableExtra("User");
     }
 
+    /**
+     * Required for user to sign out.
+     */
     private void initGoogleSignInClient() {
         GoogleSignInOptions googleSignInOptions =
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .build();
+                        .build();
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
     }
 
+    /**
+     * Handle up action by user by delegating to nav controller or falling back to onSupport.
+     */
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -175,6 +209,12 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 .onSupportNavigateUp();
     }
 
+    /**
+     * Watches for user authentication change and will kick them to auth activity
+     * if they are suddenly unauthenticated.
+     *
+     * @param firebaseAuth Instance made available at App level.
+     */
     @Override
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -194,6 +234,11 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         firebaseAuth.addAuthStateListener(this);
     }
 
+    /**
+     * If NFC is available on phone but disabled, inform user to enable it.
+     * Creates pending intent with a filter of NFC tags being discovered.
+     * We don't care about anything more specific than Tag discovered.
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -225,12 +270,22 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         firebaseAuth.removeAuthStateListener(this);
     }
 
+    /**
+     * Sign out options for user.
+     *
+     * @param menu contains google signout option.
+     * @return true if inflated.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
+    /**
+     * Signout of both firebase and google sign in client when user selects sign out option.
+     * Prevents user from being signed directly back in.
+     */
     private void signOut() {
         firebaseAuth.signOut();
         googleSignInClient.signOut();
@@ -246,6 +301,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         return super.onOptionsItemSelected(menuItem);
     }
 
+    /**
+     * Enable nfc Write mode if the dialog displayed is of an nfcWriteDialog type.
+     * Attached/Display status monitored by dialog listener interface.
+     */
     @Override
     public void onDialogDisplayed() {
         if (nfcWriteDialogFragment != null && nfcWriteDialogFragment.isAdded()) {

@@ -13,41 +13,67 @@ import java.util.List;
 
 public class PropertyViewModel extends ViewModel {
 
-    private Property property;
     private PropertyRepo propertyRepo;
     private MutableLiveData<Property> propertyToWriteMutableLiveData = new MutableLiveData<>();
 
-    public PropertyViewModel(PropertyRepo propertyRepo) {
+    /**
+     * Provided by ViewModel Factory
+     *
+     * @param propertyRepo singleton repo injected by Dagger.
+     */
+    PropertyViewModel(PropertyRepo propertyRepo) {
         this.propertyRepo = propertyRepo;
     }
 
-    //todo save address in more human readable/ui friendly form.
-    public void setProperty(Address address, Double dailyRate, String availableWeekends){
+    /**
+     * Create property Object to pass to PropertyRepo to save.
+     *
+     * @param address           Full address object of property
+     * @param dailyRate         Users set rate for renting for a day
+     * @param availableWeekends boolean whether property is avail to rent on weekends
+     */
+    public void setProperty(Address address, Double dailyRate, String availableWeekends) {
         String addressLine = address.getAddressLine(0);
         String eircode = address.getPostalCode();
         Double longitude = address.getLongitude();
         Double latitude = address.getLatitude();
-        property = new Property(addressLine, eircode, dailyRate, longitude, latitude);
+        Property property = new Property(addressLine, eircode, dailyRate, longitude, latitude);
         property.parseWeekend(availableWeekends);
         addProperty(property);
     }
 
-    public LiveData<List<Property>> getProperties(){
+    /**
+     * Fetch all properties belonging to current user
+     *
+     * @return livedata list of users properties.
+     */
+    public LiveData<List<Property>> getProperties() {
         return propertyRepo.selectAll();
     }
 
-    private void addProperty(Property property){
+    private void addProperty(Property property) {
         propertyRepo.create(property);
     }
 
-    public void remove(Property property){
+    public void remove(Property property) {
         propertyRepo.remove(property);
     }
 
-    public void setPropertyToWrite(Property property){
+    /**
+     * Set by Property RecyclerView, when user wishes to create a property NFC tag
+     *
+     * @param property the property in which the tag is to be written for.
+     */
+    public void setPropertyToWrite(Property property) {
         propertyToWriteMutableLiveData.postValue(property);
     }
 
+    /**
+     * Observed by main activity. Passes the property for which the NFC tag is to be written for.
+     * Best practices of sharing a ViewModel between activity/fragment.
+     *
+     * @return the property to write a tag for.
+     */
     public MutableLiveData<Property> getPropertyToWriteMutableLiveData() {
         return propertyToWriteMutableLiveData;
     }

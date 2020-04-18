@@ -126,7 +126,7 @@
             app:layout_constraintTop_toBottomOf="@id/property_address" />
 
         <Button
-            android:id="@+id/confirm_booking_button"
+            android:id="@+id/submit_booking"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/confirm_booking_button"

@@ -22,8 +22,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Service responsible for handling downstream messages from Firebase Cloud Messaging (FCM).
+ * Creates channels for foreground and background messages.
+ * Receives updated FCM Device Token for receiving messages.
+ */
 public class ParkLetFirebaseMessagingService extends FirebaseMessagingService {
-
 
     private final String TAG = this.getClass().getSimpleName();
     private final DatabaseReference DB = FirebaseDatabase.getInstance().getReference("users/");
@@ -35,7 +39,12 @@ public class ParkLetFirebaseMessagingService extends FirebaseMessagingService {
         updateUsersToken(token);
     }
 
-    //In the case of uninstall/updates/changing device
+    /**
+     * Updates user profile with new token in the case of the token being revoked, device changed
+     * or app being reinstalled.
+     *
+     * @param token the new FCM device token for targeted FCM messages.
+     */
     private void updateUsersToken(String token) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
@@ -45,6 +54,11 @@ public class ParkLetFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
+    /**
+     * Generates unique id for current message
+     *
+     * @return int id generated from atomic incremented integer.
+     */
     private int getUniqueReqID() {
         return notificationID.getAndIncrement();
     }
@@ -55,10 +69,10 @@ public class ParkLetFirebaseMessagingService extends FirebaseMessagingService {
      * Required to handle foreground messages and create a channel to receive both foreground and
      * background notifications if running Oreo or higher.
      *
-     * @param remoteMessage
+     * @param remoteMessage message received from FCM
      */
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public void onMessageReceived(@NotNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         //Bring user to landing screen in case they are not signed in.
         Intent intent = new Intent(this, LandingActivity.class);
@@ -100,8 +114,8 @@ public class ParkLetFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Set high importance for cancellations. This may be overridden by the device settings however.
      *
-     * @param parkletChannel
-     * @return
+     * @param parkletChannel String Name of Channel
+     * @return customised channel to receive message on
      */
     private NotificationChannel setHighImportance(String parkletChannel) {
         NotificationChannel channel = new NotificationChannel(parkletChannel, "Parklet",
@@ -112,8 +126,8 @@ public class ParkLetFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Normal priority for all other notifications recieved by ParkLet
      *
-     * @param parkletChannel
-     * @return
+     * @param parkletChannel String Name of Channel
+     * @return customised channel to receive message on
      */
     private NotificationChannel setDefaultImportance(String parkletChannel) {
         NotificationChannel channel = new NotificationChannel(parkletChannel, "Parklet",

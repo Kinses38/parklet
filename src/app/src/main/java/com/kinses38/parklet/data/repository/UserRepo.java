@@ -7,6 +7,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.kinses38.parklet.data.model.entity.User;
 
+/**
+ *  Responsible for creation of new User profiles and updating cloud messaging token.
+ */
 public class UserRepo {
 
     private final String TAG = this.getClass().getSimpleName();

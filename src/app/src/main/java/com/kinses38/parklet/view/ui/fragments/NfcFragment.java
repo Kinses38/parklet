@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.kinses38.parklet.R;
 
+//TODO remove.
 public class NfcFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,

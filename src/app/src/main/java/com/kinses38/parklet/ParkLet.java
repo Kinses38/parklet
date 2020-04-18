@@ -22,12 +22,17 @@ public class ParkLet extends Application {
     private VehicleRepoComponent vehicleRepoComponent;
     private PropertyRepoComponent propertyRepoComponent;
     private UserRepoComponent userRepoComponent;
-    private final String TESTMODE = "robolectric";
 
+    /**
+     *  Override App instance and use as entry point to ParkLet App. Enables firebase auth &
+     *  DB instance to be shared at app level and, firebase caching through persistence enabled.
+     *  Dagger 2 components made available at app level through static ParkletApp instance for dependency injection
+     */
     public void onCreate() {
         super.onCreate();
         FirebaseApp.initializeApp(this);
         //Disable persistence for testing.
+        String TESTMODE = "robolectric";
         if(!DEVICE.equals(TESTMODE)){
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         }

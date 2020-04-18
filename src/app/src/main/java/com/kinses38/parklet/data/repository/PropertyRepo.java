@@ -25,19 +25,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Repository responsible for:
+ * Adding, removing and querying users properties.
+ * Querying properties falling within a geohash range for users searching for property to rent
+ * Querying the average property price of an area.
+ */
 public class PropertyRepo {
 
-    //TODO refactor to static global paths?
-
-
     private final String TAG = this.getClass().getSimpleName();
-
     private DatabaseReference DB = FirebaseDatabase.getInstance().getReference();
     private final FirebaseAuth ADB = FirebaseAuth.getInstance();
     private DatabaseReference geoFireRef = FirebaseDatabase.getInstance().getReference("propertyLocations");
     private GeoFire geoFire = new GeoFire(geoFireRef);
 
 
+    /**
+     * Creates new property entry belong to current user under "properties" node
+     * and queryable geohash for that properties location under "propertyLocations" node
+     *
+     * @param property the property to add.
+     */
     public void create(Property property) {
         //TODO check for existing property using....?Eircode?
         String propertyKey = DB.child("properties").push().getKey();
@@ -51,6 +59,7 @@ public class PropertyRepo {
                 .addOnFailureListener(e ->
                         Log.i(TAG, "Property not added" + e.getMessage()));
 
+        //creates queryable geohash that allows us to search by area and range. Maps to property ID under "properties" node
         geoFire.setLocation(propertyKey, new GeoLocation(property.getLatitude(), property.getLongitude()), new GeoFire.CompletionListener() {
             @Override
             public void onComplete(String key, DatabaseError error) {
@@ -63,6 +72,11 @@ public class PropertyRepo {
         });
     }
 
+    /**
+     * Query for all properties belonging to current user
+     *
+     * @return livedata list of properties
+     */
     public MutableLiveData<List<Property>> selectAll() {
         MutableLiveData<List<Property>> userPropertiesMutableLiveData = new MutableLiveData<>();
         DatabaseReference allProperties = DB.child("properties/");
@@ -86,6 +100,14 @@ public class PropertyRepo {
         return userPropertiesMutableLiveData;
     }
 
+    /**
+     * Query for propertyid's that fall within geohash range of users search.
+     *
+     * @param lon   double longitude of area of interest
+     * @param lat   double latitude of area of interest
+     * @param range double range in kms in which the user is interested in
+     * @return livedata list of all property ids that fall within this geohash range.
+     */
     public MutableLiveData<List<String>> selectAllInRange(Double lon, Double lat, Double range) {
         MutableLiveData<List<String>> propertiesInRangeMutableLiveData = new MutableLiveData<>();
         List<String> propertyKeys = new ArrayList<>();
@@ -127,6 +149,12 @@ public class PropertyRepo {
         return propertiesInRangeMutableLiveData;
     }
 
+    /**
+     * Returns all properties matching the list of property id keys
+     *
+     * @param keys the ids of properties to fetch
+     * @return livedata list of properties.
+     */
     public MutableLiveData<List<Property>> selectProperty(List<String> keys) {
         DatabaseReference ref = DB.child("properties/");
         String currentUserUid = ADB.getCurrentUser().getUid();
@@ -159,6 +187,13 @@ public class PropertyRepo {
         return propertiesInRange;
     }
 
+    /**
+     * Atomically deletes provided property from both "properties" node and "propertyLocations"
+     * by setting both child nodes to null.
+     * Both must succeed or neither will be removed. Prevents dangling properties/locations
+     *
+     * @param property the property to remove.
+     */
     public void remove(Property property) {
         Map<String, Object> requestMap = new HashMap<>();
         requestMap.put("properties/" + property.getPropertyUID(), null);
@@ -176,6 +211,16 @@ public class PropertyRepo {
 
     }
 
+    /**
+     * Queries the "GeoPriceBucket" node for a precomputed average for the area. The level of precision is
+     * set by mapping the range of the users query to the appropriate geohash length for an approximation of
+     * their area of interest
+     *
+     * @param lon       double longitude of area of interest
+     * @param lat       double latitude of area of interest
+     * @param precision the number of bits to be used for matching the geohash. The longer the geohash the more specific the area
+     * @return the average price for that area
+     */
     public MutableLiveData<Double> getAverage(double lon, double lat, int precision) {
         MutableLiveData<Double> averagePrice = new MutableLiveData<>(0.0);
         GeoHash geoHash = new GeoHash(lat, lon, precision);

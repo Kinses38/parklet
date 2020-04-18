@@ -209,13 +209,10 @@ exports.aggregatePropertyPrices = functions.region("europe-west2").database.ref(
             let propertyPrice = (await admin.database().ref(`properties/${propertyUID}/dailyRate`).once('value')).val();
             console.log("Property Price:", propertyPrice);
 
-
             //Create or update bucket using transaction to ensure atomic transaction.
             console.log("Geohash before: ", geoHash + " after: " + geoBucket);
-            //recursive func here
             await recursiveAddToBucket(propertyUID, propertyPrice, geoBucket);
 
-            //end
         } else if (oldState !== null) {
             // The property was just deleted
             console.log("Deleted: ", oldState);

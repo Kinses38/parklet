@@ -14,6 +14,8 @@ import dagger.Component;
 public interface PropertyRepoComponent {
 
     void inject(MainActivity mainActivity);
+
     void inject(PropertiesFragment propertiesFragment);
+
     void inject(MapFragment mapFragment);
 }

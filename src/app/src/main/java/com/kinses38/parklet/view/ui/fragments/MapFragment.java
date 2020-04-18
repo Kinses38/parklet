@@ -45,6 +45,11 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+/**
+ * Responsible for displaying MapView of properties within the search area of users interest.
+ * Displays properties prepared by Map ViewModel as map markers with recyclerview summary.
+ * Allows users to select property to book.
+ */
 public class MapFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener {
 
     private final String TAG = this.getClass().getSimpleName();
@@ -78,23 +83,35 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         return mapBinding.getRoot();
     }
 
+    /**
+     * Pass the users search query to the Map ViewModel to find properties in range.
+     * Updates the map to show properties that match the query,
+     * otherwise displays no properties have been found matching the query
+     *
+     * @param latLng coordinates of the users area of interest
+     * @param range  double km's of how far the user wants to search around the latLng coords.
+     */
     private void searchPropertiesInRange(LatLng latLng, Double range) {
-        //Todo ensure that each query uses the same observer and that multiple are not being instantiated
-        mapViewModel.queryPropertiesInRange(latLng.longitude, latLng.latitude, range).observe(getViewLifecycleOwner(), properties -> {
-            if (properties != null && !properties.isEmpty()) {
-                updateMap(properties);
-                mapBinding.setHasProperty(true);
-                adapter.refreshList(properties);
-                recyclerView.setAdapter(adapter);
+        mapViewModel.queryPropertiesInRange(latLng.longitude, latLng.latitude, range)
+                .observe(getViewLifecycleOwner(), properties -> {
+                    if (properties != null && !properties.isEmpty()) {
+                        updateMap(properties);
+                        mapBinding.setHasProperty(true);
+                        adapter.refreshList(properties);
+                        recyclerView.setAdapter(adapter);
 
-            } else {
-                map.clear();
-                map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                mapBinding.setHasProperty(false);
-            }
-        });
+                    } else {
+                        map.clear();
+                        map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                        mapBinding.setHasProperty(false);
+                    }
+                });
     }
 
+    /**
+     * Initialise the recyclerview with a horizontal scroll,
+     * and snaps to the nearest ViewHolder property item when the user is scrolling
+     */
     private void initRecyclerView() {
         adapter = new MapAdapter(getActivity());
         recyclerView = mapBinding.mapPropertyRecycler;
@@ -110,6 +127,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         recyclerView.setLayoutManager(layoutManager);
     }
 
+    /**
+     * Binds:
+     * The MapView to googleMap for when onMapReady is called
+     * This instance of MapFragment to the layout file
+     * Search inputs to editTexts.
+     */
     private void initBindings() {
         mapView = mapBinding.mapBlock;
         mapBinding.setMapFrag(this);
@@ -117,7 +140,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         mapRangeInput = mapBinding.mapRangeInput;
     }
 
-    //Variadic method, takes 0 or more arguments, 0 or 1 in this case
+    /**
+     * Converts String address of users search query and returns LatLng coordinates object to be used
+     * for checking properties in range.
+     *
+     * @param areaToSearch String Array address of users search area. Variadic/MultiArity to
+     *                     allow initial map placement
+     * @return LatLng object of coordinates.
+     */
     private LatLng getGeo(String... areaToSearch) {
         LatLng latLng;
         String addressText = " Ireland";
@@ -141,13 +171,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         return null;
     }
 
-
-    /*
-          Map tutorial
-          https://developers.google.com/maps/documentation/android-sdk/map-with-marker
-          https://stackoverflow.com/questions/16536414/how-to-use-mapview-in-android-using-google-map-v2
-         */
-    // required to notify above callback mapView is ready.
+    /**
+     * Triggered when the map is ready to be displayed from the getMapAsync call in onCreateView.
+     * Overrides default marker click listener to scroll the recyclerview to the corresponding property entry.
+     * Camera position defaults to area over Dublin for now. (Todo user location)
+     * https://developers.google.com/maps/documentation/android-sdk/map-with-marker
+     * https://stackoverflow.com/questions/16536414/how-to-use-mapview-in-android-using-google-map-v2
+     *
+     * @param googleMap map instance ready to use.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
@@ -159,10 +191,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
             // Need to return false here otherwise info tag on markers do not display
             return false;
         });
-        //TODO should load properties in users area automatically?
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(53.463314, -6.231833), 10));
     }
 
+    /**
+     * Update map when properties matching users query are found.
+     * Creates List of markers, calculate the bounds of camera with respect
+     * to the markers currently on the map and move the camera to appropriate area.
+     *
+     * @param properties list of properties found matching users query.
+     */
     private void updateMap(List<Property> properties) {
         //clear all currently existing markers
         map.clear();
@@ -175,12 +213,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
             map.addMarker(marker.visible(true));
         }
         LatLngBounds bounds = boundBuilder.build();
-        //TODO magic number
-        CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 400);
+        final int boundsPadding = 400;
+        CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, boundsPadding);
         map.animateCamera(update);
 
     }
 
+    /**
+     * Creates the map markers corresponding to each property and sets customisation.
+     * Dynamically created markers cannot have a tag set to uniquely
+     * identify them to match to the properties in the recyclerview, so instead the eircode is used.
+     *
+     * @param properties list of properties to convert to markers.
+     * @return list of markers
+     */
     private List<MarkerOptions> createMarkers(List<Property> properties) {
         List<MarkerOptions> propertyMarkers = new ArrayList<>();
         for (Property property : properties) {
@@ -196,7 +242,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         return propertyMarkers;
     }
 
-    //todo constants
+    /**
+     * Provides color customisation for markers to show how its priced in comparison to the
+     * area average
+     *
+     * @param percentPriceComparison percent increase/decrease of property compared to area average.
+     * @return color to be set on marker.
+     */
     private Float formatPriceColor(Double percentPriceComparison) {
         if (percentPriceComparison <= -10) {
             //More expensive by 10%
@@ -209,6 +261,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
 
     }
 
+    /**
+     * Provides text snippet of how the properties price compares to area average.
+     * @param percentPriceComparison percent increase/decrease of property compared to area average.
+     * @return String summary of price comparison
+     */
     private String formatPriceSnippet(Double percentPriceComparison) {
         if (percentPriceComparison < 0) {
             return String.format(getString(R.string.average_expensive), Math.abs(percentPriceComparison));
@@ -230,6 +287,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, View.On
         mapView.onPause();
     }
 
+    /**
+     * Fetch user query inputs from DataBinding xml.
+     * Get LatLng object from geocode lookup.
+     * Ready query parameters for passing to Map ViewModel.
+     */
     private void submitSearchValues() {
         LatLng latLng;
         String areaToSearch = mapSearchInput.getText().toString();

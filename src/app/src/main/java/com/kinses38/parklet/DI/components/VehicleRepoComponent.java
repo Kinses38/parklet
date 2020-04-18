@@ -14,6 +14,8 @@ import dagger.Component;
 public interface VehicleRepoComponent {
 
     void inject(BookingFragment bookingFragment);
+
     void inject(ConfirmationFragmentDialog confirmationFragmentDialog);
+
     void inject(VehiclesFragment vehiclesFragment);
 }

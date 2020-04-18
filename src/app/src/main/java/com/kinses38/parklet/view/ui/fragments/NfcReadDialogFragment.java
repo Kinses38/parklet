@@ -23,6 +23,10 @@ import com.kinses38.parklet.viewmodels.ViewModelFactory;
 import com.kinses38.parklet.view.ui.activities.MainActivity;
 import com.kinses38.parklet.viewmodels.HomeViewModel;
 
+/**
+ * Responsible for showing progress of check-in/check-out status to customer upon NFC tag read
+ * containing a property id. Launched upon nfc read if write mode is false.
+ */
 public class NfcReadDialogFragment extends DialogFragment {
 
     private TextView nfcDialog;
@@ -45,10 +49,17 @@ public class NfcReadDialogFragment extends DialogFragment {
 
     }
 
+    /**
+     *  Attempt to read ndef from tag.
+     * @param ndef data from current tag.
+     */
     public void readNfc(Ndef ndef) {
         checkInProperty = NfcUtil.readNfc(ndef);
     }
 
+    /**
+     * Inform user if tag is empty. Otherwise, initial status of check-in
+     */
     private void checkPropertyTag(){
         if(checkInProperty.length() == 0){
             nfcDialog.setText(R.string.empty_property_tag);
@@ -57,6 +68,9 @@ public class NfcReadDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     *  Call to Home ViewModel to try and check-in, observe result and set the response text.
+     */
     private void observeCheckIn(){
         homeViewModel.updateCheckInStatus(checkInProperty).observe(getViewLifecycleOwner(),
                 checkInStatus -> {
@@ -66,6 +80,10 @@ public class NfcReadDialogFragment extends DialogFragment {
         });
     }
 
+    /**
+     * Implements dialog listener so main activity is aware when it is attached and displayed.
+     * @param context the main activity.
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
