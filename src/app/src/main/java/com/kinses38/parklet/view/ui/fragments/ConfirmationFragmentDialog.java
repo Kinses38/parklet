@@ -1,5 +1,6 @@
 package com.kinses38.parklet.view.ui.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,8 +27,12 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+/**
+ *  Shows a summary of the booking the user created or errors
+ */
 public class ConfirmationFragmentDialog extends DialogFragment implements View.OnClickListener {
 
+    private final String TAG = this.getClass().getSimpleName();
     private TextView bookingErrors, bookingTotalDays, bookingTotalPrice, bookingSummaryText;
     private FragmentConfirmationDialogBinding binding;
     private Booking booking;
@@ -36,7 +41,7 @@ public class ConfirmationFragmentDialog extends DialogFragment implements View.O
     @Inject
     ViewModelFactory viewModelFactory;
 
-    public static ConfirmationFragmentDialog newInstance() {
+    static ConfirmationFragmentDialog newInstance() {
         ConfirmationFragmentDialog dialog = new ConfirmationFragmentDialog();
         return dialog;
     }
@@ -58,6 +63,10 @@ public class ConfirmationFragmentDialog extends DialogFragment implements View.O
 
     }
 
+    /**
+     *  Binds any errors in the booking, no vehicle or dates selected.
+     *  Binds total price, days booked and address of property.
+     */
     private void initBinding() {
         binding.setDialogFrag(this);
         bookingErrors = binding.bookingErrors;
@@ -79,35 +88,44 @@ public class ConfirmationFragmentDialog extends DialogFragment implements View.O
         binding.setHasError(errorState);
         bookingErrors.setText(errors);
 
-        Log.i("TAG", errors);
+        Log.i(TAG, errors);
     }
 
+    /**
+     * Formating dates to human readable form for summary.
+     * @param dates objects belonging to candidate booking
+     * @return String formatted dates.
+     */
     private String summariseDates(List<Long> dates) {
-        SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM");
         String daysBooked = dates.stream().map(Date::new).map(format::format)
                 .collect(Collectors.joining(",\n"));
         return daysBooked;
     }
 
+    /**
+     * Binds string summary of dates and price of booking to the textview, IFF no errors are present.
+     * @param booking the candidate booking
+     */
+    @SuppressLint("SetTextI18n")
     private void bookingSummary(Booking booking) {
         if (!errorState) {
-            bookingSummaryText.setText("Confirm all booking details are correct?");
-            bookingTotalDays.setText("Days Booked: \n" + summariseDates(booking.getBookingDates()));
-            bookingTotalPrice.setText(String
-                    .format("Total price of booking: €%.2f ", booking.getPriceTotal()));
+            bookingSummaryText.setText(R.string.summaryText);
+            bookingTotalDays.setText(getString(R.string.totalDaysBooked) + summariseDates(booking.getBookingDates()));
+            bookingTotalPrice.setText(String.format(getString(R.string.total_price), booking.getPriceTotal()));
         }
     }
 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.booking_confirm_button:
-                Log.i("TAG", "Booking confirmed");
+                Log.i(TAG, "Booking confirmed");
                 bookingViewModel.createBooking(booking);
                 this.dismiss();
                 break;
             case R.id.booking_cancel:
                 this.dismiss();
-                Log.i("TAG", "booking not placed");
+                Log.i(TAG, "booking not placed");
                 break;
             default:
                 break;

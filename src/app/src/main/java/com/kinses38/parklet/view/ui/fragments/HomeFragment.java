@@ -19,8 +19,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.kinses38.parklet.ParkLet;
 import com.kinses38.parklet.R;
 import com.kinses38.parklet.data.model.entity.User;
-import com.kinses38.parklet.data.repository.BookingRepo;
-import com.kinses38.parklet.data.repository.UserRepo;
 import com.kinses38.parklet.databinding.FragmentHomeBinding;
 import com.kinses38.parklet.utilities.HomeAdapter;
 import com.kinses38.parklet.viewmodels.HomeViewModel;
@@ -28,6 +26,11 @@ import com.kinses38.parklet.viewmodels.ViewModelFactory;
 
 import javax.inject.Inject;
 
+/**
+ *  Home page of app. First page loaded if user is successfully authenticated.
+ *  Allows creation of new vehicle bookings and management of current bookings for home owners and
+ *  renters.
+ */
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private final String TAG = this.getClass().getSimpleName();
@@ -38,12 +41,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private FragmentHomeBinding binding;
     private RecyclerView recyclerView;
-    private LinearLayoutManager layoutManager;
     private HomeAdapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Inflate through Databinding util to allow use of databinding in layout files.
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
         ParkLet.getParkLetApp().getUserRepoComponent().inject(this);
+        //provide ViewModel through injected ViewModel Factory.
         homeViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(HomeViewModel.class);
 
         Bundle bundle = this.getArguments();
@@ -55,20 +59,33 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return binding.getRoot();
     }
 
+    /**
+     * Set relevant bindings for Home Fragment layout file.
+     * Set context of fragment to this.
+     * Set HasBookings to false to hide RecyclerView until bookings are loaded/found.
+     */
     private void initBindings() {
         textView = binding.textHome;
         binding.setHomeFrag(this);
         binding.setHasBookings(false);
     }
 
+    /**
+     *  Initialise recyclerview for display of current Bookings.
+     */
     private void initRecyclerView() {
         adapter = new HomeAdapter(getActivity());
         recyclerView = binding.homeRecycler;
-        layoutManager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
     }
 
 
+    /**
+     * Fetch signed in user from bundle and if they are new start process of creating new profile.
+     * Updates the Firebase Cloud Messaging token in the case of an app uninstall or the token being revoked.
+     * @param bundle
+     */
     private void initProfileView(Bundle bundle) {
         if (bundle != null) {
             User user = (User) bundle.getSerializable("User");
@@ -87,10 +104,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * If new user then call for the ViewModel to initialise their profile through the user Repo.
+     * @param user
+     */
     private void createNewUserProfile(User user) {
         homeViewModel.createUserProfile(user);
     }
 
+    /**
+     * Get the most up to date device token for firebase cloud messaging and associate with users profile.
+     * @param user
+     */
     //https://firebase.google.com/docs/cloud-messaging/android/client#retrieve-the-current-registration-token
     private void getCurrentFcmToken(User user) {
         FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
@@ -100,7 +125,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-
+    /**
+     * Fetch all users bookings, both vehicle and properties and pass to recycler.
+     * setHasBookings updated so layout file knows whether to display the recycler
+     * if new bookings have arrived.
+     */
     private void observerUsersBookings() {
         homeViewModel.getUsersBookings().observe(getViewLifecycleOwner(), bookings -> {
             if (bookings != null && !bookings.isEmpty()) {

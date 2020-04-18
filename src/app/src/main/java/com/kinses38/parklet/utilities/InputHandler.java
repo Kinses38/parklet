@@ -6,6 +6,10 @@ import android.view.inputmethod.InputMethodManager;
 
 import androidx.fragment.app.FragmentActivity;
 
+/**
+ * Utility class to hide soft keyboard input when user is finished completing forms
+ */
+
 public class InputHandler {
 
     public static void hideKeyboard(FragmentActivity activity) {

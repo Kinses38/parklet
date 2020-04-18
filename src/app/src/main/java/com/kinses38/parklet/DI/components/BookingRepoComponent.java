@@ -13,5 +13,6 @@ import dagger.Component;
 public interface BookingRepoComponent {
 
     void inject(BookingFragment bookingFragment);
+
     void inject(ConfirmationFragmentDialog confirmationFragmentDialog);
 }

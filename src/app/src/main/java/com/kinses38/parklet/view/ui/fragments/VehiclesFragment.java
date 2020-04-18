@@ -36,7 +36,6 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
 
     private RecyclerView recyclerView;
     private VehicleAdapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
     private TextView carMake, carModel, carReg;
 
     private VehiclesViewModel vehiclesViewModel;
@@ -55,32 +54,13 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
         return vehiclesLandingBinding.getRoot();
     }
 
-    private void initVehicleObserver() {
-        vehiclesViewModel.getVehicles().observe(getViewLifecycleOwner(), new Observer<List<Vehicle>>() {
-            @Override
-            public void onChanged(@Nullable List<Vehicle> vehicles) {
-                if (!vehicles.isEmpty()) {
-                    vehiclesLandingBinding.setHasVehicle(true);
-                    adapter.refreshList(vehicles);
-                    recyclerView.setAdapter(adapter);
-                    Log.i(TAG, String.valueOf(this.hashCode()));
-                }
-                else{
-                    vehiclesLandingBinding.setHasVehicle(false);
-                }
-            }
-        });
-    }
-
-    private void initRecyclerView(){
-        adapter = new VehicleAdapter(getActivity());
-        recyclerView = vehiclesLandingBinding.getRoot().findViewById(R.id.vehicle_recycler);
-        layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-
-    }
-
-    private void initBindings(){
+    /**
+     * Binds:
+     * This fragment instance to the vehicle layout Fragment
+     * Boolean to form whether to display or not
+     * TextViews for vehicle info.
+     */
+    private void initBindings() {
         //Bind this fragment to allow onClick binding
         vehiclesLandingBinding.setVehicleFrag(this);
         //Binding boolean value to hide form
@@ -92,14 +72,51 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    private void saveVehicle(){
+    /**
+     * Recyclerview to display users vehicles and allow deletion.
+     */
+    private void initRecyclerView() {
+        adapter = new VehicleAdapter(getActivity());
+        recyclerView = vehiclesLandingBinding.getRoot().findViewById(R.id.vehicle_recycler);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+
+    }
+
+    /**
+     * Call to Vehicle ViewModel to retrieve users vehicles if they exist.
+     * Displays recyclerview if they do, otherwise informs user to add a vehicle
+     */
+    private void initVehicleObserver() {
+        vehiclesViewModel.getVehicles().observe(getViewLifecycleOwner(), new Observer<List<Vehicle>>() {
+            @Override
+            public void onChanged(@Nullable List<Vehicle> vehicles) {
+                if (!vehicles.isEmpty()) {
+                    vehiclesLandingBinding.setHasVehicle(true);
+                    adapter.refreshList(vehicles);
+                    recyclerView.setAdapter(adapter);
+                    Log.i(TAG, String.valueOf(this.hashCode()));
+                } else {
+                    vehiclesLandingBinding.setHasVehicle(false);
+                }
+            }
+        });
+    }
+
+    /**
+     * Retrieve vehicle details from form and then pass to Vehicle ViewModel.
+     */
+    private void saveVehicle() {
         String make = carMake.getText().toString();
         String model = carModel.getText().toString();
         String reg = carReg.getText().toString();
-        vehiclesViewModel.onClickVehicleSubmit(make, model, reg);
+        vehiclesViewModel.submitVehicle(make, model, reg);
     }
 
-    private void resetTextViews(){
+    /**
+     * Reset form after user saves vehicle or cancels.
+     */
+    private void resetTextViews() {
         carMake.setText("");
         carModel.setText("");
         carReg.setText("");

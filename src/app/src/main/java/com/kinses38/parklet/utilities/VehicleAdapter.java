@@ -24,7 +24,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
 
     private Activity context;
     private List<Vehicle> vehicles;
-    VehiclesViewModel vehiclesViewModel;
+    private VehiclesViewModel vehiclesViewModel;
 
     static class VehicleViewHolder extends RecyclerView.ViewHolder{
       TextView rv_car_reg, rv_car_make, rv_car_model;
@@ -59,15 +59,12 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
         viewHolder.rv_car_reg.setText(String.format("%s %s", context.getString(R.string.car_reg), vehicle.getReg()));
         viewHolder.rv_car_make.setText(String.format("%s %s", context.getString(R.string.car_make), vehicle.getMake()));
         viewHolder.rv_car_model.setText(String.format("%s %s", context.getString(R.string.car_model), vehicle.getModel()));
-        viewHolder.rv_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Vehicle deletedVehicle = vehicles.get(position);
-                vehiclesViewModel.remove(deletedVehicle);
-                vehicles.remove(position);
-                Toast.makeText((FragmentActivity)context, String.format("Vehicle: %s has been removed", vehicle.getReg()),Toast.LENGTH_LONG).show();
-                notifyDataSetChanged();
-            }
+        viewHolder.rv_delete.setOnClickListener(v -> {
+            Vehicle deletedVehicle = vehicles.get(position);
+            vehiclesViewModel.remove(deletedVehicle);
+            vehicles.remove(position);
+            Toast.makeText(context, String.format("Vehicle: %s has been removed", vehicle.getReg()),Toast.LENGTH_LONG).show();
+            notifyDataSetChanged();
         });
 
 

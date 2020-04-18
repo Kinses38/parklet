@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 
 
 /**
- * Responsible for the publishing new bookings to the Booking repository and and fetching all
- * bookings relating to a homeowner/renter/property.
- *
+ * Responsible for the publishing new bookings to the Booking repository, fetching all
+ * bookings for a given property and users vehicles for renting with.
+ * Observed by the Booking Fragment
  **/
 
 public class BookingViewModel extends ViewModel {
@@ -29,53 +29,74 @@ public class BookingViewModel extends ViewModel {
     private LiveData<List<Booking>> propertyBookings;
     private LiveData<List<Vehicle>> renterVehicles;
     private boolean status;
-    private MutableLiveData<Boolean> bookingConfirmedText = new MutableLiveData<>();
+    private MutableLiveData<Boolean> bookingIsConfirmed = new MutableLiveData<>();
 
     private VehicleRepo vehicleRepo;
     private BookingRepo bookingRepo;
 
     private Booking booking;
 
-    public BookingViewModel(BookingRepo bookingRepo, VehicleRepo vehicleRepo){
+    BookingViewModel(BookingRepo bookingRepo, VehicleRepo vehicleRepo) {
         this.bookingRepo = bookingRepo;
         this.vehicleRepo = vehicleRepo;
     }
 
+    /**
+     * Call to Booking repo to create new booking with relevant details.
+     *
+     * @param booking relevant details
+     */
     public void createBooking(Booking booking) {
-        //Todo set response in repo, return response code?
         bookingRepo.create(booking);
-        //Booking fragment observes
+        //Booking fragment observes status to know when to navigate back to home page.
         status = true;
-        bookingConfirmedText.setValue(status);
+        bookingIsConfirmed.setValue(status);
     }
 
-    public LiveData<Boolean> getBookingStatus(){
-        return bookingConfirmedText;
+    public LiveData<Boolean> getBookingStatus() {
+        return bookingIsConfirmed;
     }
 
-    public void setBookingStatus(boolean status){
+    public void setBookingStatus(boolean status) {
         this.status = status;
-        bookingConfirmedText.setValue(status);
+        bookingIsConfirmed.setValue(status);
     }
 
-    public void setBookingDetails(Booking booking){
+    /**
+     * Set details of booking for user to review in confirmation window before submitting.
+     *
+     * @param booking
+     */
+    public void setBookingDetails(Booking booking) {
         this.booking = booking;
     }
 
-    public Booking getBooking(){
+    public Booking getBooking() {
         return this.booking;
     }
 
+    /**
+     * Query all bookings for the given property so user can check available dates.
+     *
+     * @param propertyUID the id of the property the user is observing.
+     * @return a list of dates of each booking for that property.
+     */
     public LiveData<List<Date>> getBookingsForProperty(String propertyUID) {
         if (propertyBookings == null) {
             propertyBookings = new MutableLiveData<>();
         }
         propertyBookings = bookingRepo.selectAllForProperty(propertyUID);
-        LiveData<List<Date>> allDatesOfBookings = Transformations.map(propertyBookings, bookings -> convertAndFilter(bookings));
+        LiveData<List<Date>> allDatesOfBookings = Transformations.map(propertyBookings,
+                bookings -> convertAndFilter(bookings));
 
         return allDatesOfBookings;
     }
 
+    /**
+     * Get current users vehicles to make the booking under.
+     *
+     * @return all eligible vehicles belonging to the user.
+     */
     public LiveData<List<Vehicle>> getUserVehicles() {
         if (renterVehicles == null) {
             renterVehicles = new MutableLiveData<>();
@@ -85,6 +106,14 @@ public class BookingViewModel extends ViewModel {
         return renterVehicles;
     }
 
+    /**
+     * Helper function to convert epochs to dates,
+     * filter any date before the current days date as its not relevant.
+     * If a booking has been cancelled, the date will be show as available.
+     *
+     * @param bookings all bookings belonging to a property
+     * @return list of java dates corresponding to all the bookings for the given property.
+     */
     @VisibleForTesting
     List<Date> convertAndFilter(List<Booking> bookings) {
         final int oneDay = -1;

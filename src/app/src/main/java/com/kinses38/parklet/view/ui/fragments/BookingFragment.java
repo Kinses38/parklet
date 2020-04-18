@@ -32,6 +32,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+/**
+ * Responsible for showing current available dates to book for a property, dates prepared by
+ * Booking ViewModel. Allows user to select dates and vehicles for their booking.
+ * Uses ParkletView Calendar to allow selection of dates.
+ */
 public class BookingFragment extends Fragment implements View.OnClickListener {
 
     private final String TAG = this.getClass().getSimpleName();
@@ -63,12 +68,17 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
         observeVehicles();
         observeBookingStatus();
 
+        //Initialise calendar and check if current property allows weekend bookings.
         calendarView.initCalendar(propertyToBook.getWeekendBookings());
         Log.i(TAG, propertyToBook.getAddressLine());
         return binding.getRoot();
 
     }
 
+    /**
+     * Call to booking ViewModel to query for all the bookings relevant to this property and update
+     * the calendar view appropriately.
+     */
     private void observeBookings() {
         bookingViewModel.getBookingsForProperty(binding.getPropertyToBook().getPropertyUID())
                 .observe(getViewLifecycleOwner(), bookingDates -> {
@@ -80,6 +90,11 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
                 });
     }
 
+    /**
+     * Call to booking ViewModel to get the current user's vehicle(s).
+     * Binds the vehicles to a spinner dropdown menu if the user currently has vehicles.
+     * Otherwise informs user they must have a vehicle to make a booking.
+     */
     private void observeVehicles() {
         bookingViewModel.getUserVehicles().observe(getViewLifecycleOwner(), vehicles -> {
             if (!vehicles.isEmpty()) {
@@ -89,12 +104,16 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
                 adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
                 spinner.setAdapter(adapter);
             } else {
+                //set layout visibility for dropdown to hidden and give warning to user instead.
                 binding.setHasVehicle(false);
-                //TODO show button to navigate to vehicle page instead
             }
         });
     }
 
+    /**
+     * If the user successfully confirms the booking after review, inform them then navigate back
+     * to the home fragment page.
+     */
     private void observeBookingStatus() {
         bookingViewModel.getBookingStatus().observe(getViewLifecycleOwner(), status -> {
             if (status) {
@@ -105,6 +124,13 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    /**
+     * Initialise all relevant bindings.
+     * Passes the current property to layout file for DataBinding.
+     * Initialise spinner and listener for selection of vehicle for renting under.
+     *
+     * @param property the current property the user is interested in renting.
+     */
     private void initBindings(Property property) {
         binding.setBookingFrag(this);
         calendarView = binding.calendarView;
@@ -124,6 +150,10 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    /**
+     * Create the booking object and pass to confirmation dialog for the user
+     * to review before confirming.
+     */
     private void submitBooking() {
         Property propertyToBook = binding.getPropertyToBook();
         List<Long> datesTimeStamp = calendarView.getAndConvertDates();
@@ -143,8 +173,11 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    //Using share ViewModel this time to deal with fragment to fragment communication
-    public void confirmationDialog() {
+    /**
+     * Create the confirmation dialog for booking confirmation.
+     * Observes the current booking from booking viewModel after passing it from this class
+     */
+    private void confirmationDialog() {
         FragmentTransaction fragTrans = getChildFragmentManager().beginTransaction();
         ConfirmationFragmentDialog dialog = ConfirmationFragmentDialog.newInstance();
         dialog.show(fragTrans, dialog.getClass().getSimpleName());
@@ -153,12 +186,10 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         Log.i("ID here: ", "" + v.getId());
         switch (v.getId()) {
-            case R.id.confirm_booking_button:
-                Log.i(TAG, "Confirm booking button clicked");
+            case R.id.submit_booking:
+                Log.i(TAG, "booking submitted.");
                 submitBooking();
                 break;
-            case R.id.booking_confirm_button:
-                Log.i(TAG, "Dialog button working");
             default:
                 break;
         }

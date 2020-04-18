@@ -54,7 +54,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         this.vehicleRepo = vehicleRepo;
     }
 
-    //Map & Property viewModel
+    //Map & Property viewModel. Not shared, just constructed with same parameters.
     public ViewModelFactory(PropertyRepo propertyRepo) {
         this.propertyRepo = propertyRepo;
     }
@@ -75,7 +75,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(PropertyViewModel.class)) {
             return (T) new PropertyViewModel(propertyRepo);
         }
-        if (modelClass.isAssignableFrom(MapViewModel.class)){
+        if (modelClass.isAssignableFrom(MapViewModel.class)) {
             return (T) new MapViewModel(propertyRepo);
         }
 

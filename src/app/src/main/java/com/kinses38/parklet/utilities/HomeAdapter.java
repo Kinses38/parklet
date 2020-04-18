@@ -1,5 +1,6 @@
 package com.kinses38.parklet.utilities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -28,6 +29,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Adapter and viewHolder for use with recyclerview in Home fragment. Shows current bookings, provides cancellation and
+ * route lookup functionality through google maps api.
+ */
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder> {
 
     private Activity context;
@@ -35,6 +40,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
     private HomeViewModel homeViewModel;
 
 
+    /**
+     * ViewHolder describes the item view and binds the layouts textviews/buttons to the viewholders instance.
+     */
     static class HomeViewHolder extends RecyclerView.ViewHolder {
         TextView rv_houseAddress, rv_total_price, rv_booking_dates, rv_owner_name, rv_renter_name,
                 rv_booked_car;
@@ -58,16 +66,21 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         }
 
         //Need this to dynamically update bindings for each property
-        public void bind(Booking booking) {
+        void bind(Booking booking) {
             binding.setBooking(booking);
-            if(booking.isOwnerCancelled() || booking.isRenterCancelled())
-            {
+            if (booking.isOwnerCancelled() || booking.isRenterCancelled()) {
                 binding.setBookingCancelled(true);
             }
             binding.executePendingBindings();
         }
     }
 
+    /**
+     * Constructor for adapter, takes the context of the main activity displaying the fragment.
+     * Shares HomeViewModel with HomeFragment, so no duplicate ViewModel
+     *
+     * @param context the Activity/fragment from which the adapter was called from.
+     */
     public HomeAdapter(Activity context) {
         this.context = context;
         this.bookings = new ArrayList<>();
@@ -86,6 +99,15 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         return new HomeViewHolder(binding);
     }
 
+    /**
+     * Binds the values of the current booking to the current viewHolder.
+     * Sets onClick listener for both cancellation and map navigation.
+     * Visibility of the map navigation is set by booking recycler layout
+     *
+     * @param viewHolder the current Item View
+     * @param position   the position of the booking in the recyclerview/arraylist
+     */
+    @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(@NonNull HomeAdapter.HomeViewHolder viewHolder, int position) {
         Booking booking = bookings.get(position);
@@ -105,15 +127,20 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         viewHolder.rv_booked_car.setText(String
                 .format("%s %s", context.getText(R.string.car_booked), booking
                         .getRenterVehicleReg()));
+        // Call to HomeViewModel to request cancellation
         viewHolder.rv_cancel_booking.setOnClickListener(v ->
                 homeViewModel.cancelBooking(viewHolder.ADB.getCurrentUser().getUid(), booking));
-
         viewHolder.rv_directions_button.setOnClickListener(v ->
                 showDirections(booking.getPropertyAddress()));
     }
 
+    /**
+     * Starts intent for google maps to show route for the given property address.
+     * Only displayed on bookings for which the user is renter. Set in booking_recycler_layout.xml
+     * @param address the address to search directions for.
+     */
     //https://developers.google.com/maps/documentation/urls/android-intents
-    private void showDirections(@NonNull String address){
+    private void showDirections(@NonNull String address) {
         Uri addressUri = Uri.parse("geo:0,0?q=" + Uri.encode(address));
         Intent gmapsIntent = new Intent(Intent.ACTION_VIEW, addressUri);
         gmapsIntent.setPackage("com.google.android.apps.maps");
@@ -125,6 +152,11 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         notifyDataSetChanged();
     }
 
+    /**
+     * Format dates to human readable format
+     * @param dates objects of the booking days
+     * @return string representation of the booking days.
+     */
     private String formatDates(List<Long> dates) {
         SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM");
         String daysBooked = dates.stream().map(Date::new).map(format::format)

@@ -76,6 +76,9 @@
     <string name="no_vehicle_booking">\u0020 You must add a vehicle to make a booking</string>
     <string name="confirm_booking">Confirm</string>
     <string name="cancel_booking">Cancel</string>
+    <string name="summaryText">Confirm all booking details are correct?</string>
+    <string name="totalDaysBooked">Days Booked: \n</string>
+    <string name="total_price">Total price of booking: €%.2f </string>
     <!--Booking fragment end-->
 
     <!--    Home fragment start-->

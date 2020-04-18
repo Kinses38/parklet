@@ -16,15 +16,22 @@ import com.kinses38.parklet.data.model.entity.Vehicle;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repository responsible for:
+ * Adding, removing or querying a users vehicles.
+ */
 public class VehicleRepo {
-    
+
     private final String TAG = this.getClass().getSimpleName();
-    
+
     private DatabaseReference DB = FirebaseDatabase.getInstance().getReference();
     private final FirebaseAuth ADB = FirebaseAuth.getInstance();
-    
-    
-    
+
+    /**
+     * Add users vehicle to the "Vehicles" node
+     *
+     * @param vehicle vehicle object to be added
+     */
     public void create(Vehicle vehicle) {
         String vehicleKey = DB.child("vehicles").push().getKey();
         DatabaseReference vehicleRef = DB.child("vehicles/" + vehicleKey);
@@ -38,6 +45,11 @@ public class VehicleRepo {
     }
 
 
+    /**
+     * Return all of the current users vehicles
+     *
+     * @return livedata list of vehicles
+     */
     public MutableLiveData<List<Vehicle>> selectAll() {
         MutableLiveData<List<Vehicle>> userVehiclesMutableLiveData = new MutableLiveData<>();
         DatabaseReference allVehicles = DB.child("vehicles/");
@@ -61,14 +73,20 @@ public class VehicleRepo {
         return userVehiclesMutableLiveData;
     }
 
-    public void remove(Vehicle vehicle){
+
+    /**
+     * Removes users selected vehicle
+     *
+     * @param vehicle vehicle to be removed, matched by registration.
+     */
+    public void remove(Vehicle vehicle) {
         DatabaseReference userVehicles = DB.child("vehicles/");
         userVehicles.orderByChild("reg").equalTo(vehicle.getReg()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
-                     ds.getRef().removeValue();
+                    ds.getRef().removeValue();
                 }
             }
 
