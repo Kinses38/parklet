@@ -11,8 +11,6 @@ import java.io.Serializable;
 public class Vehicle extends BaseObservable implements Serializable {
 
     private String reg, model, make, ownerUID;
-    @Exclude
-    private String vehicleUID;
 
     public Vehicle() {
         //Empty constructor for firebase
@@ -60,14 +58,6 @@ public class Vehicle extends BaseObservable implements Serializable {
 
     public void setOwnerUID(String ownerUID) {
         this.ownerUID = ownerUID;
-    }
-
-    public String getVehicleUID() {
-        return vehicleUID;
-    }
-
-    public void setVehicleUID(String vehicleUID) {
-        this.vehicleUID = vehicleUID;
     }
 
     @Override

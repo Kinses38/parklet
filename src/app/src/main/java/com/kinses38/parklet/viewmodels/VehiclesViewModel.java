@@ -29,13 +29,13 @@ public class VehiclesViewModel extends ViewModel {
      * @param model String model of car
      * @param reg   String registration of car
      */
-    public void submitVehicle(String make, String model, String reg) {
+    public LiveData<String> submitVehicle(String make, String model, String reg) {
         Vehicle vehicle = new Vehicle(make, model, reg);
-        createNewVehicle(vehicle);
+        return createNewVehicle(vehicle);
     }
 
-    private void createNewVehicle(Vehicle vehicle) {
-        vehicleRepo.create(vehicle);
+    private LiveData<String> createNewVehicle(Vehicle vehicle) {
+        return vehicleRepo.create(vehicle);
     }
 
     /**
