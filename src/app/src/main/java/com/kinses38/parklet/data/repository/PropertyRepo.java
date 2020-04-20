@@ -10,8 +10,6 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.firebase.geofire.core.GeoHash;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,30 +44,48 @@ public class PropertyRepo {
      *
      * @param property the property to add.
      */
-    public void create(Property property) {
-        //TODO check for existing property using....?Eircode?
-        String propertyKey = DB.child("properties").push().getKey();
-        DatabaseReference propertyRef = DB.child("properties/" + propertyKey);
-        property.setPropertyUID(propertyKey);
+    public MutableLiveData<String> create(Property property) {
+        //Property EirCode used as natural key
+        DatabaseReference propertyRef = DB.child("properties/" + property.getEircode());
+        MutableLiveData<String> result = new MutableLiveData<>();
         property.setOwnerUID(ADB.getCurrentUser().getUid());
         property.setOwnerName(ADB.getCurrentUser().getDisplayName());
-        propertyRef.setValue(property).addOnSuccessListener(aVoid -> {
-            Log.i(TAG, "Property added");
-        })
-                .addOnFailureListener(e ->
-                        Log.i(TAG, "Property not added" + e.getMessage()));
-
-        //creates queryable geohash that allows us to search by area and range. Maps to property ID under "properties" node
-        geoFire.setLocation(propertyKey, new GeoLocation(property.getLatitude(), property.getLongitude()), new GeoFire.CompletionListener() {
+        propertyRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onComplete(String key, DatabaseError error) {
-                if (error == null) {
-                    Log.i(TAG, "PropertyLocation saved");
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Log.i(TAG, "Cant add property, exists");
+                    result.postValue("Property already exists!");
+
                 } else {
-                    Log.i(TAG, error.getMessage());
+                    propertyRef.setValue(property)
+                            .addOnSuccessListener(aVoid -> {
+                                result.postValue("Property added!");
+                                Log.i(TAG, "Property added");
+                            })
+                            .addOnFailureListener(e ->
+                                    Log.i(TAG, "Property not added" + e.getMessage()));
+
+                    /* creates queryable geohash that allows us to search by
+                    area and range. Maps to property ID under "properties" node */
+                    geoFire.setLocation(property.getEircode(),
+                            new GeoLocation(property.getLatitude(), property.getLongitude()),
+                            (key, error) -> {
+                                if (error == null) {
+                                    Log.i(TAG, "PropertyLocation saved: " + key);
+                                } else {
+                                    Log.i(TAG, error.getMessage());
+                                }
+                            });
                 }
             }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.i(TAG, databaseError.getMessage());
+            }
         });
+        return result;
     }
 
     /**
@@ -162,15 +178,14 @@ public class PropertyRepo {
         MutableLiveData<List<Property>> propertiesInRange = new MutableLiveData<>();
         if (!keys.isEmpty()) {
             for (String key : keys) {
-                ref.orderByChild("propertyUID").equalTo(key).addValueEventListener(new ValueEventListener() {
+                ref.child(key).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            Property prop = ds.getValue(Property.class);
+                        if (dataSnapshot.exists()) {
+                            Property prop = dataSnapshot.getValue(Property.class);
                             if (!prop.getOwnerUID().equals(currentUserUid)) {
                                 properties.add(prop);
                             }
-
                         }
                         propertiesInRange.postValue(properties);
                     }
@@ -196,16 +211,13 @@ public class PropertyRepo {
      */
     public void remove(Property property) {
         Map<String, Object> requestMap = new HashMap<>();
-        requestMap.put("properties/" + property.getPropertyUID(), null);
-        requestMap.put("propertyLocations/" + property.getPropertyUID(), null);
-        DB.updateChildren(requestMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Log.i(TAG, property.getEircode() + " removed");
-                } else {
-                    Log.i(TAG, "Failed");
-                }
+        requestMap.put("properties/" + property.getEircode(), null);
+        requestMap.put("propertyLocations/" + property.getEircode(), null);
+        DB.updateChildren(requestMap).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.i(TAG, property.getEircode() + " removed");
+            } else {
+                Log.i(TAG, "Failed");
             }
         });
 

@@ -77,7 +77,7 @@ public class UserPropertyAdapter extends RecyclerView.Adapter<UserPropertyAdapte
         viewHolder.rv_nfc_write.setOnClickListener(v -> {
             Property propertyToWrite = properties.get(position);
             propertyViewModel.setPropertyToWrite(propertyToWrite);
-            Log.i(TAG, "property: " + propertyToWrite.getPropertyUID());
+            Log.i(TAG, "property: " + propertyToWrite.getEircode());
         });
     }
 

@@ -81,7 +81,6 @@ public class VehicleRepo {
                 List<Vehicle> vehicles = new ArrayList<>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Vehicle userVehicle = ds.getValue(Vehicle.class);
-//                    userVehicle.setVehicleUID(ds.getKey());
                     vehicles.add(userVehicle);
                 }
                 userVehiclesMutableLiveData.postValue(vehicles);

@@ -7,7 +7,8 @@ import java.io.Serializable;
 
 public class Property implements Serializable {
 
-    private String addressLine, eircode, ownerUID, propertyUID, ownerName;
+    //EirCode used as natural Key
+    private String addressLine, eircode, ownerUID, ownerName;
     private Double dailyRate, propertyRating = 0.0;
     private Boolean takingBookings = true, weekendBookings = true;
     private Double longitude, latitude;
@@ -106,14 +107,6 @@ public class Property implements Serializable {
     @Exclude
     public LatLng getLatLng() {
         return new LatLng(this.getLatitude(), this.getLongitude());
-    }
-
-    public String getPropertyUID() {
-        return propertyUID;
-    }
-
-    public void setPropertyUID(String propertyUID) {
-        this.propertyUID = propertyUID;
     }
 
     public String getOwnerName() {

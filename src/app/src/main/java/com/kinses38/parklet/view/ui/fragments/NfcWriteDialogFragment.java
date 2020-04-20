@@ -52,7 +52,7 @@ public class NfcWriteDialogFragment extends DialogFragment {
      */
     @SuppressLint("SetTextI18n")
     public void writeNfc(Ndef ndef, Property propertyToWrite) {
-        String propertyUid = propertyToWrite.getPropertyUID();
+        String propertyUid = propertyToWrite.getEircode();
         if (NfcUtil.writeNfc(ndef, propertyUid)) {
             writeDialog.setText(requireActivity().getString(R.string.wrote_tag) + propertyToWrite.getAddressLine());
         } else {
