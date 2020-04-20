@@ -32,14 +32,14 @@ public class PropertyViewModel extends ViewModel {
      * @param dailyRate         Users set rate for renting for a day
      * @param availableWeekends boolean whether property is avail to rent on weekends
      */
-    public void setProperty(Address address, Double dailyRate, String availableWeekends) {
+    public LiveData<String> setProperty(Address address, Double dailyRate, String availableWeekends) {
         String addressLine = address.getAddressLine(0);
         String eircode = address.getPostalCode();
         Double longitude = address.getLongitude();
         Double latitude = address.getLatitude();
         Property property = new Property(addressLine, eircode, dailyRate, longitude, latitude);
         property.parseWeekend(availableWeekends);
-        addProperty(property);
+        return addProperty(property);
     }
 
     /**
@@ -51,8 +51,8 @@ public class PropertyViewModel extends ViewModel {
         return propertyRepo.selectAll();
     }
 
-    private void addProperty(Property property) {
-        propertyRepo.create(property);
+    private LiveData<String> addProperty(Property property) {
+        return propertyRepo.create(property);
     }
 
     public void remove(Property property) {

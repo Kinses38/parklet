@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -155,8 +156,9 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
         String availableWeekends = r.getText().toString();
         Double rate = Double.parseDouble(dailyRate.getText().toString());
 
-        propertyViewModel.setProperty(address, rate, availableWeekends);
-
+        propertyViewModel.setProperty(address, rate, availableWeekends)
+                .observe(getViewLifecycleOwner(),
+                        result -> Toast.makeText(requireActivity(), result, Toast.LENGTH_SHORT).show());
     }
 
     /**

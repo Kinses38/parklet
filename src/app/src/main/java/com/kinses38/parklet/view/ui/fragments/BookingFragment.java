@@ -80,7 +80,7 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
      * the calendar view appropriately.
      */
     private void observeBookings() {
-        bookingViewModel.getBookingsForProperty(binding.getPropertyToBook().getPropertyUID())
+        bookingViewModel.getBookingsForProperty(binding.getPropertyToBook().getEircode())
                 .observe(getViewLifecycleOwner(), bookingDates -> {
                     if (!bookingDates.isEmpty()) {
                         calendarView.refreshCalendar(bookingDates);
@@ -161,7 +161,7 @@ public class BookingFragment extends Fragment implements View.OnClickListener {
         Booking booking = new Booking(
                 propertyToBook.getOwnerUID(),
                 propertyToBook.getOwnerName(),
-                propertyToBook.getPropertyUID(),
+                propertyToBook.getEircode(),
                 propertyToBook.getAddressLine(),
                 renterVehicleReg,
                 propertyToBook.getDailyRate(),
