@@ -45,20 +45,13 @@
     <string name="house_icon_svg">house_icon_svg</string>
     <string name="house_address"> <b>Address:</b></string>
     <string name="available_to_book">Available to book: </string>
+    <string name="address_required">*Property Address required*</string>
+    <string name="no_property_text">You have added no properties yet. please add one</string>
+    <string name="no_price">*You must provide a price*</string>
     <!--    Properties fragment end-->
 
-    <!-- Nfc fragment start   -->
-    <string name="nfc_page">NFC Tool</string>
-    <string name="no_property_text">You have added no properties yet. please add one</string>
-    <!-- Nfc fragment end   -->
-
-    <!--    Home fragment start -->
-    <string name="user_welcome">Welcome to ParkLet %1$s</string>
-    <!--    Home fragment end   -->
 
     <!--    Map fragment start -->
-    <string name="create_a_vehicle_booking">Create a vehicle booking</string>
-    <string name="no_bookings">You have no current bookings</string>
     <string name="map_search_area">Search area</string>
     <string name="map_range">Range in Km: </string>
     <string name="map_default_range">2</string>
@@ -66,6 +59,8 @@
     <string name="map_search_button_search_content">Search for property in an area</string>
     <string name="map_no_properties">There are no properties in this area,   try expanding your search</string>
     <string name="distance_in_km">distance in km</string>
+    <string name="average_expensive">More expensive than average by %.0f%%</string>
+    <string name="expensive_cheaper">Cheaper than average by %.0f%%</string>
     <!--    Map fragment end -->
 
     <!--    Booking fragment start-->
@@ -82,6 +77,9 @@
     <!--Booking fragment end-->
 
     <!--    Home fragment start-->
+    <string name="user_welcome">Welcome to ParkLet %1$s</string>
+    <string name="create_a_vehicle_booking">Create a vehicle booking</string>
+    <string name="no_bookings">You have no current bookings</string>
     <string name="days_booked">Days booked:</string>
     <string name="property_owner">Owner:</string>
     <string name="renter_name">Renter:</string>
@@ -92,14 +90,19 @@
     <string name="status_cancelled_by_owner">Status: Cancelled by Owner</string>
     <string name="status_cancelled_by_renter">Status: Cancelled by Renter</string>
     <string name="directions_to_property">Directions to property</string>
+
+
+
+
+    <!--    Home fragment end-->
+
+    <!-- NFC Strings -->
     <string name="wrote_tag">Successfully wrote tag for:</string>
     <string name="hold_tag">Hold the tag to your phone!</string>
     <string name="nfc_write_failed">Write Failed!</string>
     <string name="empty_property_tag">Property Tag is empty!</string>
     <string name="checkin_in_progress">Checking you in now!</string>
-    <string name="average_expensive">More expensive than average by %.0f%%</string>
-    <string name="expensive_cheaper">Cheaper than average by %.0f%%</string>
-    <!--    Home fragment end-->
+
 
 
 </resources>

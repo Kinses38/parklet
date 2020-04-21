@@ -4,16 +4,21 @@
 
 
     <data>
+
         <import type="android.view.View" />
+
         <variable
             name="propertyFrag"
             type="com.kinses38.parklet.view.ui.fragments.PropertiesFragment" />
+
         <variable
             name="formClicked"
             type="java.lang.Boolean" />
+
         <variable
             name="viewModel"
             type="com.kinses38.parklet.viewmodels.PropertyViewModel" />
+
         <variable
             name="hasProperty"
             type="java.lang.Boolean" />
@@ -45,9 +50,9 @@
             android:layout_below="@+id/text_properties"
             android:layout_centerHorizontal="true"
             android:contentDescription="@string/add_property"
-            android:text="@string/add_property"
             android:onClick="@{v -> propertyFrag.onClick(v)}"
-            android:visibility="@{formClicked? View.GONE : View.VISIBLE}"/>
+            android:text="@string/add_property"
+            android:visibility="@{formClicked? View.GONE : View.VISIBLE}" />
 
         <!-- Start of the form. Should be visibility:GONE when form button has not been clicked       -->
         <RelativeLayout
@@ -117,11 +122,19 @@
                     android:textAlignment="center" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/dailyRateError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dailyRateBlock"
+                android:layout_centerHorizontal="true"
+                android:textAlignment="center" />
+
             <RadioGroup
                 android:id="@+id/weekend_radio_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/dailyRateBlock"
+                android:layout_below="@+id/dailyRateError"
                 android:layout_centerHorizontal="true"
                 android:orientation="horizontal">
 
@@ -133,16 +146,16 @@
 
                 <RadioButton
                     android:id="@+id/weekend_radio_true"
-                    android:text="@string/yes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true" />
+                    android:checked="true"
+                    android:text="@string/yes" />
 
                 <RadioButton
                     android:id="@+id/weekend_radio_false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/no"/>
+                    android:text="@string/no" />
 
             </RadioGroup>
 
@@ -152,18 +165,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/weekend_radio_group"
-                android:layout_toLeftOf="@+id/center_block"
                 android:layout_centerHorizontal="true"
+                android:layout_toLeftOf="@+id/center_block"
                 android:contentDescription="@string/property_save_descript"
-                android:text="@string/property_save_button"
-                android:onClick="@{(v) -> propertyFrag.onClick(v)}"/>
+                android:onClick="@{(v) -> propertyFrag.onClick(v)}"
+                android:text="@string/property_save_button" />
 
             <TextView
                 android:id="@+id/center_block"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/weekend_radio_group"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true" />
+
             <Button
                 android:id="@+id/property_form_cancel"
                 android:layout_width="wrap_content"
@@ -171,30 +185,30 @@
                 android:layout_below="@+id/weekend_radio_group"
                 android:layout_toRightOf="@+id/center_block"
                 android:contentDescription="@string/property_cancel_descript"
-                android:text="@string/property_cancel"
-                android:onClick="@{(v) -> propertyFrag.onClick(v)}"/>
+                android:onClick="@{(v) -> propertyFrag.onClick(v)}"
+                android:text="@string/property_cancel" />
 
         </RelativeLayout>
         <!--        End of form-->
 
         <TextView
-            android:visibility="@{hasProperty? View.GONE : View.VISIBLE}"
             android:id="@+id/no_property_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/property_form"
-            android:layout_marginTop="8dp"
             android:layout_centerHorizontal="true"
-            android:text="@string/no_property_text" />
+            android:layout_marginTop="8dp"
+            android:text="@string/no_property_text"
+            android:visibility="@{hasProperty? View.GONE : View.VISIBLE}" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:visibility="@{hasProperty? View.VISIBLE : View.GONE}"
             android:id="@+id/property_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/property_form"
             android:layout_marginTop="8dp"
             android:scrollbars="vertical"
-            android:layout_below="@+id/property_form"
+            android:visibility="@{hasProperty? View.VISIBLE : View.GONE}"
             app:layout_constraintVertical_bias="0.0" />
 
     </RelativeLayout>
