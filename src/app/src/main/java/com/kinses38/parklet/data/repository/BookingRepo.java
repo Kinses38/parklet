@@ -154,15 +154,26 @@ public class BookingRepo {
     /**
      * Update the booking to be cancelled whether by the renter or homeowner.
      * RealTime database recognises the updated fields and will only update that.
+     * Sets bookingTable entries to null to remove. Completed atomically, all must succeed or
+     * all fail. Removal of booking table entry ensures the renter cannot check-in or clash with someone
+     * who booked the same property for the same day after a cancellation.
      *
      * @param booking to be cancelled.
      */
-    //TODO atomic multipath delete table and then update booking.
     public void cancelBooking(Booking booking) {
-        DatabaseReference allBookings = DB.child("bookings/");
-        allBookings.child(booking.getBookingUID()).setValue(booking)
-                .addOnSuccessListener(aVoid -> Log.i(TAG, "Booking cancelled"))
-                .addOnFailureListener(e -> Log.i(TAG, e.getMessage()));
+        Map<String, Object> requestMap = new HashMap<>();
+        for (Long date : booking.getBookingDates()) {
+            //Get each day entry for the booking table
+            requestMap.put("bookingTable/" + booking.getPropertyUID() + date, null);
+        }
+        requestMap.put("bookings/" + booking.getBookingUID(), booking);
+        DB.updateChildren(requestMap).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.i(TAG, booking.getBookingUID() + " cancelled");
+            } else {
+                Log.i(TAG, "Could not cancel");
+            }
+        });
     }
 
     /**
