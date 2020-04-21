@@ -15,7 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,7 +43,7 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
 
     private RecyclerView recyclerView;
     private UserPropertyAdapter adapter;
-    private TextView propertyAddress, textProperties, addressLine, dailyRate;
+    private TextView propertyAddress, addressLine, dailyRate, dailyRateError;
     private RadioGroup weekends;
 
     private Address address;
@@ -86,9 +85,9 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
         propertiesBinding.setViewModel(propertyViewModel);
         weekends = propertiesBinding.weekendRadioGroup;
         propertyAddress = propertiesBinding.addressInput;
-        textProperties = propertiesBinding.textProperties;
         addressLine = propertiesBinding.addressLineOne;
         dailyRate = propertiesBinding.dailyRate;
+        dailyRateError = propertiesBinding.dailyRateError;
 
         propertyAddress.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
@@ -166,9 +165,26 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
      */
     private void resetForm() {
         propertyAddress.setText("");
-        textProperties.setText("");
         addressLine.setText("");
         dailyRate.setText(R.string.default_daily_rate);
+    }
+
+    /**
+     * Ensure address lookup succeeded/User entered Address.
+     * Other form values are provided with defaults
+     * */
+    private void validateProperty(){
+        if(addressLine.getText().toString().isEmpty()){
+            addressLine.setText(R.string.address_required);
+        }
+        if(dailyRate.getText().toString().isEmpty()){
+            dailyRateError.setText(R.string.no_price);
+        }
+        else {
+            saveProperty();
+            propertiesBinding.setFormClicked(!propertiesBinding.getFormClicked());
+            resetForm();
+        }
     }
 
     public void onClick(View v) {
@@ -179,9 +195,7 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.property_form_save:
                 InputHandler.hideKeyboard(requireActivity());
-                saveProperty();
-                propertiesBinding.setFormClicked(!propertiesBinding.getFormClicked());
-                resetForm();
+                validateProperty();
                 Log.i(TAG, "Property saved, clicked");
                 break;
             case R.id.property_form_cancel:

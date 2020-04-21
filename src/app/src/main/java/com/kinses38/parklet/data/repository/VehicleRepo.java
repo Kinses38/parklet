@@ -54,8 +54,6 @@ public class VehicleRepo {
                                 response.postValue("Failed, please try again");
                                 Log.i(TAG, e.getMessage());
                             });
-
-
                 }
             }
 

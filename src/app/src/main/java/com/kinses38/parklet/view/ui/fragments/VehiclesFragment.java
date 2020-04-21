@@ -112,7 +112,7 @@ public class VehiclesFragment extends Fragment implements View.OnClickListener {
         String model = carModel.getText().toString();
         String reg = carReg.getText().toString();
         vehiclesViewModel.submitVehicle(make, model, reg).observe(getViewLifecycleOwner(),
-                result -> Toast.makeText(requireActivity(), result, Toast.LENGTH_SHORT).show());
+                result -> Toast.makeText(requireActivity(), result, Toast.LENGTH_LONG).show());
     }
 
     /**
