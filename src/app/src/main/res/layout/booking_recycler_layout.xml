@@ -171,7 +171,7 @@
                         android:id="@+id/rv_cust_cancellation_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:contentDescription=""
+                        android:contentDescription="@string/status_cancelled_by_renter"
                         android:text="@string/status_cancelled_by_renter"
                         android:visibility="@{booking.isRenterCancelled? View.VISIBLE : View.GONE}"
                         app:autoSizeMinTextSize="@dimen/recycler_text_min_size"
@@ -181,11 +181,21 @@
                         android:id="@+id/rv_owner_cancellation_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:contentDescription=""
+                        android:contentDescription="@string/status_cancelled_by_renter"
                         android:text="@string/status_cancelled_by_owner"
                         android:visibility="@{booking.isOwnerCancelled? View.VISIBLE : View.GONE}"
                         app:autoSizeMinTextSize="@dimen/recycler_text_min_size"
                         app:autoSizeTextType="uniform" />
+
+                    <TextView
+                        android:id="@+id/renter_checked"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/check_in_renter_arrived"
+                        android:contentDescription="@string/check_in_renter_arrived"
+                        android:visibility="@{booking.isRenterAtProperty? View.VISIBLE : View.GONE}"
+                        app:autoSizeMinTextSize="@dimen/recycler_text_min_size"
+                        app:autoSizeTextType="uniform"/>
 
                 </LinearLayout>
                 <!--                booking complete visible if true green text-->

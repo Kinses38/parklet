@@ -102,7 +102,7 @@
     <string name="nfc_write_failed">Write Failed!</string>
     <string name="empty_property_tag">Property Tag is empty!</string>
     <string name="checkin_in_progress">Checking you in now!</string>
-
+    <string name="check_in_renter_arrived">Check-in: Renter arrived!</string>
 
 
 </resources>
