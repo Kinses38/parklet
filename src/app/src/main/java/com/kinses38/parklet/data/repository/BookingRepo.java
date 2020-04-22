@@ -188,53 +188,42 @@ public class BookingRepo {
     public LiveData<String> updateCheckInStatus(String bookingQuery) {
         MutableLiveData<String> status = new MutableLiveData<>();
         status.postValue("Checking for booking");
-        //Query Booking table first for booking on that Day
-        DB.child("bookingTable/").orderByKey().equalTo(bookingQuery).addListenerForSingleValueEvent(new ValueEventListener() {
+        DB.child("bookingTable/").child(bookingQuery).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getChildrenCount() != 0) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        String bookingKey = ds.getValue(String.class);
-                        //If booking exists flip the current check-in status.
-                        DB.child("bookings/").orderByKey().equalTo(bookingKey).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                //Todo refactor check-in logic to booking. Check renter id and cancellation/complete status.
-                                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                    Booking booking = ds.getValue(Booking.class);
-                                    booking.setRenterAtProperty(!booking.isRenterAtProperty());
-                                    DB.child("bookings/").child(bookingKey).child("renterAtProperty")
-                                            .setValue(booking.isRenterAtProperty());
-                                    if (booking.isRenterAtProperty()) {
-                                        status.postValue("You are checked in!");
-                                    } else {
-                                        status.postValue("You are checked out!");
-                                    }
-                                    Log.i(TAG, "CheckInStatus updated");
-                                }
+                if (dataSnapshot.exists()) {
+                    String bookingKey = dataSnapshot.getValue(String.class);
+                    DB.child("bookings/").child(bookingKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                Booking booking = dataSnapshot.getValue(Booking.class);
+                                // Check renter UID
+                                // Check booking not cancelled
+                                // Check and retrieve appropriate response for check-in
+                            } else {
+                                status.postValue("Booking not found");
                             }
+                        }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                Log.i(TAG, databaseError.getMessage());
-                            }
-                        });
-                    }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.i(TAG, databaseError.getMessage());
+                            status.postValue("There was an error, please try again");
+                        }
+                    });
                 } else {
-                    status.postValue("Booking not found!");
+                    status.postValue("Booking not found");
+                    Log.i(TAG, "No booking for property on this day");
                 }
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                status.postValue("There was an error, try again");
+                Log.i(TAG, databaseError.getMessage());
+                status.postValue("There was an error, please try again");
             }
         });
         return status;
     }
 }
-
-
-
-
