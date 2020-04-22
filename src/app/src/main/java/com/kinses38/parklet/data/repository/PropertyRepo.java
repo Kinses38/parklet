@@ -32,10 +32,18 @@ import java.util.Map;
 public class PropertyRepo {
 
     private final String TAG = this.getClass().getSimpleName();
+    private final static String PROPERTYNODE = "properties/";
+    private final static String PROPERTYLOCATIONNODE = "propertyLocations/";
+    private final static String OWNERUIDCHILD = "ownerUID";
+    private final static String GEOBUCKETNODE = "geoPriceBucket/";
+    private final static String AVERAGENODE = "average";
+
     private DatabaseReference DB = FirebaseDatabase.getInstance().getReference();
     private final FirebaseAuth ADB = FirebaseAuth.getInstance();
-    private DatabaseReference geoFireRef = FirebaseDatabase.getInstance().getReference("propertyLocations");
+    private DatabaseReference geoFireRef = FirebaseDatabase.getInstance().getReference(PROPERTYLOCATIONNODE);
     private GeoFire geoFire = new GeoFire(geoFireRef);
+
+
 
 
     /**
@@ -46,7 +54,7 @@ public class PropertyRepo {
      */
     public MutableLiveData<String> create(Property property) {
         //Property EirCode used as natural key
-        DatabaseReference propertyRef = DB.child("properties/" + property.getEircode());
+        DatabaseReference propertyRef = DB.child(PROPERTYNODE + property.getEircode());
         MutableLiveData<String> result = new MutableLiveData<>();
         property.setOwnerUID(ADB.getCurrentUser().getUid());
         property.setOwnerName(ADB.getCurrentUser().getDisplayName());
@@ -95,8 +103,8 @@ public class PropertyRepo {
      */
     public MutableLiveData<List<Property>> selectAll() {
         MutableLiveData<List<Property>> userPropertiesMutableLiveData = new MutableLiveData<>();
-        DatabaseReference allProperties = DB.child("properties/");
-        allProperties.orderByChild("ownerUID").equalTo(ADB.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+        DatabaseReference allProperties = DB.child(PROPERTYNODE);
+        allProperties.orderByChild(OWNERUIDCHILD).equalTo(ADB.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Property> properties = new ArrayList<>();
@@ -132,11 +140,9 @@ public class PropertyRepo {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
                 Log.i(TAG, "Near property: " + key);
+                //get key, run query for property, retrieve property, add to list, post.
                 propertyKeys.add(key);
                 propertiesInRangeMutableLiveData.postValue(propertyKeys);
-                //get key, run query for property, retrieve property, add to list, post.
-
-                //TODO filter user_propertys
             }
 
             @Override
@@ -172,7 +178,7 @@ public class PropertyRepo {
      * @return livedata list of properties.
      */
     public MutableLiveData<List<Property>> selectProperty(List<String> keys) {
-        DatabaseReference ref = DB.child("properties/");
+        DatabaseReference ref = DB.child(PROPERTYNODE);
         String currentUserUid = ADB.getCurrentUser().getUid();
         List<Property> properties = new ArrayList<>();
         MutableLiveData<List<Property>> propertiesInRange = new MutableLiveData<>();
@@ -211,8 +217,8 @@ public class PropertyRepo {
      */
     public void remove(Property property) {
         Map<String, Object> requestMap = new HashMap<>();
-        requestMap.put("properties/" + property.getEircode(), null);
-        requestMap.put("propertyLocations/" + property.getEircode(), null);
+        requestMap.put(PROPERTYNODE + property.getEircode(), null);
+        requestMap.put(PROPERTYLOCATIONNODE + property.getEircode(), null);
         DB.updateChildren(requestMap).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.i(TAG, property.getEircode() + " removed");
@@ -236,7 +242,7 @@ public class PropertyRepo {
     public MutableLiveData<Double> getAverage(double lon, double lat, int precision) {
         MutableLiveData<Double> averagePrice = new MutableLiveData<>(0.0);
         GeoHash geoHash = new GeoHash(lat, lon, precision);
-        DB.child("geoPriceBucket").child(geoHash.getGeoHashString()).child("average").addValueEventListener(new ValueEventListener() {
+        DB.child(GEOBUCKETNODE).child(geoHash.getGeoHashString()).child(AVERAGENODE).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {

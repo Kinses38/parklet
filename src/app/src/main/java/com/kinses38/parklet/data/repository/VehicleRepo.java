@@ -23,7 +23,8 @@ import java.util.List;
 public class VehicleRepo {
 
     private final String TAG = this.getClass().getSimpleName();
-
+    private final static String VEHICLESNODE = "vehicles/";
+    private final static String OWNERUIDCHILD = "ownerUID";
     private DatabaseReference DB = FirebaseDatabase.getInstance().getReference();
     private final FirebaseAuth ADB = FirebaseAuth.getInstance();
 
@@ -34,7 +35,7 @@ public class VehicleRepo {
      */
     public MutableLiveData<String> create(Vehicle vehicle) {
         MutableLiveData<String> response = new MutableLiveData<>();
-        DatabaseReference vehicleRef = DB.child("vehicles/" + vehicle.getReg());
+        DatabaseReference vehicleRef = DB.child(VEHICLESNODE + vehicle.getReg());
         DB.child("vehicles").child(vehicle.getReg()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -72,8 +73,8 @@ public class VehicleRepo {
      */
     public MutableLiveData<List<Vehicle>> selectAll() {
         MutableLiveData<List<Vehicle>> userVehiclesMutableLiveData = new MutableLiveData<>();
-        DatabaseReference allVehicles = DB.child("vehicles/");
-        allVehicles.orderByChild("ownerUID").equalTo(ADB.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+        DatabaseReference allVehicles = DB.child(VEHICLESNODE);
+        allVehicles.orderByChild(OWNERUIDCHILD).equalTo(ADB.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Vehicle> vehicles = new ArrayList<>();
@@ -100,7 +101,7 @@ public class VehicleRepo {
      * @param vehicle vehicle to be removed, matched by registration.
      */
     public void remove(Vehicle vehicle) {
-        DatabaseReference userVehicles = DB.child("vehicles/");
+        DatabaseReference userVehicles = DB.child(VEHICLESNODE);
         userVehicles.child(vehicle.getReg()).setValue(null)
                 .addOnSuccessListener(aVoid -> Log.i(TAG, "Vehicle Deleted"))
                 .addOnFailureListener(e -> Log.i(TAG, e.getMessage()));
