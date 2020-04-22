@@ -151,4 +151,21 @@ public class Booking implements Serializable {
     public void setRenterAtProperty(boolean renterAtProperty) {
         this.renterAtProperty = renterAtProperty;
     }
+
+    public boolean checkerRenter(String customer) {
+        return this.renterUID.equals(customer);
+    }
+
+    public boolean isBookingCancelled(){
+        return this.ownerCancelled || this.renterCancelled;
+    }
+
+    public String updateCheckIn(){
+        renterAtProperty = !renterAtProperty;
+        if(renterAtProperty){
+            return "You are now checked into \n" + this.propertyAddress;
+        } else {
+            return  "You are now checked out!";
+        }
+    }
 }

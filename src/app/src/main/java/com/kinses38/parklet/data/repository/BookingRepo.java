@@ -180,13 +180,15 @@ public class BookingRepo {
      * Attempt to check-in or out at a property. Using the booking query consisting of the propertyID
      * and current Days date, check the booking table for an entry. If nothing is found, inform
      * the user there is no booking for property.
-     * Otherwise check the current check-in status and update.
+     * Otherwise, confirm the booking is still valid and for the current user.
+     * Then update the current checkin status
      *
      * @param bookingQuery the propertyID with epoch of current days date to use as a key to search for that days booking.
      * @return the status of the check-in. Subscribed to by booking ViewModel.
      */
     public LiveData<String> updateCheckInStatus(String bookingQuery) {
         MutableLiveData<String> status = new MutableLiveData<>();
+        String currentUser = ADB.getCurrentUser().getUid();
         status.postValue("Checking for booking");
         DB.child("bookingTable/").child(bookingQuery).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -198,9 +200,15 @@ public class BookingRepo {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 Booking booking = dataSnapshot.getValue(Booking.class);
-                                // Check renter UID
-                                // Check booking not cancelled
-                                // Check and retrieve appropriate response for check-in
+                                if (booking.checkerRenter(currentUser) && !booking.isBookingCancelled()) {
+                                    status.postValue(booking.updateCheckIn());
+                                    DB.child("bookings/")
+                                            .child(bookingKey)
+                                            .child("renterAtProperty")
+                                            .setValue(booking.isRenterAtProperty());
+                                } else {
+                                    status.postValue("Booking not Valid");
+                                }
                             } else {
                                 status.postValue("Booking not found");
                             }
