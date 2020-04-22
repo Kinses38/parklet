@@ -156,6 +156,7 @@ public class Booking implements Serializable {
         return this.renterUID.equals(customer);
     }
 
+    @Exclude
     public boolean isBookingCancelled(){
         return this.ownerCancelled || this.renterCancelled;
     }

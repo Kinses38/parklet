@@ -25,28 +25,31 @@ import java.util.Map;
 public class BookingRepo {
 
     private final String TAG = this.getClass().getSimpleName();
-
+    private final static String BOOKINGSNODE = "bookings/";
+    private final static String BOOKINGTABLENODE = "bookingTable/";
+    private final static String OWNERUIDCHILD = "ownerUID";
+    private final static String RENTERUIDCHILD = "renterUID";
+    private final static String PROPERTYUIDCHILD = "propertyUID";
+    private final static String RENTERARRIVEDCHILD = "renterAtProperty";
     private DatabaseReference DB = FirebaseDatabase.getInstance().getReference();
     private final FirebaseAuth ADB = FirebaseAuth.getInstance();
-
-    //TODO enforce rule
 
     /**
      * Creates a new booking for user. Atomically creates booking object entry under bookings node,
      * and entries under the booking table node. All writes must succeed or none will be written, achieved using
      * a map of requests to be written to real time database.
      *
-     * @param booking
+     * @param booking object containing all particulars of the requested booking.
      */
     public void create(Booking booking) {
-        String bookingKey = DB.child("bookings").push().getKey();
+        String bookingKey = DB.child(BOOKINGSNODE).push().getKey();
         booking.setRenterUID(ADB.getCurrentUser().getUid());
         booking.setRenterName(ADB.getCurrentUser().getDisplayName());
 
         Map<String, Object> requestMap = new HashMap<>();
-        requestMap.put("bookings/" + bookingKey, booking);
+        requestMap.put(BOOKINGSNODE + bookingKey, booking);
         for (Long timestamp : booking.getBookingDates()) {
-            requestMap.put("bookingTable/" + booking.getPropertyUID() + timestamp, bookingKey);
+            requestMap.put(BOOKINGTABLENODE + booking.getPropertyUID() + timestamp, bookingKey);
         }
         DB.updateChildren(requestMap).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -65,9 +68,9 @@ public class BookingRepo {
      */
     public MutableLiveData<List<Booking>> selectAllForProperty(String propertyUID) {
         MutableLiveData<List<Booking>> propertyBookingMutableLiveData = new MutableLiveData<>();
-        DatabaseReference allBookings = DB.child("bookings/");
+        DatabaseReference allBookings = DB.child(BOOKINGSNODE);
 
-        allBookings.orderByChild("propertyUID").equalTo(propertyUID)
+        allBookings.orderByChild(PROPERTYUIDCHILD).equalTo(propertyUID)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -96,9 +99,9 @@ public class BookingRepo {
      */
     public MutableLiveData<List<Booking>> selectAllUserRentals() {
         MutableLiveData<List<Booking>> userRentalsMutableLiveData = new MutableLiveData<>();
-        DatabaseReference allBookings = DB.child("bookings/");
+        DatabaseReference allBookings = DB.child(BOOKINGSNODE);
 
-        allBookings.orderByChild("renterUID").equalTo(ADB.getCurrentUser().getUid())
+        allBookings.orderByChild(RENTERUIDCHILD).equalTo(ADB.getCurrentUser().getUid())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -127,9 +130,9 @@ public class BookingRepo {
      */
     public MutableLiveData<List<Booking>> selectAllUsersPropertiesBooking() {
         MutableLiveData<List<Booking>> userPropertiesBookings = new MutableLiveData<>();
-        DatabaseReference allBookings = DB.child("bookings/");
+        DatabaseReference allBookings = DB.child(BOOKINGSNODE);
 
-        allBookings.orderByChild("ownerUID").equalTo(ADB.getCurrentUser().getUid())
+        allBookings.orderByChild(OWNERUIDCHILD).equalTo(ADB.getCurrentUser().getUid())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -164,9 +167,9 @@ public class BookingRepo {
         Map<String, Object> requestMap = new HashMap<>();
         for (Long date : booking.getBookingDates()) {
             //Get each day entry for the booking table
-            requestMap.put("bookingTable/" + booking.getPropertyUID() + date, null);
+            requestMap.put(BOOKINGTABLENODE + booking.getPropertyUID() + date, null);
         }
-        requestMap.put("bookings/" + booking.getBookingUID(), booking);
+        requestMap.put(BOOKINGSNODE + booking.getBookingUID(), booking);
         DB.updateChildren(requestMap).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.i(TAG, booking.getBookingUID() + " cancelled");
@@ -190,24 +193,24 @@ public class BookingRepo {
         MutableLiveData<String> status = new MutableLiveData<>();
         String currentUser = ADB.getCurrentUser().getUid();
         status.postValue("Checking for booking");
-        DB.child("bookingTable/").child(bookingQuery).addListenerForSingleValueEvent(new ValueEventListener() {
+        DB.child(BOOKINGTABLENODE).child(bookingQuery).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     String bookingKey = dataSnapshot.getValue(String.class);
-                    DB.child("bookings/").child(bookingKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                    DB.child(BOOKINGSNODE).child(bookingKey).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 Booking booking = dataSnapshot.getValue(Booking.class);
                                 if (booking.checkerRenter(currentUser) && !booking.isBookingCancelled()) {
                                     status.postValue(booking.updateCheckIn());
-                                    DB.child("bookings/")
+                                    DB.child(BOOKINGSNODE)
                                             .child(bookingKey)
-                                            .child("renterAtProperty")
+                                            .child(RENTERARRIVEDCHILD)
                                             .setValue(booking.isRenterAtProperty());
                                 } else {
-                                    status.postValue("Booking not Valid");
+                                    status.postValue("Booking not valid");
                                 }
                             } else {
                                 status.postValue("Booking not found");
