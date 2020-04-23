@@ -172,15 +172,19 @@ public class PropertiesFragment extends Fragment implements View.OnClickListener
     /**
      * Ensure address lookup succeeded/User entered Address.
      * Other form values are provided with defaults
-     * */
-    private void validateProperty(){
-        if(addressLine.getText().toString().isEmpty()){
+     */
+    private void validateProperty() {
+        boolean isValid = true;
+        if (addressLine.getText().toString().isEmpty()) {
             addressLine.setText(R.string.address_required);
+            isValid = false;
         }
-        if(dailyRate.getText().toString().isEmpty()){
+        if (dailyRate.getText().toString().isEmpty()) {
             dailyRateError.setText(R.string.no_price);
+            isValid = false;
+
         }
-        else {
+        if (isValid) {
             saveProperty();
             propertiesBinding.setFormClicked(!propertiesBinding.getFormClicked());
             resetForm();
