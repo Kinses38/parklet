@@ -1,5 +1,8 @@
 package com.kinses38.parklet.view.ui.activities;
 
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.google.android.material.navigation.NavigationView;
 import com.kinses38.parklet.ParkLet;
 import com.kinses38.parklet.R;
@@ -13,6 +16,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -59,4 +63,10 @@ public class MainActivityUnitTest {
         assertThat("Properties nav button", view.getMenu().getItem(2).getTitle(), equalTo("My Properties"));
     }
 
+    @Test
+    public void DrawerClosedByDefault(){
+        DrawerLayout drawer = mainActivity.findViewById(R.id.drawer_layout);
+        assertFalse("Drawer not visible", drawer.isDrawerVisible(mainActivity.findViewById(R.id.nav_view)));
+        assertFalse("Drawer not open", drawer.isDrawerOpen(GravityCompat.START));
+    }
 }
