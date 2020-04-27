@@ -51,15 +51,15 @@ public class VehicleViewModelTest {
         vehiclesViewModel = new VehiclesViewModel(vehicleRepo);
     }
 
-//    @Test
-//    public void submitVehicleTest(){
-//
-//        MutableLiveData<String> result = new MutableLiveData<>("Created");
-//        Vehicle vehicle = new Vehicle("Ford", "Focus", "98-D-1234");
-//        when(vehicleRepo.create(vehicle)).thenReturn(result);
-//        vehiclesViewModel.submitVehicle(make, model, reg).observeForever(resultObserver);
-//        verify(resultObserver).onChanged(result.getValue());
-//    }
+    @Test
+    public void submitVehicleTest(){
+
+        MutableLiveData<String> result = new MutableLiveData<>("Model of vehicle required\n");
+        Vehicle vehicle = new Vehicle("Ford", "Focus", "98-D-1234");
+        when(vehicleRepo.create(vehicle)).thenReturn(result);
+        vehiclesViewModel.submitVehicle(make, "", reg).observeForever(resultObserver);
+        verify(resultObserver).onChanged(result.getValue());
+    }
 
     @Test
     public void validateVehicleTest(){
