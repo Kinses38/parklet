@@ -1,5 +1,6 @@
 package com.kinses38.parklet.viewmodels;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -61,7 +62,8 @@ public class MapViewModel extends ViewModel {
      * @param propertyKeys the ids of the properties in range
      * @return livedata list of properties that match the users query.
      */
-    private LiveData<List<Property>> getPropertiesInRange(LiveData<List<String>> propertyKeys) {
+    @VisibleForTesting
+    LiveData<List<Property>> getPropertiesInRange(LiveData<List<String>> propertyKeys) {
         LiveData propertiesInRange = Transformations
                 .switchMap(propertyKeys, keys -> propertyRepo.selectProperty(keys));
         return propertiesInRange;
@@ -76,14 +78,20 @@ public class MapViewModel extends ViewModel {
      * @param range users given range of interest.
      * @return the average price from the GeoHashBucket.
      */
-    private MutableLiveData<Double> getPricingForArea(double lon, double lat, double range) {
+    @VisibleForTesting
+    MutableLiveData<Double> getPricingForArea(double lon, double lat, double range) {
+        //LiveData will post incorrectly for tests unless explicitly assigned here.
+        MutableLiveData<Double> average;
         //TODO constants
         if (range <= 2) {
-            return propertyRepo.getAverage(lon, lat, 6);
+            average = propertyRepo.getAverage(lon, lat, 6);
+            return average;
         } else if (range > 2 && range < 4) {
-            return propertyRepo.getAverage(lon, lat, 5);
+            average = propertyRepo.getAverage(lon, lat, 5);
+            return average;
         } else {
-            return propertyRepo.getAverage(lon, lat, 4);
+            average = propertyRepo.getAverage(lon, lat, 4);
+            return average;
         }
     }
 
@@ -94,7 +102,8 @@ public class MapViewModel extends ViewModel {
      * @param average            given average price for current area
      * @return properties with average price comparison set.
      */
-    private List<Property> updateProperties(LiveData<List<Property>> propertiesLiveData, double average) {
+    @VisibleForTesting
+    List<Property> updateProperties(LiveData<List<Property>> propertiesLiveData, double average) {
         List<Property> properties = propertiesLiveData.getValue();
         if (properties != null && !properties.isEmpty()) {
             for (Property property : properties) {
