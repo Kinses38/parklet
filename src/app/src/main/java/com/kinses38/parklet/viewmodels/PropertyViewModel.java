@@ -2,6 +2,7 @@ package com.kinses38.parklet.viewmodels;
 
 import android.location.Address;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -51,7 +52,8 @@ public class PropertyViewModel extends ViewModel {
         return propertyRepo.selectAll();
     }
 
-    private LiveData<String> addProperty(Property property) {
+    @VisibleForTesting
+    LiveData<String> addProperty(Property property) {
         return propertyRepo.create(property);
     }
 
