@@ -88,7 +88,7 @@ public class VehicleRepo {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.e(TAG, databaseError.getMessage());
             }
         });
         return userVehiclesMutableLiveData;
