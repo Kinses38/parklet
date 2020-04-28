@@ -1,5 +1,6 @@
 package com.kinses38.parklet.viewmodels;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
@@ -78,8 +79,9 @@ public class HomeViewModel extends ViewModel {
      * @return livedata of concatenated bookings.
      */
     @Nullable
-    private List<Booking> mergeBookingsLiveData(LiveData<List<Booking>> userRentals,
-                                                LiveData<List<Booking>> propertyRentals) {
+    @VisibleForTesting
+    List<Booking> mergeBookingsLiveData(LiveData<List<Booking>> userRentals,
+                                        LiveData<List<Booking>> propertyRentals) {
         List<Booking> user = userRentals.getValue();
         List<Booking> property = propertyRentals.getValue();
         /* If neither has results yet return null.
