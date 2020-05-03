@@ -50,9 +50,9 @@ public class MapViewModel extends ViewModel {
          */
         MediatorLiveData<List<Property>> combinedResult = new MediatorLiveData();
         combinedResult.addSource(averagePrice, price
-                -> combinedResult.postValue(updateProperties(propertiesInRangeLiveData, averagePrice.getValue())));
+                -> combinedResult.postValue(updateProperties(propertiesInRangeLiveData.getValue(), price)));
         combinedResult.addSource(propertiesInRangeLiveData, properties
-                -> combinedResult.postValue(updateProperties(propertiesInRangeLiveData, averagePrice.getValue())));
+                -> combinedResult.postValue(updateProperties(properties, averagePrice.getValue())));
         return combinedResult;
     }
 
@@ -98,13 +98,12 @@ public class MapViewModel extends ViewModel {
     /**
      * Updates the properties average price comparison relative to the current area of search
      *
-     * @param propertiesLiveData properties list to be updated
+     * @param properties properties list to be updated
      * @param average            given average price for current area
      * @return properties with average price comparison set.
      */
     @VisibleForTesting
-    List<Property> updateProperties(LiveData<List<Property>> propertiesLiveData, double average) {
-        List<Property> properties = propertiesLiveData.getValue();
+    List<Property> updateProperties(List<Property> properties, double average) {
         if (properties != null && !properties.isEmpty()) {
             for (Property property : properties) {
                 property.setAverageComparison(average);
