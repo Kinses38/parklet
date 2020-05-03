@@ -43,14 +43,14 @@ public class NfcReadDialogFragment extends DialogFragment {
         ViewModelFactory viewModelFactory = new ViewModelFactory(new UserRepo(), new BookingRepo());
         homeViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(HomeViewModel.class);
         nfcDialog = binding.nfcText;
-        checkPropertyTag();
-        observeCheckIn();
+        checkPropertyTag(checkInProperty);
         return binding.getRoot();
 
     }
 
     /**
-     *  Attempt to read ndef from tag.
+     * Attempt to read ndef from tag.
+     *
      * @param ndef data from current tag.
      */
     public void readNfc(Ndef ndef) {
@@ -60,28 +60,36 @@ public class NfcReadDialogFragment extends DialogFragment {
     /**
      * Inform user if tag is empty. Otherwise, initial status of check-in
      */
-    private void checkPropertyTag(){
-        if(checkInProperty.length() == 0){
+    private void checkPropertyTag(String checkInProperty) {
+        if (checkInProperty != null ) {
+            if(checkInProperty.length() == 0){
+                nfcDialog.setText(R.string.empty_property_tag);
+            }
+            else {
+                nfcDialog.setText(R.string.checkin_in_progress);
+                observeCheckIn(checkInProperty);
+            }
+        } else {
             nfcDialog.setText(R.string.empty_property_tag);
-        }else{
-            nfcDialog.setText(R.string.checkin_in_progress);
         }
     }
 
     /**
-     *  Call to Home ViewModel to try and check-in, observe result and set the response text.
+     * Call to Home ViewModel to try and check-in, observe result and set the response text.
      */
-    private void observeCheckIn(){
+    private void observeCheckIn(String checkInProperty) {
         homeViewModel.updateCheckInStatus(checkInProperty).observe(getViewLifecycleOwner(),
                 checkInStatus -> {
-            if(checkInStatus != null){
-                nfcDialog.setText(checkInStatus);
-            }
-        });
+                    if (checkInStatus != null) {
+                        nfcDialog.setText(checkInStatus);
+                    }
+                });
     }
+
 
     /**
      * Implements dialog listener so main activity is aware when it is attached and displayed.
+     *
      * @param context the main activity.
      */
     @Override
