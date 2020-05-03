@@ -185,7 +185,7 @@ exports.renterBookingCancellation = functions.region("europe-west2").database.re
 
 /**
  * When a user adds a new property this function is called to aggregate the prices in their area for the average.
- * By using the geohash of a property, we can truncate it from 10 characters to 5 giving a geographical grid of 4.9km squared.
+ * By using the geohash of a property, we can truncate it from 10 characters to 6 giving a geographical grid of 0.738km squared.
  * We can then use these shortened geohashes as buckets to contain aggregated data for an properties falling into that area.
  * Calculating a running average price so it is available for when a renter queries for property.
  *
@@ -203,7 +203,7 @@ exports.aggregatePropertyPrices = functions.region("europe-west2").database.ref(
         //If property was added
         if (newState !== null) {
             const geoHash = newState.g;
-            //get geohash, reduce to 5 points for 4.9km x 4.9km (Some precision bits are square others are rectangles with a greater height)
+            //get geohash, reduce to 6 points for 1.22km x 0.61km area (The first bit references longitude, the 2nd latitude, so on so forth)
             const geoBucket = geoHash.substring(0, 6);
             //get property price to store in bucket as when the user deletes the property we wont be able to retrieve it to update average.
             let propertyPrice = (await admin.database().ref(`properties/${propertyUID}/dailyRate`).once('value')).val();
