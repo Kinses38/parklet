@@ -101,10 +101,10 @@ public class MapViewModelTest {
         MutableLiveData<List<Property>> propertyMutableLiveData = new MutableLiveData<>(properties);
         double average = 10.00;
 
-        assertEquals("Properties in = Properties out", mapViewModel.updateProperties(propertyMutableLiveData, average), properties);
+        assertEquals("Properties in = Properties out", mapViewModel.updateProperties(propertyMutableLiveData.getValue(), average), properties);
         assertEquals("Properties average comparison correct",properties.get(0).getAverageComparison(), 50.00);
         properties.get(0).setDailyRate(10.00);
-        assertEquals("Properties in = Properties out", mapViewModel.updateProperties(propertyMutableLiveData, average), properties);
+        assertEquals("Properties in = Properties out", mapViewModel.updateProperties(propertyMutableLiveData.getValue(), average), properties);
         assertEquals("Properties average comparison correct",properties.get(0).getAverageComparison(), 0.00);
 
     }
