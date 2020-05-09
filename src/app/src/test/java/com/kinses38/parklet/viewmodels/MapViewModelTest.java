@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.function.Predicate.isEqual;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.verify;
@@ -109,23 +110,27 @@ public class MapViewModelTest {
 
     }
 
-//    @Test
-//    public void queryPropertiesInRangeTest(){
-//        List<String> keys = new ArrayList<>();
-//        keys.add("1234");
-//        List<Property> properties = new ArrayList<>();
-//        Property property = new Property();
-//        properties.add(property);
-//
-//        MutableLiveData<Double> averagePrice = new MutableLiveData<>(15.00);
-//        MutableLiveData<List<String>> propertyKeys = new MutableLiveData<>(keys);
-//        MutableLiveData<List<Property>> propertiesInRange = new MutableLiveData<>(properties);
-//
-//        when(propertyRepo.getAverage(10.0, 5.0, 2)).thenReturn(averagePrice);
-//        when(propertyRepo.selectAllInRange(10.0, 5.0, 2.0)).thenReturn(propertyKeys);
-//        when(propertyRepo.selectProperty(keys)).thenReturn(propertiesInRange);
-//
-//        mapViewModel.queryPropertiesInRange(10.0, 5.0, 5.0).observeForever(propertyObserver);
-//        verify(propertyObserver).onChanged(properties);
-//    }
+    @Test
+    public void queryPropertiesInRangeTest(){
+        double expectedPriceComparison = 50.00;
+        List<String> keys = new ArrayList<>();
+        keys.add("1234");
+        List<Property> properties = new ArrayList<>();
+        Property property = new Property();
+        property.setDailyRate(5.00);
+        properties.add(property);
+
+        MutableLiveData<Double> averagePrice = new MutableLiveData<>(10.00);
+        MutableLiveData<List<String>> propertyKeys = new MutableLiveData<>(keys);
+        MutableLiveData<List<Property>> propertiesInRange = new MutableLiveData<>(properties);
+
+        when(propertyRepo.getAverage(10.0, 5.0, 6)).thenReturn(averagePrice);
+        when(propertyRepo.selectAllInRange(10.0, 5.0, 1.0)).thenReturn(propertyKeys);
+        when(propertyRepo.selectProperty(keys)).thenReturn(propertiesInRange);
+
+        mapViewModel.queryPropertiesInRange(10.0, 5.0, 1.0).observeForever(propertyObserver);
+        verify(propertyObserver).onChanged(properties);
+
+        assertEquals(properties.get(0).getAverageComparison(), expectedPriceComparison);
+    }
 }
