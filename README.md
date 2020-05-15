@@ -1,6 +1,13 @@
 ## ParkLet
 > "Airbnb for parking"
 
+
+Download the app [here](https://gitlab.computing.dcu.ie/kinses38/2020-ca400-kinses38-purcem23/blob/master/apk/app-debug.apk)
+
+The app source code [here](https://gitlab.computing.dcu.ie/kinses38/2020-ca400-kinses38-purcem23/tree/master/src/app/src/main/java/com/kinses38/parklet)
+
+Cloud functions source code here in [index.js](https://gitlab.computing.dcu.ie/kinses38/2020-ca400-kinses38-purcem23/tree/master/src/firebase/functions)
+
 The aim of our project will be to develop an android app that will allow 
 homeowners to easily rent out their driveways as parking spaces to commuters 
 with minimal effort. And likewise enable commuters to easily view and book 
